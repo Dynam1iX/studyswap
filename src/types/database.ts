@@ -1,0 +1,53 @@
+/**
+ * Row shapes of the Supabase tables, matching the column names and check constraints.
+ * Feature code builds its own view models on top of these.
+ */
+
+export type Category = 'CS & Dev' | 'Mathematics' | 'Humanities' | 'Languages';
+
+export type ContactMethod = 'telegram' | 'email';
+
+/** barter_posts.status */
+export type PostStatus = 'active' | 'completed' | 'archived';
+
+/** swap_requests.status */
+export type SwapStatus = 'pending' | 'accepted' | 'declined';
+
+/** users.role */
+export type UserRole = 'student' | 'moderator' | 'admin';
+
+/** users.study_year (1 to 3) */
+export type StudyYear = 1 | 2 | 3;
+
+export interface Subject {
+  id: number;
+  code: string;
+  name: string;
+  category: Category;
+  department: string;
+}
+
+export interface User {
+  id: string;
+  email: string;
+  full_name: string;
+  telegram_handle: string;
+  role: UserRole;
+  major: string;
+  study_year: StudyYear;
+}
+
+export interface BarterPost {
+  id: string;
+  author_id: string;
+  needed_subject_id: number;
+  offered_subject_id: number;
+  description: string;
+  offered_description: string;
+  contact_method: ContactMethod;
+  status: PostStatus;
+  created_at: string;
+}
+
+/** Insert payload for barter_posts (the database fills id and created_at). */
+export type NewBarterPost = Omit<BarterPost, 'id' | 'created_at'>;

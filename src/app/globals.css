@@ -1,0 +1,65 @@
+@import "tailwindcss";
+
+/* Design tokens: use them as Tailwind classes, e.g. bg-page, text-ink, border-line, font-bricolage. */
+@theme {
+  --color-page: #fbf9ff;
+  --color-ink: #1b1530;
+  --color-muted: #5a5472;
+  --color-placeholder: #6f6888;
+  --color-line: #ece6f7;
+  --color-line-strong: #e2dbf1;
+  --color-field: #cfc6e6;
+  --color-soft: #f4f0fb;
+  --color-brand-from: #ad46ff;
+  --color-brand-to: #f6339a;
+  --color-success: #0b6b48;
+  --color-danger: #e02424;
+
+  --font-bricolage: "Bricolage Grotesque", sans-serif;
+  --font-montserrat: "Montserrat", sans-serif;
+
+  --animate-shake: shake 0.35s ease-in-out;
+
+  @keyframes shake {
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+    20%,
+    60% {
+      transform: translateX(-6px);
+    }
+    40%,
+    80% {
+      transform: translateX(6px);
+    }
+  }
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--color-page);
+  color: var(--color-ink);
+  font-family: var(--font-montserrat);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+nextjs-portal,
+[data-nextjs-dev-indicator] {
+  display: none !important;
+}
