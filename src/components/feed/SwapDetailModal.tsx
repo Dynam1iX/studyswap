@@ -4,7 +4,7 @@ import { useId, useState, type CSSProperties, type ReactNode } from 'react';
 import { CalendarDays, Mail, Send, Star, Tag, X } from 'lucide-react';
 import { BottomSheet } from '@/components/ui/BottomSheet';
 import { paletteFor } from '@/lib/categoryPalette';
-import { getAuthorName, getContactHref, type FeedPost } from '@/lib/feed';
+import { getAuthorName, getContactHref, getContactMethod, type FeedPost } from '@/lib/feed';
 import { formatPostedAt, formatStudyInfo, getInitials } from '@/lib/format';
 import type { Subject } from '@/types/database';
 
@@ -122,14 +122,10 @@ function SwapDetailBody({ post }: { post: FeedPost }) {
           {formatPostedAt(post.created_at)}
         </DetailRow>
         <DetailRow
-          icon={post.contact_method === 'telegram' ? <Send className="size-5" /> : <Mail className="size-5" />}
+          icon={getContactMethod(post) === 'telegram' ? <Send className="size-5" /> : <Mail className="size-5" />}
           label="Contact via"
         >
-          {post.contact_method === 'telegram' && post.author?.telegram_handle
-            ? `Telegram · @${post.author.telegram_handle}`
-            : post.contact_method === 'telegram'
-              ? 'Telegram'
-              : 'University email'}
+          {getContactMethod(post) === 'telegram' ? `Telegram · @${post.author?.telegram_handle}` : 'University email'}
         </DetailRow>
         <DetailRow icon={<Tag className="size-5" />} label="Status" valueClassName="text-success">
           Active · open for swaps
@@ -204,7 +200,7 @@ function DetailRow({
 }
 
 function SwapDetailActions({ post, onClose }: { post: FeedPost; onClose: () => void }) {
-  const isTelegram = post.contact_method === 'telegram';
+  const isTelegram = getContactMethod(post) === 'telegram';
   return (
     <div className="grid shrink-0 grid-cols-4 gap-6 border-t border-line bg-white px-6 pt-4 pb-[max(24px,env(safe-area-inset-bottom))]">
       <button

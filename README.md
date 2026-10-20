@@ -59,7 +59,7 @@ public/                   Logo and icons
 | `barter_posts` | Barter cards: needed subject, offered subject, topics, contact method, status |
 | `swap_requests` | Requests between students on a card |
 
-Row Level Security is on. The public key can read only `active` barter posts.
+Row Level Security is on. Schema, migrations and the rules the database enforces: see [`supabase/README.md`](supabase/README.md).
 
 ## Team
 

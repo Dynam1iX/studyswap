@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase';
-import type { BarterPost, Subject, User } from '@/types/database';
+import type { BarterPost, ContactMethod, Subject, User } from '@/types/database';
 
 export type FeedAuthor = Pick<User, 'id' | 'full_name' | 'email' | 'telegram_handle' | 'role' | 'major' | 'study_year'>;
 
@@ -50,10 +50,15 @@ export function getAuthorName(post: FeedPost): string {
   return post.author?.full_name || 'AITU Student';
 }
 
+/** How to contact the author: Telegram only when the author has a handle, otherwise e-mail. */
+export function getContactMethod(post: FeedPost): ContactMethod {
+  return post.contact_method === 'telegram' && post.author?.telegram_handle ? 'telegram' : 'email';
+}
+
 /** Telegram link or a prefilled mailto: link for the post's contact method. */
 export function getContactHref(post: FeedPost): string {
-  if (post.contact_method === 'telegram') {
-    return `https://t.me/${post.author?.telegram_handle || 'dynam1ix'}`;
+  if (getContactMethod(post) === 'telegram') {
+    return `https://t.me/${post.author?.telegram_handle}`;
   }
   const email = post.author?.email || 'student@astanait.edu.kz';
   const subjectName = post.needed?.name;

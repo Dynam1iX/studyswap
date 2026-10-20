@@ -1,6 +1,6 @@
 import { BarterCard } from '@/components/barter/BarterCard';
 import { CATEGORY_PALETTE } from '@/lib/categoryPalette';
-import { getAuthorName, getContactHref, type FeedPost } from '@/lib/feed';
+import { getAuthorName, getContactHref, getContactMethod, type FeedPost } from '@/lib/feed';
 import { formatStudyInfo, getInitials } from '@/lib/format';
 
 interface FeedPostCardProps {
@@ -32,7 +32,7 @@ export function FeedPostCard({ post, liked, onToggleLike, onOpen }: FeedPostCard
         title: post.offered?.name || 'Introduction to Programming 1',
         topic: post.offered_description || post.offered?.department || post.offered?.code || 'Topics & skills',
       }}
-      contactMethod={post.contact_method === 'telegram' ? 'telegram' : 'email'}
+      contactMethod={getContactMethod(post)}
       contactHref={getContactHref(post)}
       liked={liked}
       onToggleLike={() => onToggleLike(post.id)}
