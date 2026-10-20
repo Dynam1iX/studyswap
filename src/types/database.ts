@@ -31,7 +31,8 @@ export interface User {
   id: string;
   email: string;
   full_name: string;
-  telegram_handle: string;
+  /** Optional; stored without "@". */
+  telegram_handle: string | null;
   role: UserRole;
   major: string;
   study_year: StudyYear;
