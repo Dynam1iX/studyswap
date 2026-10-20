@@ -1,0 +1,136 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { Loader2, LogOut, Pencil } from 'lucide-react';
+import { AppHeader } from '@/components/layout/AppHeader';
+import { BottomNav } from '@/components/layout/BottomNav';
+import { MobileShell } from '@/components/layout/MobileShell';
+import { MyCardItem } from '@/components/profile/MyCardItem';
+import { ProfileHeaderCard } from '@/components/profile/ProfileHeaderCard';
+import { SettingsPanel } from '@/components/profile/SettingsPanel';
+import { StatsRow } from '@/components/profile/StatsRow';
+import { SubjectChipList } from '@/components/profile/SubjectChipList';
+import { fetchProfile, type Language, type ProfileData } from '@/lib/profile';
+
+type LoadState =
+  | { status: 'loading' }
+  | { status: 'error'; message: string }
+  | { status: 'not-found' }
+  | { status: 'ready'; data: ProfileData };
+
+function SectionTitle({ children }: { children: string }) {
+  return <h2 className="font-bricolage text-lg font-extrabold text-ink">{children}</h2>;
+}
+
+export default function ProfilePage() {
+  const [state, setState] = useState<LoadState>({ status: 'loading' });
+  const [language, setLanguage] = useState<Language>('en');
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchProfile()
+      .then((data) => {
+        if (!cancelled) setState(data ? { status: 'ready', data } : { status: 'not-found' });
+      })
+      .catch((err: unknown) => {
+        console.error('Error loading profile from Supabase:', err);
+        if (!cancelled) {
+          setState({ status: 'error', message: err instanceof Error ? err.message : 'Could not load the profile' });
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // Editing, card management and sign-out arrive with auth; the buttons are wired but do nothing yet.
+  const notReadyYet = () => {};
+
+  return (
+    <MobileShell wide>
+      <AppHeader />
+
+      {/* 16px sides, 8px top and bottom, 16px between blocks. */}
+      <div className="flex flex-col gap-4 px-4 py-2">
+        <div className="flex items-center justify-between">
+          <h1 className="font-bricolage text-2xl font-extrabold text-ink">Profile</h1>
+          <button
+            type="button"
+            onClick={notReadyYet}
+            className="flex h-11 cursor-pointer items-center gap-2 rounded-full border border-line-strong bg-white px-4 text-sm font-semibold text-ink transition hover:bg-soft"
+          >
+            <Pencil className="size-4" />
+            Edit
+          </button>
+        </div>
+
+        {state.status === 'loading' && (
+          <div className="flex flex-col items-center justify-center gap-2 py-20 text-muted">
+            <Loader2 className="size-6 animate-spin text-brand-from" />
+            <span className="text-xs font-medium">Loading profile...</span>
+          </div>
+        )}
+
+        {state.status === 'error' && (
+          <p className="rounded-2xl border border-[#F2C6D4] bg-white p-6 text-center text-sm font-medium text-[#C0264B]">
+            {state.message}
+          </p>
+        )}
+
+        {state.status === 'not-found' && (
+          <p className="rounded-2xl border border-line bg-white p-6 text-center text-sm font-medium text-muted">
+            Profile not found
+          </p>
+        )}
+
+        {state.status === 'ready' && (
+          // Mobile: one column in Figma order. Desktop: identity and settings left, subjects and cards right.
+          <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[minmax(0,360px)_minmax(0,1fr)] lg:grid-rows-[auto_1fr] lg:items-start lg:gap-x-6 lg:gap-y-4">
+            <div className="contents lg:col-start-1 lg:row-start-1 lg:flex lg:flex-col lg:gap-4">
+              <ProfileHeaderCard user={state.data.user} onEditAvatar={notReadyYet} />
+              <StatsRow stats={state.data.stats} />
+            </div>
+
+            <div className="contents lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:flex lg:flex-col lg:gap-4">
+              <SubjectChipList title="I need help with" subjects={state.data.needsHelp} emptyText="Nothing yet" />
+              <SubjectChipList title="I can teach" subjects={state.data.canTeach} emptyText="Nothing yet" />
+
+              <section className="flex flex-col gap-4">
+                <SectionTitle>My cards</SectionTitle>
+                {state.data.cards.length > 0 ? (
+                  <ul className="grid gap-4 xl:grid-cols-2">
+                    {state.data.cards.map((card) => (
+                      <li key={card.id}>
+                        <MyCardItem card={card} onManage={notReadyYet} />
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-sm font-medium text-muted">You have no cards yet. Tap + to create one.</p>
+                )}
+              </section>
+            </div>
+
+            <div className="contents lg:col-start-1 lg:row-start-2 lg:flex lg:flex-col lg:gap-4">
+              <section className="flex flex-col gap-4">
+                <SectionTitle>Settings</SectionTitle>
+                <SettingsPanel language={language} onLanguageChange={setLanguage} onOpenNotifications={notReadyYet} />
+              </section>
+
+              <button
+                type="button"
+                onClick={notReadyYet}
+                className="flex h-14 cursor-pointer items-center justify-center gap-2 rounded-2xl border border-[#F2C6D4] bg-white text-base font-extrabold text-[#C0264B] transition hover:bg-[#FFF5F8]"
+              >
+                <LogOut className="size-4" />
+                Log out
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <BottomNav active="profile" />
+    </MobileShell>
+  );
+}
