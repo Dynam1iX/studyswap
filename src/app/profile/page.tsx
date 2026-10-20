@@ -47,7 +47,7 @@ export default function ProfilePage() {
   const notReadyYet = () => {};
 
   return (
-    <MobileShell wide>
+    <MobileShell>
       <AppHeader />
 
       {/* 16px sides, 8px top and bottom, 16px between blocks. */}
@@ -84,49 +84,41 @@ export default function ProfilePage() {
         )}
 
         {state.status === 'ready' && (
-          // Mobile: one column in Figma order. Desktop: identity and settings left, subjects and cards right.
-          <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[minmax(0,360px)_minmax(0,1fr)] lg:grid-rows-[auto_1fr] lg:items-start lg:gap-x-6 lg:gap-y-4">
-            <div className="contents lg:col-start-1 lg:row-start-1 lg:flex lg:flex-col lg:gap-4">
-              <ProfileHeaderCard user={state.data.user} onEditAvatar={notReadyYet} />
-              <StatsRow stats={state.data.stats} />
-            </div>
+          <>
+            <ProfileHeaderCard user={state.data.user} onEditAvatar={notReadyYet} />
+            <StatsRow stats={state.data.stats} />
+            <SubjectChipList title="I need help with" subjects={state.data.needsHelp} emptyText="Nothing yet" />
+            <SubjectChipList title="I can teach" subjects={state.data.canTeach} emptyText="Nothing yet" />
 
-            <div className="contents lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:flex lg:flex-col lg:gap-4">
-              <SubjectChipList title="I need help with" subjects={state.data.needsHelp} emptyText="Nothing yet" />
-              <SubjectChipList title="I can teach" subjects={state.data.canTeach} emptyText="Nothing yet" />
+            <section className="flex flex-col gap-4">
+              <SectionTitle>My cards</SectionTitle>
+              {state.data.cards.length > 0 ? (
+                <ul className="flex flex-col gap-4">
+                  {state.data.cards.map((card) => (
+                    <li key={card.id}>
+                      <MyCardItem card={card} onManage={notReadyYet} />
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-sm font-medium text-muted">You have no cards yet. Tap + to create one.</p>
+              )}
+            </section>
 
-              <section className="flex flex-col gap-4">
-                <SectionTitle>My cards</SectionTitle>
-                {state.data.cards.length > 0 ? (
-                  <ul className="grid gap-4 xl:grid-cols-2">
-                    {state.data.cards.map((card) => (
-                      <li key={card.id}>
-                        <MyCardItem card={card} onManage={notReadyYet} />
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="text-sm font-medium text-muted">You have no cards yet. Tap + to create one.</p>
-                )}
-              </section>
-            </div>
+            <section className="flex flex-col gap-4">
+              <SectionTitle>Settings</SectionTitle>
+              <SettingsPanel language={language} onLanguageChange={setLanguage} onOpenNotifications={notReadyYet} />
+            </section>
 
-            <div className="contents lg:col-start-1 lg:row-start-2 lg:flex lg:flex-col lg:gap-4">
-              <section className="flex flex-col gap-4">
-                <SectionTitle>Settings</SectionTitle>
-                <SettingsPanel language={language} onLanguageChange={setLanguage} onOpenNotifications={notReadyYet} />
-              </section>
-
-              <button
-                type="button"
-                onClick={notReadyYet}
-                className="flex h-14 cursor-pointer items-center justify-center gap-2 rounded-2xl border border-[#F2C6D4] bg-white text-base font-extrabold text-[#C0264B] transition hover:bg-[#FFF5F8]"
-              >
-                <LogOut className="size-4" />
-                Log out
-              </button>
-            </div>
-          </div>
+            <button
+              type="button"
+              onClick={notReadyYet}
+              className="flex h-14 cursor-pointer items-center justify-center gap-2 rounded-2xl border border-[#F2C6D4] bg-white text-base font-extrabold text-[#C0264B] transition hover:bg-[#FFF5F8]"
+            >
+              <LogOut className="size-4" />
+              Log out
+            </button>
+          </>
         )}
       </div>
 
