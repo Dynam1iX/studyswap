@@ -32,6 +32,7 @@ src/
   components/
     layout/               AppHeader, BottomNav, MobileShell: used on every page
     barter/               BarterCard: the "Needs help / Can teach" card
+    ui/                   Generic UI: BottomSheet (accessible modal / bottom sheet)
     feed/ create/ profile/  Components used by one page only
   lib/
     supabase.ts           Supabase client
