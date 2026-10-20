@@ -8,7 +8,13 @@ Every change to the database lives in `migrations/` as a numbered SQL file, so t
 | --- | --- | --- |
 | `20261010000000_baseline.sql` | Snapshot of the schema that was created by hand in the dashboard | Applied (before tracking) |
 | `20261020182414_phase1a_hardening.sql` | Data rules, least privilege, swap rules, indexes | Applied |
-| `20261020190000_phase1b_cleanup.sql` | Removes duplicate policies, the old e-mail rule, 2 self-swap test rows, unused colour columns | Applied (SQL Editor) |
+| `20261020190000_phase1b_cleanup.sql` | Removes duplicate policies, the old e-mail rule, 2 self-swap test rows, unused colour columns | Applied, then wiped by the reset below |
+| `20261020194518_phase1c_restore.sql` | Restores phase 1a on the re-created tables | Applied |
+| `20261020194600_phase1c_cleanup.sql` | Restores phase 1b, keeping the `public_read_*` policies (the only read policies after the reset) | Applied (SQL Editor) |
+
+### Never re-run the setup script
+
+On 2026-10-20 19:03 UTC the old setup script (`DROP TABLE … CASCADE`, `CREATE TABLE …`, test data) was run again from the SQL Editor. It deleted every table, so all phase 1 rules and all data created through the app were lost; phase 1c restores the rules. Change the database only through new files in `migrations/`.
 
 ### Destructive migrations
 
