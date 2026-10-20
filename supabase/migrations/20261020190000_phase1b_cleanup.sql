@@ -1,6 +1,6 @@
 -- Phase 1b: removals that phase 1a made possible.
--- NOT APPLIED YET: Supabase asks for confirmation on destructive statements.
--- Run it once in the Supabase SQL Editor (see supabase/README.md).
+-- Applied on 2026-10-20 in the Supabase SQL Editor (destructive statements need
+-- confirmation there) and recorded in supabase_migrations as version 20261020190000.
 
 -- Every read policy existed twice under two names; keep the descriptive ones.
 drop policy if exists public_read_subjects     on public.subjects;
