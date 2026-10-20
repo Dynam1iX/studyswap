@@ -44,3 +44,22 @@ export async function fetchFeed(): Promise<FeedData> {
     subjects: (subjectsRes.data ?? []) as Subject[],
   };
 }
+
+/** Author name with the same fallback the cards use. */
+export function getAuthorName(post: FeedPost): string {
+  return post.author?.full_name || 'AITU Student';
+}
+
+/** Telegram link or a prefilled mailto: link for the post's contact method. */
+export function getContactHref(post: FeedPost): string {
+  if (post.contact_method === 'telegram') {
+    return `https://t.me/${post.author?.telegram_handle || 'dynam1ix'}`;
+  }
+  const email = post.author?.email || 'student@astanait.edu.kz';
+  const subjectName = post.needed?.name;
+  const subject = encodeURIComponent(`StudySwap: ${subjectName || 'Academic Exchange'}`);
+  const body = encodeURIComponent(
+    `Hi ${getAuthorName(post)}! I saw your StudySwap offer for ${subjectName || 'this subject'}. I would like to connect!`,
+  );
+  return `mailto:${email}?subject=${subject}&body=${body}`;
+}

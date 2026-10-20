@@ -1,30 +1,19 @@
 import { BarterCard } from '@/components/barter/BarterCard';
 import { CATEGORY_PALETTE } from '@/lib/categoryPalette';
-import type { FeedPost } from '@/lib/feed';
+import { getAuthorName, getContactHref, type FeedPost } from '@/lib/feed';
 import { formatStudyInfo, getInitials } from '@/lib/format';
 
 interface FeedPostCardProps {
   post: FeedPost;
   liked: boolean;
   onToggleLike: (postId: string) => void;
-}
-
-function contactHref(post: FeedPost, authorName: string): string {
-  if (post.contact_method === 'telegram') {
-    return `https://t.me/${post.author?.telegram_handle || 'dynam1ix'}`;
-  }
-  const email = post.author?.email || 'student@astanait.edu.kz';
-  const subjectName = post.needed?.name;
-  const subject = encodeURIComponent(`StudySwap: ${subjectName || 'Academic Exchange'}`);
-  const body = encodeURIComponent(
-    `Hi ${authorName}! I saw your StudySwap offer for ${subjectName || 'this subject'}. I would like to connect!`,
-  );
-  return `mailto:${email}?subject=${subject}&body=${body}`;
+  /** Called when the card itself is clicked (opens the details modal). */
+  onOpen: (post: FeedPost) => void;
 }
 
 /** Maps a post from the database onto the shared BarterCard. */
-export function FeedPostCard({ post, liked, onToggleLike }: FeedPostCardProps) {
-  const authorName = post.author?.full_name || 'AITU Student';
+export function FeedPostCard({ post, liked, onToggleLike, onOpen }: FeedPostCardProps) {
+  const authorName = getAuthorName(post);
 
   return (
     <BarterCard
@@ -44,9 +33,11 @@ export function FeedPostCard({ post, liked, onToggleLike }: FeedPostCardProps) {
         topic: post.offered_description || post.offered?.department || post.offered?.code || 'Topics & skills',
       }}
       contactMethod={post.contact_method === 'telegram' ? 'telegram' : 'email'}
-      contactHref={contactHref(post, authorName)}
+      contactHref={getContactHref(post)}
       liked={liked}
       onToggleLike={() => onToggleLike(post.id)}
+      onOpen={() => onOpen(post)}
+      openLabel={`Show details of ${authorName}'s swap`}
     />
   );
 }

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { FeedPostCard } from '@/components/feed/FeedPostCard';
 import { SubjectFilter, type SubjectFilterValue } from '@/components/feed/SubjectFilter';
+import { SwapDetailModal } from '@/components/feed/SwapDetailModal';
 import { AppHeader } from '@/components/layout/AppHeader';
 import { BottomNav } from '@/components/layout/BottomNav';
 import { MobileShell } from '@/components/layout/MobileShell';
@@ -16,6 +17,8 @@ export default function FeedPage() {
   const [loading, setLoading] = useState(true);
   const [selectedSubject, setSelectedSubject] = useState<SubjectFilterValue>('All');
   const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set());
+  /** The card whose details modal is open, or null. */
+  const [activeSwap, setActiveSwap] = useState<FeedPost | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -69,10 +72,18 @@ export default function FeedPage() {
           </div>
         ) : (
           visiblePosts.map((post) => (
-            <FeedPostCard key={post.id} post={post} liked={likedPosts.has(post.id)} onToggleLike={toggleLike} />
+            <FeedPostCard
+              key={post.id}
+              post={post}
+              liked={likedPosts.has(post.id)}
+              onToggleLike={toggleLike}
+              onOpen={setActiveSwap}
+            />
           ))
         )}
       </main>
+
+      <SwapDetailModal post={activeSwap} onClose={() => setActiveSwap(null)} />
 
       <BottomNav active="feed" />
     </MobileShell>

@@ -24,6 +24,10 @@ interface BarterCardProps {
   liked?: boolean;
   /** Omit it for a static heart (preview). */
   onToggleLike?: () => void;
+  /** Makes the whole card clickable, e.g. to open the details modal. */
+  onOpen?: () => void;
+  /** Accessible name of the open action. */
+  openLabel?: string;
 }
 
 function SubjectHalf({ label, half }: { label: string; half: CardHalf }) {
@@ -54,7 +58,22 @@ const contactClasses =
   'flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-brand-from to-brand-to text-[15px] font-semibold text-white no-underline';
 
 /** The "Needs help / Can teach" card used in the Feed and in the Create preview. */
-export function BarterCard({ author, needs, teaches, contactMethod, contactHref, liked = false, onToggleLike }: BarterCardProps) {
+export function BarterCard({
+  author,
+  needs,
+  teaches,
+  contactMethod,
+  contactHref,
+  liked = false,
+  onToggleLike,
+  onOpen,
+  openLabel = 'Show swap details',
+}: BarterCardProps) {
+  // With onOpen, a full-size button sits under the content. Content ignores clicks
+  // so they reach that button; the heart and the contact link stay clickable on top.
+  const layer = onOpen ? 'pointer-events-none relative' : '';
+  const interactive = onOpen ? 'pointer-events-auto relative z-10' : '';
+
   const contact = CONTACT[contactMethod];
   const contactContent = (
     <>
@@ -64,9 +83,23 @@ export function BarterCard({ author, needs, teaches, contactMethod, contactHref,
   );
 
   return (
-    <div className="w-full space-y-2.5 rounded-2xl border border-line bg-white p-4 shadow-sm transition">
+    <div
+      className={`relative w-full space-y-2.5 rounded-2xl border border-line bg-white p-4 shadow-sm transition ${
+        onOpen ? 'hover:shadow-md' : ''
+      }`}
+    >
+      {onOpen && (
+        <button
+          type="button"
+          onClick={onOpen}
+          aria-label={openLabel}
+          aria-haspopup="dialog"
+          className="absolute inset-0 cursor-pointer rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-from"
+        />
+      )}
+
       {/* Author and wishlist */}
-      <div className="flex items-center justify-between">
+      <div className={`flex items-center justify-between ${layer}`}>
         <div className="flex min-w-0 items-center gap-2.5">
           <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#F1E9FF] text-xs font-semibold text-[#6D1FC4]">
             {author.initials}
@@ -83,7 +116,7 @@ export function BarterCard({ author, needs, teaches, contactMethod, contactHref,
             onClick={onToggleLike}
             aria-label="Wishlist toggle"
             aria-pressed={liked}
-            className="shrink-0 cursor-pointer p-1 transition hover:scale-110 active:scale-95"
+            className={`shrink-0 cursor-pointer p-1 transition hover:scale-110 active:scale-95 ${interactive}`}
           >
             <img src={liked ? '/liked.svg' : '/like.svg'} alt="Like" className="size-[22px]" />
           </button>
@@ -95,7 +128,7 @@ export function BarterCard({ author, needs, teaches, contactMethod, contactHref,
       </div>
 
       {/* Subjects, with the exchange icon over the seam */}
-      <div className="relative flex w-full flex-col gap-2">
+      <div className={`relative flex w-full flex-col gap-2 ${onOpen ? 'pointer-events-none' : ''}`}>
         <SubjectHalf label="Needs help" half={needs} />
         <SubjectHalf label="Can teach" half={teaches} />
         <img
@@ -110,7 +143,7 @@ export function BarterCard({ author, needs, teaches, contactMethod, contactHref,
           href={contactHref}
           target={contactMethod === 'telegram' ? '_blank' : undefined}
           rel="noreferrer"
-          className={`${contactClasses} shadow-[0_3px_12px_rgba(173,70,255,0.25)] transition hover:opacity-95 active:scale-[0.99]`}
+          className={`${contactClasses} shadow-[0_3px_12px_rgba(173,70,255,0.25)] transition hover:opacity-95 active:scale-[0.99] ${interactive}`}
         >
           {contactContent}
         </a>
