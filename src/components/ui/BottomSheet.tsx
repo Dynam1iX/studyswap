@@ -23,8 +23,7 @@ interface BottomSheetProps {
  * Accessible modal built on the native <dialog> element:
  * focus is trapped and returned to the trigger by the browser, Escape closes it.
  *
- * Mobile: bottom sheet (swipe down, tap the backdrop or × to close).
- * Desktop (lg): centred modal.
+ * Mobile-first bottom sheet: swipe down, tap the backdrop, × or Escape to close.
  */
 export function BottomSheet({ open, onClose, labelledBy, header, footer, children }: BottomSheetProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -109,12 +108,12 @@ export function BottomSheet({ open, onClose, labelledBy, header, footer, childre
         }`}
       />
 
-      <div className="pointer-events-none absolute inset-0 flex items-end justify-center lg:items-center lg:p-6">
+      <div className="pointer-events-none absolute inset-0 flex items-end justify-center">
         <div
           style={dragY ? { transform: `translateY(${dragY}px)` } : undefined}
-          className={`pointer-events-auto relative flex max-h-[80dvh] w-full max-w-[576px] flex-col overflow-hidden rounded-t-[28px] bg-white shadow-[0_-8px_32px_rgba(27,21,48,0.18)] lg:max-h-[85dvh] lg:max-w-[560px] lg:rounded-[28px] lg:shadow-[0_24px_64px_rgba(27,21,48,0.28)] ${
-            dragY ? '' : 'transition-[translate,scale,opacity] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] motion-reduce:transition-none'
-          } ${shown ? 'translate-y-0 lg:scale-100 lg:opacity-100' : 'translate-y-full lg:translate-y-4 lg:scale-95 lg:opacity-0'}`}
+          className={`pointer-events-auto relative flex max-h-[80dvh] w-full max-w-[576px] flex-col overflow-hidden rounded-t-[28px] bg-white shadow-[0_-8px_32px_rgba(27,21,48,0.18)] ${
+            dragY ? '' : 'transition-[translate] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] motion-reduce:transition-none'
+          } ${shown ? 'translate-y-0' : 'translate-y-full'}`}
         >
           {/* Handle + title: drag here to swipe the sheet down */}
           <div
@@ -122,9 +121,9 @@ export function BottomSheet({ open, onClose, labelledBy, header, footer, childre
             onPointerMove={onPointerMove}
             onPointerUp={onPointerEnd}
             onPointerCancel={onPointerEnd}
-            className="shrink-0 touch-none select-none lg:touch-auto"
+            className="shrink-0 touch-none select-none"
           >
-            <div className="flex justify-center pt-2.5 pb-0.5 lg:hidden">
+            <div className="flex justify-center pt-2.5 pb-0.5">
               <span className="h-[5px] w-10 rounded-full bg-line-strong" />
             </div>
             {header}

@@ -13,6 +13,10 @@ export interface ProfileCard {
   status: PostStatus;
   needed: ProfileSubject;
   offered: ProfileSubject;
+  /** What the student needs help with (barter_posts.description). */
+  neededTopic: string;
+  /** What the student can teach (barter_posts.offered_description). */
+  offeredTopic: string;
 }
 
 export interface ProfileUser {
@@ -48,6 +52,8 @@ interface PostRow {
   id: string;
   status: PostStatus;
   created_at: string;
+  description: string | null;
+  offered_description: string | null;
   needed: ProfileSubject | null;
   offered: ProfileSubject | null;
 }
@@ -88,6 +94,8 @@ export async function fetchProfile(email: string = CURRENT_USER_EMAIL): Promise<
       id,
       status,
       created_at,
+      description,
+      offered_description,
       needed:subjects!barter_posts_needed_subject_id_fkey(id, code, name, category),
       offered:subjects!barter_posts_offered_subject_id_fkey(id, code, name, category)
     `)
@@ -97,7 +105,18 @@ export async function fetchProfile(email: string = CURRENT_USER_EMAIL): Promise<
   if (postsError) throw postsError;
 
   const cards: ProfileCard[] = ((postData ?? []) as unknown as PostRow[]).flatMap((row) =>
-    row.needed && row.offered ? [{ id: row.id, status: row.status, needed: row.needed, offered: row.offered }] : [],
+    row.needed && row.offered
+      ? [
+          {
+            id: row.id,
+            status: row.status,
+            needed: row.needed,
+            offered: row.offered,
+            neededTopic: row.description?.trim() ?? '',
+            offeredTopic: row.offered_description?.trim() ?? '',
+          },
+        ]
+      : [],
   );
 
   // A swap counts once it is accepted, whether the student sent it or received it on their post.

@@ -1,42 +1,6 @@
 import { ChevronRight } from 'lucide-react';
 import type { Language } from '@/lib/profile';
-
-const LANGUAGES: { value: Language; label: string }[] = [
-  { value: 'en', label: 'EN' },
-  { value: 'ru', label: 'RU' },
-  { value: 'kz', label: 'KZ' },
-];
-
-interface LanguageSwitcherProps {
-  value: Language;
-  onChange: (language: Language) => void;
-}
-
-export function LanguageSwitcher({ value, onChange }: LanguageSwitcherProps) {
-  return (
-    <div role="radiogroup" aria-label="Interface language" className="flex gap-1 rounded-2xl bg-soft p-[3px]">
-      {LANGUAGES.map((lang) => {
-        const selected = lang.value === value;
-        return (
-          <button
-            key={lang.value}
-            type="button"
-            role="radio"
-            aria-checked={selected}
-            onClick={() => onChange(lang.value)}
-            className={`h-11 w-12 cursor-pointer rounded-xl text-xs transition ${
-              selected
-                ? 'bg-linear-to-r from-brand-from to-brand-to font-extrabold text-white'
-                : 'font-bold text-ink hover:bg-line'
-            }`}
-          >
-            {lang.label}
-          </button>
-        );
-      })}
-    </div>
-  );
-}
+import { LanguageSwitcher } from './LanguageSwitcher';
 
 interface SettingsPanelProps {
   language: Language;

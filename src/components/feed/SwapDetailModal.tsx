@@ -28,7 +28,7 @@ export function SwapDetailModal({ post, onClose }: SwapDetailModalProps) {
       onClose={onClose}
       labelledBy={titleId}
       header={
-        <div className="flex items-center justify-between px-6 py-2 lg:pt-5">
+        <div className="flex items-center justify-between px-6 py-2">
           <h2 id={titleId} className="font-bricolage text-[22px] font-extrabold text-ink">
             Swap details
           </h2>
