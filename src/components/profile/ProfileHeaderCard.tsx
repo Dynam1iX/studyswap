@@ -1,4 +1,4 @@
-import { Check, Send } from 'lucide-react';
+import { Check } from 'lucide-react';
 import type { ProfileUser } from '@/lib/profile';
 import { Avatar } from './Avatar';
 
@@ -28,7 +28,7 @@ export function ProfileHeaderCard({ user, onEditAvatar }: ProfileHeaderCardProps
           className="flex h-12 items-center justify-between rounded-2xl bg-soft px-3.5 transition hover:bg-line"
         >
           <span className="flex items-center gap-2.5 text-base font-semibold text-ink">
-            <Send aria-hidden className="size-5" />@{user.telegramHandle}
+            <img src="/telegram-circle.svg" alt="" className="size-7 shrink-0" />@{user.telegramHandle}
           </span>
           <span className="flex items-center gap-1.5 text-xs font-semibold text-success">
             <Check className="size-3.5" strokeWidth={3} />
