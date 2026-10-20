@@ -8,16 +8,11 @@ Every change to the database lives in `migrations/` as a numbered SQL file, so t
 | --- | --- | --- |
 | `20261010000000_baseline.sql` | Snapshot of the schema that was created by hand in the dashboard | Applied (before tracking) |
 | `20261020182414_phase1a_hardening.sql` | Data rules, least privilege, swap rules, indexes | Applied |
-| `20261020190000_phase1b_cleanup.sql` | Removes duplicates and leftovers (needs confirmation) | **Pending** |
+| `20261020190000_phase1b_cleanup.sql` | Removes duplicate policies, the old e-mail rule, 2 self-swap test rows, unused colour columns | Applied (SQL Editor) |
 
-### Applying phase 1b
+### Destructive migrations
 
-Supabase asks for confirmation before destructive statements, so this one is run by hand:
-
-1. Open the [SQL Editor](https://supabase.com/dashboard/project/bepchknwwdmvugpcypgt/sql/new).
-2. Paste the contents of `migrations/20261020190000_phase1b_cleanup.sql` and press **Run**, then confirm.
-
-It is idempotent (`if exists` everywhere), so running it twice is harmless.
+Supabase asks for confirmation before destructive statements (`DROP`, `DELETE`). Run such a migration in the [SQL Editor](https://supabase.com/dashboard/project/bepchknwwdmvugpcypgt/sql/new), confirm, then record it in `supabase_migrations.schema_migrations` with the file's version so the history matches this folder.
 
 ## Tables
 
