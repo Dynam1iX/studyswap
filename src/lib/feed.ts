@@ -1,7 +1,10 @@
 import { supabase } from '@/lib/supabase';
 import type { BarterPost, ContactMethod, Subject, User } from '@/types/database';
 
-export type FeedAuthor = Pick<User, 'id' | 'full_name' | 'email' | 'telegram_handle' | 'role' | 'major' | 'study_year'>;
+export type FeedAuthor = Pick<
+  User,
+  'id' | 'full_name' | 'email' | 'telegram_handle' | 'telegram_visibility' | 'role' | 'major' | 'study_year'
+>;
 
 /** One active barter post with its subjects and author, as the Feed shows it. */
 export interface FeedPost
@@ -25,7 +28,7 @@ export const FEED_POST_SELECT = `
         created_at,
         needed:subjects!barter_posts_needed_subject_id_fkey(id, code, name, category, department),
         offered:subjects!barter_posts_offered_subject_id_fkey(id, code, name, category, department),
-        author:users!barter_posts_author_id_fkey(id, full_name, email, telegram_handle, role, major, study_year)
+        author:users!barter_posts_author_id_fkey(id, full_name, email, telegram_handle, telegram_visibility, role, major, study_year)
       `;
 
 /** Active posts (newest first) and the subject catalogue for the filter chips. */
@@ -53,9 +56,16 @@ export function getAuthorName(post: FeedPost): string {
   return post.author?.full_name || 'AITU Student';
 }
 
-/** How to contact the author: Telegram only when the author has a handle, otherwise e-mail. */
+/**
+ * How to contact the author: Telegram only when the author has a handle and shows it
+ * to everyone, otherwise e-mail. ("accepted" will reveal it after an accepted swap
+ * request once requests exist in the app.)
+ */
 export function getContactMethod(post: FeedPost): ContactMethod {
-  return post.contact_method === 'telegram' && post.author?.telegram_handle ? 'telegram' : 'email';
+  const author = post.author;
+  return post.contact_method === 'telegram' && author?.telegram_handle && author.telegram_visibility !== 'accepted'
+    ? 'telegram'
+    : 'email';
 }
 
 /** Telegram link or a prefilled mailto: link for the post's contact method. */

@@ -16,6 +16,12 @@ export type SwapStatus = 'pending' | 'accepted' | 'declined';
 /** users.role */
 export type UserRole = 'student' | 'moderator' | 'admin';
 
+/** users.degree_level */
+export type DegreeLevel = 'Undergraduate' | "Master's Degree" | 'PhD';
+
+/** users.telegram_visibility: who sees the Telegram handle. */
+export type TelegramVisibility = 'everyone' | 'accepted';
+
 /** users.study_year (1 to 3) */
 export type StudyYear = 1 | 2 | 3;
 
@@ -36,6 +42,8 @@ export interface User {
   role: UserRole;
   major: string;
   study_year: StudyYear;
+  degree_level: DegreeLevel;
+  telegram_visibility: TelegramVisibility;
 }
 
 export interface BarterPost {

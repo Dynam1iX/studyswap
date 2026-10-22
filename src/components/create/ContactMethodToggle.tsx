@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import type { ContactMethod } from '@/types/database';
 
 const OPTIONS: { value: ContactMethod; label: string }[] = [
@@ -8,9 +9,11 @@ const OPTIONS: { value: ContactMethod; label: string }[] = [
 interface ContactMethodToggleProps {
   value: ContactMethod;
   onChange: (value: ContactMethod) => void;
+  /** Telegram can be chosen only once the student has linked it in their profile. */
+  telegramAvailable: boolean;
 }
 
-export function ContactMethodToggle({ value, onChange }: ContactMethodToggleProps) {
+export function ContactMethodToggle({ value, onChange, telegramAvailable }: ContactMethodToggleProps) {
   return (
     <div className="space-y-2 pt-1">
       <span className="block text-[14px] font-bold text-ink">Preferred Contact Method</span>
@@ -18,14 +21,16 @@ export function ContactMethodToggle({ value, onChange }: ContactMethodToggleProp
       <div role="radiogroup" className="flex items-center gap-1 rounded-[16px] bg-soft p-1">
         {OPTIONS.map((option) => {
           const selected = option.value === value;
+          const disabled = option.value === 'telegram' && !telegramAvailable;
           return (
             <button
               key={option.value}
               type="button"
               role="radio"
               aria-checked={selected}
+              disabled={disabled}
               onClick={() => onChange(option.value)}
-              className={`flex h-[48px] flex-1 cursor-pointer items-center gap-2 rounded-[12px] px-3 transition ${
+              className={`flex h-[48px] flex-1 cursor-pointer items-center gap-2 rounded-[12px] px-3 transition disabled:cursor-not-allowed disabled:opacity-45 ${
                 selected ? 'bg-white shadow-[0_2px_6px_rgba(0,0,0,0.06)]' : 'bg-transparent'
               }`}
             >
@@ -43,6 +48,16 @@ export function ContactMethodToggle({ value, onChange }: ContactMethodToggleProp
           );
         })}
       </div>
+
+      {!telegramAvailable && (
+        <p className="text-[12px] font-semibold text-muted">
+          To use Telegram,{' '}
+          <Link href="/profile/edit" className="text-brand-from underline-offset-2 hover:underline">
+            link it in your profile
+          </Link>
+          .
+        </p>
+      )}
     </div>
   );
 }

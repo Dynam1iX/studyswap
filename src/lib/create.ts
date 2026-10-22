@@ -2,7 +2,7 @@ import { CURRENT_USER_EMAIL } from '@/lib/currentUser';
 import { supabase } from '@/lib/supabase';
 import type { NewBarterPost, Subject, User } from '@/types/database';
 
-export type CreateAuthor = Pick<User, 'id' | 'full_name' | 'major' | 'study_year'>;
+export type CreateAuthor = Pick<User, 'id' | 'full_name' | 'major' | 'study_year' | 'telegram_handle'>;
 
 export interface CreateFormData {
   /** Sorted by name for the selects. */
@@ -16,7 +16,7 @@ export async function fetchCreateFormData(): Promise<CreateFormData> {
     supabase.from('subjects').select('*').order('name', { ascending: true }),
     supabase
       .from('users')
-      .select('id, full_name, major, study_year')
+      .select('id, full_name, major, study_year, telegram_handle')
       .eq('email', CURRENT_USER_EMAIL)
       .maybeSingle(),
   ]);
@@ -24,7 +24,7 @@ export async function fetchCreateFormData(): Promise<CreateFormData> {
   let author = userRes.data as CreateAuthor | null;
   if (!author) {
     // Fall back to any account so the page still works on a fresh database.
-    const { data } = await supabase.from('users').select('id, full_name, major, study_year').limit(1).maybeSingle();
+    const { data } = await supabase.from('users').select('id, full_name, major, study_year, telegram_handle').limit(1).maybeSingle();
     author = data as CreateAuthor | null;
   }
 

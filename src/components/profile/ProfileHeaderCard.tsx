@@ -5,9 +5,11 @@ import { Avatar } from './Avatar';
 interface ProfileHeaderCardProps {
   user: ProfileUser;
   onEditAvatar?: () => void;
+  /** "Link Telegram" when the student has not linked it yet. */
+  onLinkTelegram?: () => void;
 }
 
-export function ProfileHeaderCard({ user, onEditAvatar }: ProfileHeaderCardProps) {
+export function ProfileHeaderCard({ user, onEditAvatar, onLinkTelegram }: ProfileHeaderCardProps) {
   return (
     <div className="flex flex-col gap-4 rounded-3xl border border-line bg-white p-4">
       <div className="flex items-center gap-4">
@@ -36,9 +38,14 @@ export function ProfileHeaderCard({ user, onEditAvatar }: ProfileHeaderCardProps
           </span>
         </a>
       ) : (
-        <div className="flex h-12 items-center rounded-2xl border border-dashed border-field px-3.5 text-sm font-semibold text-muted">
-          Telegram is not linked yet
-        </div>
+        <button
+          type="button"
+          onClick={onLinkTelegram}
+          className="shine flex h-12 cursor-pointer items-center justify-center gap-2.5 rounded-2xl bg-linear-to-r from-[#2AABEE] to-[#229ED9] text-base font-bold text-white shadow-[0_6px_16px_rgba(34,158,217,0.3)] transition active:scale-[0.98]"
+        >
+          <img src="/telegram.svg" alt="" className="size-6 shrink-0" />
+          Link Telegram
+        </button>
       )}
     </div>
   );

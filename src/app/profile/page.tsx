@@ -1,16 +1,31 @@
 'use client';
 
-import { useEffect, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useState, type ReactNode } from 'react';
+import Link from 'next/link';
 import { Loader2, LogOut, Pencil } from 'lucide-react';
 import { AppHeader } from '@/components/layout/AppHeader';
 import { BottomNav } from '@/components/layout/BottomNav';
 import { MobileShell } from '@/components/layout/MobileShell';
+import { ManageCardSheet, type CardChanges } from '@/components/profile/ManageCardSheet';
 import { MyCardItem } from '@/components/profile/MyCardItem';
+import { PrivacySheet } from '@/components/profile/PrivacySheet';
 import { ProfileHeaderCard } from '@/components/profile/ProfileHeaderCard';
 import { SettingsPanel } from '@/components/profile/SettingsPanel';
 import { StatsRow } from '@/components/profile/StatsRow';
 import { SubjectChipList } from '@/components/profile/SubjectChipList';
-import { fetchProfile, type Language, type ProfileData } from '@/lib/profile';
+import { Toast, useToast } from '@/components/ui/Toast';
+import {
+  deleteMyCard,
+  downloadMyData,
+  fetchProfile,
+  setMyCardStatus,
+  setTelegramVisibility,
+  updateMyCard,
+  type Language,
+  type ProfileCard,
+  type ProfileData,
+} from '@/lib/profile';
+import type { TelegramVisibility } from '@/types/database';
 
 type LoadState =
   | { status: 'loading' }
@@ -34,43 +49,78 @@ function SectionTitle({ children }: { children: string }) {
 export default function ProfilePage() {
   const [state, setState] = useState<LoadState>({ status: 'loading' });
   const [language, setLanguage] = useState<Language>('en');
+  /** The card whose Manage sheet is open, or null. */
+  const [managing, setManaging] = useState<ProfileCard | null>(null);
+  const [privacyOpen, setPrivacyOpen] = useState(false);
+  const { toast, show: showToast, hide: hideToast } = useToast();
 
-  useEffect(() => {
-    let cancelled = false;
-    fetchProfile()
-      .then((data) => {
-        if (!cancelled) setState(data ? { status: 'ready', data } : { status: 'not-found' });
-      })
+  const load = useCallback(() => {
+    return fetchProfile()
+      .then((data) => setState(data ? { status: 'ready', data } : { status: 'not-found' }))
       .catch((err: unknown) => {
         console.error('Error loading profile from Supabase:', err);
-        if (!cancelled) {
-          setState({ status: 'error', message: err instanceof Error ? err.message : 'Could not load the profile' });
-        }
+        setState({ status: 'error', message: err instanceof Error ? err.message : 'Could not load the profile' });
       });
-    return () => {
-      cancelled = true;
-    };
   }, []);
 
-  // Editing, card management and sign-out arrive with auth; the buttons are wired but do nothing yet.
-  const notReadyYet = () => {};
+  useEffect(() => {
+    // Also runs again when the page comes back into view (Next keeps it alive while hidden).
+    void load();
+  }, [load]);
+
+  // Telegram linking and sign-out arrive with Microsoft sign-in and the Telegram bot.
+  const afterSignIn = () => showToast('Available after sign-in');
+
+  const saveCard = async (card: ProfileCard, changes: CardChanges) => {
+    if (changes.neededTopic !== card.neededTopic || changes.offeredTopic !== card.offeredTopic) {
+      await updateMyCard(card.id, changes.neededTopic, changes.offeredTopic);
+    }
+    if (changes.active !== (card.status === 'active')) {
+      await setMyCardStatus(card.id, changes.active ? 'active' : 'archived');
+    }
+    await load();
+    setManaging(null);
+    showToast('Card updated');
+  };
+
+  const removeCard = async (card: ProfileCard) => {
+    await deleteMyCard(card.id);
+    await load();
+    setManaging(null);
+    showToast('Card deleted');
+  };
+
+  const changeVisibility = async (visibility: TelegramVisibility) => {
+    await setTelegramVisibility(visibility);
+    setState((prev) =>
+      prev.status === 'ready'
+        ? { status: 'ready', data: { ...prev.data, user: { ...prev.data.user, telegramVisibility: visibility } } }
+        : prev,
+    );
+  };
+
+  const footer = (
+    <div className="relative">
+      <Toast toast={toast} onHide={hideToast} />
+      <BottomNav active="profile" />
+    </div>
+  );
 
   return (
-    <MobileShell footer={<BottomNav active="profile" />}>
+    <MobileShell footer={footer}>
       <AppHeader />
 
       {/* 16px sides, 8px top and bottom, 16px between blocks. */}
       <div className="flex flex-col gap-4 px-4 py-2">
         <div className="flex items-center justify-between">
           <h1 className="animate-rise font-bricolage text-2xl font-extrabold text-ink motion-reduce:animate-none">Profile</h1>
-          <button
-            type="button"
-            onClick={notReadyYet}
-            className="flex h-11 cursor-pointer items-center gap-2 rounded-full border border-line-strong bg-white px-4 text-sm font-semibold text-ink transition hover:bg-soft"
+          <Link
+            href="/profile/edit"
+            className="flex h-11 items-center gap-2 rounded-full border border-line-strong bg-white px-4 text-sm font-semibold text-ink transition hover:bg-soft active:scale-95"
           >
             <Pencil className="size-4" />
             Edit
-          </button>
+          </Link>
         </div>
 
         {state.status === 'loading' && (
@@ -95,7 +145,7 @@ export default function ProfilePage() {
         {state.status === 'ready' && (
           <>
             <Rise index={0}>
-              <ProfileHeaderCard user={state.data.user} onEditAvatar={notReadyYet} />
+              <ProfileHeaderCard user={state.data.user} onEditAvatar={afterSignIn} onLinkTelegram={afterSignIn} />
             </Rise>
             <Rise index={1}>
               <StatsRow stats={state.data.stats} />
@@ -113,7 +163,7 @@ export default function ProfilePage() {
                 <ul className="flex flex-col gap-4">
                   {state.data.cards.map((card) => (
                     <li key={card.id}>
-                      <MyCardItem card={card} onManage={notReadyYet} />
+                      <MyCardItem card={card} onManage={() => setManaging(card)} />
                     </li>
                   ))}
                 </ul>
@@ -124,12 +174,12 @@ export default function ProfilePage() {
 
             <section style={{ animationDelay: '350ms' }} className="flex animate-rise flex-col gap-4 motion-reduce:animate-none">
               <SectionTitle>Settings</SectionTitle>
-              <SettingsPanel language={language} onLanguageChange={setLanguage} onOpenNotifications={notReadyYet} />
+              <SettingsPanel language={language} onLanguageChange={setLanguage} onOpenPrivacy={() => setPrivacyOpen(true)} />
             </section>
 
             <button
               type="button"
-              onClick={notReadyYet}
+              onClick={afterSignIn}
               style={{ animationDelay: '420ms' }}
               className="flex h-14 animate-rise cursor-pointer items-center justify-center gap-2 rounded-2xl border border-[#F2C6D4] bg-white text-base font-extrabold text-[#C0264B] transition hover:bg-[#FFF5F8] active:scale-[0.98] motion-reduce:animate-none"
             >
@@ -140,6 +190,16 @@ export default function ProfilePage() {
         )}
       </div>
 
+      <ManageCardSheet card={managing} onClose={() => setManaging(null)} onSave={saveCard} onDelete={removeCard} />
+      {state.status === 'ready' && (
+        <PrivacySheet
+          open={privacyOpen}
+          onClose={() => setPrivacyOpen(false)}
+          telegramVisibility={state.data.user.telegramVisibility}
+          onTelegramVisibilityChange={changeVisibility}
+          onDownload={downloadMyData}
+        />
+      )}
     </MobileShell>
   );
 }

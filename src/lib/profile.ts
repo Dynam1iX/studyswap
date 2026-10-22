@@ -1,7 +1,7 @@
 import { CURRENT_USER_EMAIL } from '@/lib/currentUser';
 import { getInitials, getShortName } from '@/lib/format';
 import { supabase } from '@/lib/supabase';
-import type { PostStatus, StudyYear, Subject, User } from '@/types/database';
+import type { DegreeLevel, PostStatus, StudyYear, Subject, TelegramVisibility, User } from '@/types/database';
 
 /** Interface languages. English is the default. */
 export type Language = 'en' | 'ru' | 'kz';
@@ -22,6 +22,11 @@ export interface ProfileCard {
 export interface ProfileUser {
   id: string;
   fullName: string;
+  /** Split from full_name at the first space (the database keeps one field). */
+  firstName: string;
+  lastName: string;
+  email: string;
+  degree: DegreeLevel;
   /** "Alzhan Y." */
   displayName: string;
   initials: string;
@@ -29,6 +34,7 @@ export interface ProfileUser {
   studyYear: StudyYear;
   /** Without the leading "@"; null when the student has not linked Telegram. */
   telegramHandle: string | null;
+  telegramVisibility: TelegramVisibility;
 }
 
 export interface ProfileStats {
@@ -46,8 +52,12 @@ export interface ProfileData {
   cards: ProfileCard[];
 }
 
-type UserRow = Pick<User, 'id' | 'full_name' | 'telegram_handle' | 'major' | 'study_year'>;
+type UserRow = Pick<
+  User,
+  'id' | 'full_name' | 'email' | 'telegram_handle' | 'telegram_visibility' | 'major' | 'study_year' | 'degree_level'
+>;
 
+/** A row of get_my_cards(). */
 interface PostRow {
   id: string;
   status: PostStatus;
@@ -56,6 +66,13 @@ interface PostRow {
   offered_description: string | null;
   needed: ProfileSubject | null;
   offered: ProfileSubject | null;
+}
+
+/** "Alzhan Yerzhanuly" -> ["Alzhan", "Yerzhanuly"]; one word -> [word, ""]. */
+function splitName(fullName: string): [string, string] {
+  const trimmed = fullName.trim();
+  const space = trimmed.indexOf(' ');
+  return space === -1 ? [trimmed, ''] : [trimmed.slice(0, space), trimmed.slice(space + 1).trim()];
 }
 
 function toStudyYear(value: number | null | undefined): StudyYear {
@@ -73,14 +90,13 @@ function uniqueSubjects(subjects: ProfileSubject[]): ProfileSubject[] {
 }
 
 /**
- * Loads everything the profile page shows.
- * Note: RLS only lets the public key read active posts, so completed and archived
- * cards stay hidden until the page reads as a signed-in user.
+ * Loads everything the profile page shows. The student's own cards come from
+ * get_my_cards(), which also returns inactive (archived) ones that RLS hides elsewhere.
  */
 export async function fetchProfile(email: string = CURRENT_USER_EMAIL): Promise<ProfileData | null> {
   const { data: userData, error: userError } = await supabase
     .from('users')
-    .select('id, full_name, telegram_handle, major, study_year')
+    .select('id, full_name, email, telegram_handle, telegram_visibility, major, study_year, degree_level')
     .eq('email', email)
     .maybeSingle();
 
@@ -88,19 +104,7 @@ export async function fetchProfile(email: string = CURRENT_USER_EMAIL): Promise<
   const userRow = userData as UserRow | null;
   if (!userRow) return null;
 
-  const { data: postData, error: postsError } = await supabase
-    .from('barter_posts')
-    .select(`
-      id,
-      status,
-      created_at,
-      description,
-      offered_description,
-      needed:subjects!barter_posts_needed_subject_id_fkey(id, code, name, category),
-      offered:subjects!barter_posts_offered_subject_id_fkey(id, code, name, category)
-    `)
-    .eq('author_id', userRow.id)
-    .order('created_at', { ascending: false });
+  const { data: postData, error: postsError } = await supabase.rpc('get_my_cards');
 
   if (postsError) throw postsError;
 
@@ -133,24 +137,83 @@ export async function fetchProfile(email: string = CURRENT_USER_EMAIL): Promise<
 
   if (swapsError) throw swapsError;
 
+  const [firstName, lastName] = splitName(userRow.full_name);
+  // Inactive cards stay in My cards but do not count as subjects the student needs or teaches.
+  const activeCards = cards.filter((card) => card.status === 'active');
+
   return {
     user: {
       id: userRow.id,
       fullName: userRow.full_name,
+      firstName,
+      lastName,
+      email: userRow.email,
+      degree: userRow.degree_level || 'Undergraduate',
       displayName: getShortName(userRow.full_name),
       initials: getInitials(userRow.full_name),
       major: userRow.major || 'Software Engineering',
       studyYear: toStudyYear(userRow.study_year),
       telegramHandle: userRow.telegram_handle?.replace(/^@/, '') || null,
+      telegramVisibility: userRow.telegram_visibility === 'accepted' ? 'accepted' : 'everyone',
     },
     stats: {
       swapsDone: swapsDone ?? 0,
-      activeCards: cards.filter((card) => card.status === 'active').length,
+      activeCards: activeCards.length,
       rating: null,
     },
     // No user_subjects table yet, so both lists come from the student's own cards.
-    needsHelp: uniqueSubjects(cards.map((card) => card.needed)),
-    canTeach: uniqueSubjects(cards.map((card) => card.offered)),
+    needsHelp: uniqueSubjects(activeCards.map((card) => card.needed)),
+    canTeach: uniqueSubjects(activeCards.map((card) => card.offered)),
     cards,
   };
+}
+
+// ---------------------------------------------------------------------------
+// Changes (Supabase functions that act only on the current student)
+// ---------------------------------------------------------------------------
+
+/** "Bachelor's" / "Master's" / "PhD" for the degree_level values. */
+export function degreeLabel(degree: DegreeLevel): string {
+  if (degree === "Master's Degree") return "Master's";
+  if (degree === 'PhD') return 'PhD';
+  return "Bachelor's";
+}
+
+export async function updateMyCard(id: string, neededTopic: string, offeredTopic: string): Promise<void> {
+  const { error } = await supabase.rpc('update_my_card', {
+    p_id: id,
+    p_description: neededTopic,
+    p_offered_description: offeredTopic,
+  });
+  if (error) throw error;
+}
+
+export async function setMyCardStatus(id: string, status: 'active' | 'archived'): Promise<void> {
+  const { error } = await supabase.rpc('set_my_card_status', { p_id: id, p_status: status });
+  if (error) throw error;
+}
+
+export async function deleteMyCard(id: string): Promise<void> {
+  const { error } = await supabase.rpc('delete_my_card', { p_id: id });
+  if (error) throw error;
+}
+
+export async function setTelegramVisibility(visibility: TelegramVisibility): Promise<void> {
+  const { error } = await supabase.rpc('set_telegram_visibility', { p_visibility: visibility });
+  if (error) throw error;
+}
+
+/** Everything stored about the student, saved as studyswap-my-data.json. */
+export async function downloadMyData(): Promise<void> {
+  const { data, error } = await supabase.rpc('export_my_data');
+  if (error) throw error;
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'studyswap-my-data.json';
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
 }

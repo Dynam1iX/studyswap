@@ -26,7 +26,7 @@ src/
   app/                    Pages (one folder per route)
     page.tsx              /         Feed
     create/               /create   Create a barter offer
-    profile/              /profile  Student profile
+    profile/              /profile  Student profile; profile/edit: Telegram + student details
     search/               /search   Search: categories, filters, recent searches, results
     favorites/            /favorites Liked cards, with Undo
     layout.tsx            Fonts, metadata

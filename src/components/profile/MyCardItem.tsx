@@ -5,7 +5,7 @@ import type { PostStatus } from '@/types/database';
 const STATUS_VIEW: Record<PostStatus, { label: string; dot: string; text: string }> = {
   active: { label: 'Active', dot: '#0E9F6E', text: '#0B6B48' },
   completed: { label: 'Completed', dot: '#6D1FC4', text: '#5B24B1' },
-  archived: { label: 'Archived', dot: '#9A93B0', text: '#5A5472' },
+  archived: { label: 'Inactive', dot: '#9A93B0', text: '#5A5472' },
 };
 
 interface CardHalfProps {
@@ -46,7 +46,11 @@ export function MyCardItem({ card, onManage }: MyCardItemProps) {
 
   return (
     <div className="flex flex-col gap-3 rounded-3xl border border-line bg-white p-4">
-      <div className="relative grid grid-cols-2 gap-6">
+      <div
+        className={`relative grid grid-cols-2 gap-6 transition-[opacity,filter] duration-300 ${
+          card.status === 'active' ? '' : 'opacity-60 grayscale-[35%]'
+        }`}
+      >
         <CardHalf label="Needs" subject={card.needed} topic={card.neededTopic} />
         <CardHalf label="Teaches" subject={card.offered} topic={card.offeredTopic} />
         <span className="pointer-events-none absolute top-1/2 left-1/2 flex size-[42px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white">
@@ -62,7 +66,8 @@ export function MyCardItem({ card, onManage }: MyCardItemProps) {
         <button
           type="button"
           onClick={() => onManage?.(card.id)}
-          className="h-10 w-[88px] cursor-pointer rounded-xl border border-line-strong bg-white text-xs font-semibold text-ink transition hover:bg-page"
+          aria-haspopup="dialog"
+          className="h-10 w-[88px] cursor-pointer rounded-xl border border-line-strong bg-white text-xs font-semibold text-ink transition hover:bg-page active:scale-95"
         >
           Manage
         </button>
