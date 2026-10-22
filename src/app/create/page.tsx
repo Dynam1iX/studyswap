@@ -54,6 +54,8 @@ export default function CreateBarterPage() {
   const [shakeTrigger, setShakeTrigger] = useState(0);
 
   const [authorId, setAuthorId] = useState('');
+  /** Telegram is offered as a contact method only when the author has linked it. */
+  const [hasTelegram, setHasTelegram] = useState(false);
   const [authorName, setAuthorName] = useState('Alzhan Y.');
   const [authorSubtitle, setAuthorSubtitle] = useState('Software Engineering, Year 1');
 
@@ -65,6 +67,7 @@ export default function CreateBarterPage() {
         setSubjects(loaded);
         if (author) {
           setAuthorId(author.id);
+          setHasTelegram(Boolean(author.telegram_handle));
           setAuthorName(getShortName(author.full_name));
           setAuthorSubtitle(formatStudyInfo(author.major, author.study_year));
         }
@@ -231,7 +234,7 @@ export default function CreateBarterPage() {
             shakeKey={shakeTrigger}
           />
 
-          <ContactMethodToggle value={contactMethod} onChange={setContactMethod} />
+          <ContactMethodToggle value={contactMethod} onChange={setContactMethod} telegramAvailable={hasTelegram} />
         </div>
       </div>
 
