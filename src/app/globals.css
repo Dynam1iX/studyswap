@@ -159,6 +159,27 @@ body {
   font-family: var(--font-montserrat);
 }
 
+/* Chrome on iPhone: one-screen layout where only the content area scrolls (see MobileShell). */
+html.app-scroll,
+html.app-scroll body {
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+html.app-scroll .app-shell {
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+}
+
+html.app-scroll .app-shell-content {
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }

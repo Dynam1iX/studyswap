@@ -64,15 +64,10 @@ function NavTabItem({ config, active }: { config: TabConfig; active: boolean }) 
   );
 }
 
-/**
- * Bottom bar shared by every page (rendered as MobileShell's footer).
- * The white box-shadow extends the bar's background 100px further down: Chrome on
- * iPhone shows a strip of page under the bar when its toolbars are hidden, and the
- * shadow paints over it. It is off-screen in Safari and does not lengthen the page.
- */
+/** Bottom bar shared by every page (rendered as MobileShell's footer). */
 export function BottomNav({ active }: { active: NavTab }) {
   return (
-    <nav className="flex h-[76px] w-full items-center justify-around border-t border-line bg-white px-3 shadow-[0_100px_0_0_#fff]">
+    <nav className="flex h-[76px] w-full items-center justify-around border-t border-line bg-white px-3">
       {LEFT_TABS.map((config) => (
         <NavTabItem key={config.tab} config={config} active={config.tab === active} />
       ))}

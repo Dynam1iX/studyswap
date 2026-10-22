@@ -14,8 +14,14 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
+        {/* Chrome on iPhone ("CriOS"): use the fixed-height layout (see MobileShell). Runs before paint. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: "if(/CriOS/.test(navigator.userAgent))document.documentElement.classList.add('app-scroll')",
+          }}
+        />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link

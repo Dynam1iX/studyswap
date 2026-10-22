@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, type PointerEvent, type ReactNode } from 'react';
+import { APP_SCROLL_ID } from '@/components/layout/MobileShell';
 
 /** Must match the duration-300 transition below. */
 const EXIT_MS = 300;
@@ -8,16 +9,19 @@ const EXIT_MS = 300;
 const SWIPE_CLOSE_PX = 100;
 
 /**
- * Stops the page under the sheet from scrolling with the mouse wheel / keyboard
- * and returns a function that undoes it. Touch swipes are handled separately
- * (they are swallowed inside the dialog), so iOS never moves the page or its toolbars.
+ * Stops the page under the sheet from scrolling (the window, or #app-scroll in
+ * app-scroll mode) and returns a function that undoes it. Touch swipes are handled
+ * separately: they are swallowed inside the dialog, so iOS never moves the page.
  */
 function lockPageScroll(): () => void {
   const html = document.documentElement;
-  const previous = html.style.overflow;
+  const scroller = document.getElementById(APP_SCROLL_ID);
+  const previous = { html: html.style.overflow, scroller: scroller?.style.overflowY ?? '' };
   html.style.overflow = 'hidden';
+  if (scroller) scroller.style.overflowY = 'hidden';
   return () => {
-    html.style.overflow = previous;
+    html.style.overflow = previous.html;
+    if (scroller) scroller.style.overflowY = previous.scroller;
   };
 }
 
