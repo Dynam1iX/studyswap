@@ -11,6 +11,7 @@ Every change to the database lives in `migrations/` as a numbered SQL file, so t
 | `20261020190000_phase1b_cleanup.sql` | Removes duplicate policies, the old e-mail rule, 2 self-swap test rows, unused colour columns | Applied, then wiped by the reset below |
 | `20261020194518_phase1c_restore.sql` | Restores phase 1a on the re-created tables | Applied |
 | `20261020194600_phase1c_cleanup.sql` | Restores phase 1b, keeping the `public_read_*` policies (the only read policies after the reset) | Applied (SQL Editor) |
+| `20261022120000_search_history.sql` | Recent searches: `search_history` table + `get/add/delete_recent_search(es)`, `clear_recent_searches` | Applied (SQL Editor) |
 
 ### Never re-run the setup script
 
@@ -28,6 +29,7 @@ Supabase asks for confirmation before destructive statements (`DROP`, `DELETE`).
 | `subjects` | Course catalogue in four categories: CS & Dev, Mathematics, Humanities, Languages |
 | `barter_posts` | Barter cards: needed subject + topics, offered subject + topics, contact method, status |
 | `swap_requests` | A student asks a card's author to swap: `pending` → `accepted` / `declined` |
+| `search_history` | Recent searches of a student (10 newest, one row per query) |
 
 ## Rules enforced by the database
 
@@ -43,11 +45,13 @@ Supabase asks for confirmation before destructive statements (`DROP`, `DELETE`).
 - Anyone can read subjects, active cards and swap requests
 - Visitors can create active cards only (temporary, until sign-in); they cannot update, delete or create users
 - The API roles have no `TRUNCATE`, `TRIGGER` or `REFERENCES` rights; only admins edit the subject catalogue
+- `search_history` has no table rights for the API roles; it is reached only through `SECURITY DEFINER` functions that act on the current student (the Supabase advisor flags these as callable without sign-in: intended until phase 2)
 
 ## Roadmap
 
 **Phase 2: with Microsoft sign-in**
 - Link `users.id` to `auth.users.id` and create the profile automatically on first sign-in
+- Remove the demo-account fallback from `private.current_user_id()` and revoke the recent-search functions from `anon`
 - Owner-based rules: create, edit and close only your own cards and requests
 - E-mails visible to signed-in students only
 - Authors see their own completed and archived cards
