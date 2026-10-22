@@ -53,7 +53,7 @@ export function ThemeToggle() {
       type="button"
       role="switch"
       aria-checked={night}
-      aria-label="Dark theme"
+      aria-label="Interface theme: dark"
       onClick={toggle}
       className="relative h-9 w-[68px] shrink-0 cursor-pointer overflow-hidden rounded-full shadow-[inset_0_1px_4px_rgba(27,21,48,0.18)] transition-transform active:scale-95"
     >

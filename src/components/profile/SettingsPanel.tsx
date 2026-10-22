@@ -17,7 +17,7 @@ export function SettingsPanel({ language, onLanguageChange, onOpenPrivacy }: Set
         <LanguageSwitcher value={language} onChange={onLanguageChange} />
       </div>
       <div className="flex h-16 items-center justify-between border-b border-line">
-        <span className="text-base font-bold text-ink">Dark theme</span>
+        <span className="text-base font-bold text-ink">Interface theme</span>
         <ThemeToggle />
       </div>
       <button

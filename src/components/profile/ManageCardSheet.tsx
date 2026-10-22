@@ -26,7 +26,12 @@ export function ManageCardSheet({ card, onClose, onSave, onDelete }: ManageCardS
   const titleId = useId();
   // Keep the last card on screen while the sheet animates out.
   const [lastCard, setLastCard] = useState(card);
-  if (card && card !== lastCard) setLastCard(card);
+  /** Counts openings, so every opening gets a fresh form (even for the same card). */
+  const [session, setSession] = useState(0);
+  if (card && card !== lastCard) {
+    setLastCard(card);
+    setSession((n) => n + 1);
+  }
   const data = card ?? lastCard;
 
   return (
@@ -50,8 +55,8 @@ export function ManageCardSheet({ card, onClose, onSave, onDelete }: ManageCardS
         </div>
       }
     >
-      {/* key: a fresh form for every card */}
-      {data && <ManageForm key={data.id} card={data} onSave={onSave} onDelete={onDelete} />}
+      {/* key: a fresh form every time the sheet opens */}
+      {data && <ManageForm key={`${data.id}-${session}`} card={data} onSave={onSave} onDelete={onDelete} />}
     </BottomSheet>
   );
 }
@@ -121,6 +126,7 @@ function ManageForm({
       else await onDelete(card);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Something went wrong');
+    } finally {
       setBusy(null);
     }
   };
