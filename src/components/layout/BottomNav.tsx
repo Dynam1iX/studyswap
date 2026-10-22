@@ -15,7 +15,7 @@ interface TabConfig {
 
 const LEFT_TABS: TabConfig[] = [
   { tab: 'feed', href: '/', label: 'Feed', icon: '/home.svg', activeIcon: '/feedselected.svg', ready: true },
-  { tab: 'search', href: '/search', label: 'Search', icon: '/search.svg', activeIcon: '/searchselected.svg', ready: false },
+  { tab: 'search', href: '/search', label: 'Search', icon: '/search.svg', activeIcon: '/searchselected.svg', ready: true },
 ];
 
 const RIGHT_TABS: TabConfig[] = [

@@ -27,16 +27,18 @@ src/
     page.tsx              /         Feed
     create/               /create   Create a barter offer
     profile/              /profile  Student profile
+    search/               /search   Search: categories, filters, recent searches, results
     layout.tsx            Fonts, metadata
     globals.css           Design tokens (colours, fonts, animations)
   components/
     layout/               AppHeader, BottomNav, MobileShell: used on every page
     barter/               BarterCard: the "Needs help / Can teach" card
     ui/                   Generic UI: BottomSheet (accessible modal / bottom sheet)
-    feed/ create/ profile/  Components used by one page only
+    feed/ create/ profile/ search/  Components used by one page only
   lib/
     supabase.ts           Supabase client
     categoryPalette.ts    Colours for each subject category (the only place they live)
+    search.ts             Search filters, AITU programs, recent-search functions
     format.ts             Small text helpers (initials, short names)
   types/
     database.ts           Row types of the Supabase tables
@@ -58,6 +60,7 @@ public/                   Logo and icons
 | `subjects` | Course catalogue with a category (CS & Dev, Mathematics, Humanities, Languages) |
 | `barter_posts` | Barter cards: needed subject, offered subject, topics, contact method, status |
 | `swap_requests` | Requests between students on a card |
+| `search_history` | Recent searches per student (only through RPC functions) |
 
 Row Level Security is on. Schema, migrations and the rules the database enforces: see [`supabase/README.md`](supabase/README.md).
 
