@@ -1,33 +1,28 @@
 import type { ReactNode } from 'react';
 
-/** id of the element that scrolls the page content (the document itself never scrolls). */
-export const APP_SCROLL_ID = 'app-scroll';
-
 interface MobileShellProps {
   children: ReactNode;
-  /** Bar pinned under the content: BottomNav, or the Create page's Publish bar. */
+  /** Bar kept at the bottom of the screen: BottomNav, or the Create page's Publish bar. */
   footer?: ReactNode;
 }
 
 /**
- * Mobile-first app frame, 576px wide and centred.
+ * Mobile-first page column, 576px wide and centred.
  *
- * The frame is exactly one screen tall and only the content area inside it scrolls.
- * The document never scrolls, so iOS Safari / Chrome never collapse their toolbars,
- * which used to shift fixed bars and the bottom sheets away from the screen edge.
+ * The page itself scrolls, so Safari / Chrome on iPhone can hide their toolbars.
+ * The footer is position: sticky (part of the page), not position: fixed: fixed
+ * bars were left with a gap under them when the iOS toolbars collapsed.
  */
 export function MobileShell({ children, footer }: MobileShellProps) {
   return (
-    <div className="mx-auto flex h-dvh w-full max-w-[576px] flex-col overflow-hidden bg-page font-montserrat">
-      <div id={APP_SCROLL_ID} className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain pb-6">
-        {children}
-      </div>
-      {footer && <div className="relative z-40 shrink-0">{footer}</div>}
+    <div className="mx-auto flex min-h-dvh w-full max-w-[576px] flex-col bg-page font-montserrat">
+      <div className="flex-1 pb-6">{children}</div>
+      {footer && <div className="sticky bottom-0 z-40">{footer}</div>}
     </div>
   );
 }
 
-/** Scrolls the page content (not the window) back to the top. */
+/** Scrolls the page back to the top. */
 export function scrollAppToTop() {
-  document.getElementById(APP_SCROLL_ID)?.scrollTo({ top: 0, behavior: 'smooth' });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }

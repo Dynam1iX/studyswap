@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useRef, useState, type PointerEvent, type ReactNode } from 'react';
-import { APP_SCROLL_ID } from '@/components/layout/MobileShell';
 
 /** Must match the duration-300 transition below. */
 const EXIT_MS = 300;
@@ -9,16 +8,16 @@ const EXIT_MS = 300;
 const SWIPE_CLOSE_PX = 100;
 
 /**
- * Freezes the page content under the sheet and returns a function that unfreezes it.
- * The document never scrolls (see MobileShell); only the #app-scroll area does.
+ * Stops the page under the sheet from scrolling with the mouse wheel / keyboard
+ * and returns a function that undoes it. Touch swipes are handled separately
+ * (they are swallowed inside the dialog), so iOS never moves the page or its toolbars.
  */
 function lockPageScroll(): () => void {
-  const scroller = document.getElementById(APP_SCROLL_ID);
-  if (!scroller) return () => {};
-  const previous = scroller.style.overflowY;
-  scroller.style.overflowY = 'hidden';
+  const html = document.documentElement;
+  const previous = html.style.overflow;
+  html.style.overflow = 'hidden';
   return () => {
-    scroller.style.overflowY = previous;
+    html.style.overflow = previous;
   };
 }
 
