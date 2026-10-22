@@ -57,7 +57,7 @@ function FilterChip({
   );
 }
 
-/** Year / Faculty / Language chips; scrolls sideways on narrow screens. */
+/** Year / Faculty chips; scrolls sideways on narrow screens. */
 export function FilterBar({ year, program, openFilter, onOpen }: FilterBarProps) {
   return (
     <div className="no-scrollbar -mx-4 -my-3 flex items-center gap-2 overflow-x-auto px-4 py-3">
@@ -73,16 +73,6 @@ export function FilterBar({ year, program, openFilter, onOpen }: FilterBarProps)
         open={openFilter === 'faculty'}
         onClick={() => onOpen('faculty')}
       />
-      {/* Language filter arrives later; shown dimmed like unfinished tabs in the nav. */}
-      <button
-        type="button"
-        disabled
-        title="Coming soon"
-        className={`${CHIP} cursor-not-allowed border-line-strong bg-white text-ink opacity-50`}
-      >
-        Language
-        <ChevronDown aria-hidden className="size-4 text-muted" strokeWidth={2.2} />
-      </button>
     </div>
   );
 }

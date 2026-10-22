@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Check } from 'lucide-react';
+import { Check, ShieldCheck } from 'lucide-react';
 import { BarterCard, type CardHalf } from '@/components/barter/BarterCard';
 import { ContactMethodToggle } from '@/components/create/ContactMethodToggle';
 import { CreateNavBar } from '@/components/create/CreateNavBar';
@@ -231,7 +231,9 @@ export default function CreateBarterPage() {
 
       <div style={{ animationDelay: '210ms' }} className="animate-rise px-4 py-2 motion-reduce:animate-none">
         <div className="flex items-center gap-3 rounded-[16px] bg-[#F3E8FF] p-4">
-          <span className="text-[18px]">🔒</span>
+          <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-brand-from to-brand-to text-white shadow-[0_4px_12px_rgba(173,70,255,0.3)]">
+            <ShieldCheck aria-hidden className="size-5" strokeWidth={2.2} />
+          </span>
           <p className="text-[13px] leading-[19px] font-semibold text-[#3B2A66]">
             Contact details are only shared with verified university students.
           </p>

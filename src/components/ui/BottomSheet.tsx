@@ -7,6 +7,47 @@ const EXIT_MS = 300;
 /** Drag distance (px) after which a swipe down closes the sheet. */
 const SWIPE_CLOSE_PX = 100;
 
+/**
+ * Freezes the page under the sheet and returns a function that unfreezes it.
+ *
+ * `overflow: hidden` on <html> is enough on desktop, but iOS Safari still scrolls
+ * the page on touch, and the open sheet moved up with it. Pinning <body> with
+ * position: fixed at the current scroll offset stops that on every browser.
+ */
+function lockPageScroll(): () => void {
+  const { body, documentElement: html } = document;
+  const scrollY = window.scrollY;
+  const previous = {
+    htmlOverflow: html.style.overflow,
+    position: body.style.position,
+    top: body.style.top,
+    left: body.style.left,
+    right: body.style.right,
+    width: body.style.width,
+    overflow: body.style.overflow,
+  };
+
+  html.style.overflow = 'hidden';
+  body.style.position = 'fixed';
+  body.style.top = `-${scrollY}px`;
+  body.style.left = '0';
+  body.style.right = '0';
+  body.style.width = '100%';
+  body.style.overflow = 'hidden';
+
+  return () => {
+    html.style.overflow = previous.htmlOverflow;
+    body.style.position = previous.position;
+    body.style.top = previous.top;
+    body.style.left = previous.left;
+    body.style.right = previous.right;
+    body.style.width = previous.width;
+    body.style.overflow = previous.overflow;
+    // Back to where the student was, without the smooth-scroll animation.
+    window.scrollTo({ top: scrollY, behavior: 'instant' });
+  };
+}
+
 interface BottomSheetProps {
   open: boolean;
   onClose: () => void;
@@ -40,9 +81,7 @@ export function BottomSheet({ open, onClose, labelledBy, header, footer, childre
 
     if (open) {
       if (!dialog.open) dialog.showModal();
-      const html = document.documentElement;
-      const previousOverflow = html.style.overflow;
-      html.style.overflow = 'hidden';
+      const unlockScroll = lockPageScroll();
       // Two frames so the closed styles are painted before the enter transition starts.
       let second = 0;
       const first = requestAnimationFrame(() => {
@@ -51,7 +90,7 @@ export function BottomSheet({ open, onClose, labelledBy, header, footer, childre
       return () => {
         cancelAnimationFrame(first);
         cancelAnimationFrame(second);
-        html.style.overflow = previousOverflow;
+        unlockScroll();
       };
     }
 
@@ -97,13 +136,13 @@ export function BottomSheet({ open, onClose, labelledBy, header, footer, childre
         event.preventDefault();
         onClose();
       }}
-      className="fixed inset-0 m-0 h-dvh max-h-none w-full max-w-none overflow-hidden bg-transparent p-0 backdrop:bg-transparent"
+      className="fixed inset-0 m-0 h-full max-h-none w-full max-w-none overflow-hidden overscroll-none bg-transparent p-0 backdrop:bg-transparent"
     >
       {/* Backdrop */}
       <div
         aria-hidden
         onClick={onClose}
-        className={`absolute inset-0 bg-ink/50 backdrop-blur-[6px] transition-opacity duration-300 motion-reduce:transition-none ${
+        className={`absolute inset-0 touch-none bg-ink/50 backdrop-blur-[6px] transition-opacity duration-300 motion-reduce:transition-none ${
           shown ? 'opacity-100' : 'opacity-0'
         }`}
       />

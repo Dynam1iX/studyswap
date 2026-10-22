@@ -49,11 +49,9 @@ export function MyCardItem({ card, onManage }: MyCardItemProps) {
       <div className="relative grid grid-cols-2 gap-6">
         <CardHalf label="Needs" subject={card.needed} topic={card.neededTopic} />
         <CardHalf label="Teaches" subject={card.offered} topic={card.offeredTopic} />
-        <img
-          src="/exchangeicon.svg"
-          alt=""
-          className="pointer-events-none absolute top-1/2 left-1/2 size-9 -translate-x-1/2 -translate-y-1/2 rounded-full ring-[3px] ring-white"
-        />
+        <span className="pointer-events-none absolute top-1/2 left-1/2 flex size-[42px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white">
+          <img src="/exchangeicon.svg" alt="" className="size-9" />
+        </span>
       </div>
 
       <div className="flex items-center justify-between">
