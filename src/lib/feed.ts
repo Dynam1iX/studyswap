@@ -16,12 +16,8 @@ export interface FeedData {
   subjects: Subject[];
 }
 
-/** Active posts (newest first) and the subject catalogue for the filter chips. */
-export async function fetchFeed(): Promise<FeedData> {
-  const [postsRes, subjectsRes] = await Promise.all([
-    supabase
-      .from('barter_posts')
-      .select(`
+/** Columns of a Feed card: the post, both subjects and the author. */
+export const FEED_POST_SELECT = `
         id,
         description,
         offered_description,
@@ -30,7 +26,14 @@ export async function fetchFeed(): Promise<FeedData> {
         needed:subjects!barter_posts_needed_subject_id_fkey(id, code, name, category, department),
         offered:subjects!barter_posts_offered_subject_id_fkey(id, code, name, category, department),
         author:users!barter_posts_author_id_fkey(id, full_name, email, telegram_handle, role, major, study_year)
-      `)
+      `;
+
+/** Active posts (newest first) and the subject catalogue for the filter chips. */
+export async function fetchFeed(): Promise<FeedData> {
+  const [postsRes, subjectsRes] = await Promise.all([
+    supabase
+      .from('barter_posts')
+      .select(FEED_POST_SELECT)
       .eq('status', 'active')
       .order('created_at', { ascending: false }),
     supabase.from('subjects').select('id, code, name, category, department').order('id', { ascending: true }),

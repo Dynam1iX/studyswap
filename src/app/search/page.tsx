@@ -12,6 +12,7 @@ import { FilterSheet } from '@/components/search/FilterSheet';
 import { RecentSearches } from '@/components/search/RecentSearches';
 import { SearchField } from '@/components/search/SearchField';
 import { SearchResults } from '@/components/search/SearchResults';
+import { useFavoriteIds } from '@/lib/favorites';
 import { fetchFeed, type FeedPost } from '@/lib/feed';
 import {
   EMPTY_FILTERS,
@@ -67,7 +68,7 @@ function SearchView() {
   const [posts, setPosts] = useState<FeedPost[] | null>(null);
   const [recent, setRecent] = useState<RecentSearch[] | null>(null);
   const [openFilter, setOpenFilter] = useState<FilterKind | null>(null);
-  const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set());
+  const { liked: likedPosts, toggle: toggleLike } = useFavoriteIds();
   /** The card whose details modal is open, or null. */
   const [activeSwap, setActiveSwap] = useState<FeedPost | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -137,15 +138,6 @@ function SearchView() {
   const clearRecent = () => {
     setRecent([]);
     clearRecentSearches().catch(logError('clearing recent searches'));
-  };
-
-  const toggleLike = (postId: string) => {
-    setLikedPosts((prev) => {
-      const next = new Set(prev);
-      if (next.has(postId)) next.delete(postId);
-      else next.add(postId);
-      return next;
-    });
   };
 
   return (

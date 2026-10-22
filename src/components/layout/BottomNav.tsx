@@ -1,5 +1,9 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Plus } from 'lucide-react';
+import { FAVORITE_ADDED_EVENT } from '@/lib/favorites';
 
 export type NavTab = 'feed' | 'search' | 'favorite' | 'profile';
 
@@ -19,17 +23,31 @@ const LEFT_TABS: TabConfig[] = [
 ];
 
 const RIGHT_TABS: TabConfig[] = [
-  { tab: 'favorite', href: '/favorites', label: 'Favorite', icon: '/like.svg', activeIcon: '/likeselected.svg', ready: false },
+  { tab: 'favorite', href: '/favorites', label: 'Favorite', icon: '/like.svg', activeIcon: '/likeselected.svg', ready: true },
   { tab: 'profile', href: '/profile', label: 'Profile', icon: '/profile.svg', activeIcon: '/profileselected.svg', ready: true },
 ];
 
-function NavTabItem({ config, active }: { config: TabConfig; active: boolean }) {
+/** Counts likes made on this page, so the Favorite icon can bounce once per like. */
+function useFavoritePings(): number {
+  const [pings, setPings] = useState(0);
+  useEffect(() => {
+    const onAdded = () => setPings((n) => n + 1);
+    window.addEventListener(FAVORITE_ADDED_EVENT, onAdded);
+    return () => window.removeEventListener(FAVORITE_ADDED_EVENT, onAdded);
+  }, []);
+  return pings;
+}
+
+function NavTabItem({ config, active, pings = 0 }: { config: TabConfig; active: boolean; pings?: number }) {
+  const bounce = active || pings > 0;
   const content = (
     <>
       <img
+        // A new key replays the bounce on every like.
+        key={pings}
         src={active ? config.activeIcon : config.icon}
         alt={config.label}
-        className={`size-[22px] ${active ? 'animate-nav-bounce motion-reduce:animate-none' : ''}`}
+        className={`size-[22px] ${bounce ? 'animate-nav-bounce motion-reduce:animate-none' : ''}`}
       />
       <span
         className={`text-[11px] font-semibold ${
@@ -66,6 +84,7 @@ function NavTabItem({ config, active }: { config: TabConfig; active: boolean }) 
 
 /** Bottom bar shared by every page (rendered as MobileShell's footer). */
 export function BottomNav({ active }: { active: NavTab }) {
+  const favoritePings = useFavoritePings();
   return (
     <nav className="flex h-[76px] w-full items-center justify-around border-t border-line bg-white px-3">
       {LEFT_TABS.map((config) => (
@@ -86,7 +105,12 @@ export function BottomNav({ active }: { active: NavTab }) {
       </div>
 
       {RIGHT_TABS.map((config) => (
-        <NavTabItem key={config.tab} config={config} active={config.tab === active} />
+        <NavTabItem
+          key={config.tab}
+          config={config}
+          active={config.tab === active}
+          pings={config.tab === 'favorite' ? favoritePings : 0}
+        />
       ))}
     </nav>
   );

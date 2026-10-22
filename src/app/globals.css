@@ -28,6 +28,28 @@
   --animate-heart-pop: heart-pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
   --animate-nav-bounce: nav-bounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
   --animate-tremble: tremble 0.3s ease-in-out;
+  --animate-breathe: breathe 2.6s ease-in-out infinite;
+  /* Duration is set inline (the undo window). */
+  --animate-drain: drain 4s linear forwards;
+
+  @keyframes breathe {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.12);
+    }
+  }
+
+  @keyframes drain {
+    from {
+      transform: scaleX(1);
+    }
+    to {
+      transform: scaleX(0);
+    }
+  }
 
   @keyframes heart-pop {
     0% {

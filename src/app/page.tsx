@@ -8,6 +8,7 @@ import { SwapDetailModal } from '@/components/feed/SwapDetailModal';
 import { AppHeader } from '@/components/layout/AppHeader';
 import { BottomNav } from '@/components/layout/BottomNav';
 import { MobileShell } from '@/components/layout/MobileShell';
+import { useFavoriteIds } from '@/lib/favorites';
 import { fetchFeed, type FeedPost } from '@/lib/feed';
 import type { Subject } from '@/types/database';
 
@@ -16,7 +17,7 @@ export default function FeedPage() {
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedSubject, setSelectedSubject] = useState<SubjectFilterValue>('All');
-  const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set());
+  const { liked: likedPosts, toggle: toggleLike } = useFavoriteIds();
   /** The card whose details modal is open, or null. */
   const [activeSwap, setActiveSwap] = useState<FeedPost | null>(null);
 
@@ -36,15 +37,6 @@ export default function FeedPage() {
       cancelled = true;
     };
   }, []);
-
-  const toggleLike = (postId: string) => {
-    setLikedPosts((prev) => {
-      const next = new Set(prev);
-      if (next.has(postId)) next.delete(postId);
-      else next.add(postId);
-      return next;
-    });
-  };
 
   const visiblePosts =
     selectedSubject === 'All'
