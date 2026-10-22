@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { Heart } from 'lucide-react';
 import { UndoToast } from '@/components/favorites/UndoToast';
@@ -95,6 +95,9 @@ export default function FavoritesPage() {
       pending.forEach((timer) => window.clearTimeout(timer));
     };
   }, []);
+
+  // Next.js keeps this page alive (hidden) after navigating away: drop the Undo toast then.
+  useLayoutEffect(() => () => setRemoved(null), []);
 
   const posts = state.status === 'ready' ? state.posts : [];
   const savedCount = posts.filter((post) => !leaving.has(post.id)).length;

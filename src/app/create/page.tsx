@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Check, ShieldCheck } from 'lucide-react';
 import { BarterCard, type CardHalf } from '@/components/barter/BarterCard';
@@ -78,6 +78,23 @@ export default function CreateBarterPage() {
     };
   }, []);
 
+  // Next.js keeps a page alive (hidden) after navigating away, so a published form
+  // came back filled in with "Published!". Once published, clear it as the page hides;
+  // an unpublished draft is kept on purpose.
+  useLayoutEffect(() => {
+    if (!published) return;
+    return () => {
+      setNeededSubjectId(null);
+      setOfferedSubjectId(null);
+      setNeededDetails('');
+      setOfferedDetails('');
+      setContactMethod('email');
+      setErrors({});
+      setServerError(null);
+      setPublished(false);
+    };
+  }, [published]);
+
   const neededSubject = subjects.find((s) => s.id === neededSubjectId);
   const offeredSubject = subjects.find((s) => s.id === offeredSubjectId);
 
@@ -138,32 +155,8 @@ export default function CreateBarterPage() {
       : 'Please select a subject you can teach'
     : null;
 
-  const publishBar = (
-    <div className="border-t border-line bg-white px-4 pt-3 pb-5">
-      <button
-        type="button"
-        onClick={handleSubmit}
-        disabled={submitting || loadingSubjects || published}
-        className={`bubbly flex h-[56px] w-full cursor-pointer items-center justify-center gap-2 rounded-[16px] bg-linear-to-r from-brand-from to-brand-to text-[17px] font-bold text-white shadow-[0_8px_20px_rgba(200,40,140,0.28)] transition hover:opacity-95 active:scale-[0.97] disabled:cursor-default ${
-          published ? '' : 'disabled:opacity-50'
-        } ${bubbling ? 'bubbly-animate' : ''}`}
-      >
-        {published ? (
-          <span className="flex animate-pop items-center gap-2 motion-reduce:animate-none">
-            <Check className="size-5" strokeWidth={3} />
-            Published!
-          </span>
-        ) : submitting ? (
-          'Publishing offer...'
-        ) : (
-          'Publish Barter Offer'
-        )}
-      </button>
-    </div>
-  );
-
   return (
-    <MobileShell footer={publishBar}>
+    <MobileShell>
       <AppHeader />
       <CreateNavBar />
 
@@ -264,6 +257,28 @@ export default function CreateBarterPage() {
         </div>
       </div>
 
+      {/* Publish: at the end of the form, not pinned to the screen */}
+      <div style={{ animationDelay: '280ms' }} className="animate-rise px-4 pt-2 pb-4 motion-reduce:animate-none">
+        <button
+          type="button"
+          onClick={handleSubmit}
+          disabled={submitting || loadingSubjects || published}
+          className={`bubbly flex h-[56px] w-full cursor-pointer items-center justify-center gap-2 rounded-[16px] bg-linear-to-r from-brand-from to-brand-to text-[17px] font-bold text-white shadow-[0_8px_20px_rgba(200,40,140,0.28)] transition hover:opacity-95 active:scale-[0.97] disabled:cursor-default ${
+            published ? '' : 'disabled:opacity-50'
+          } ${bubbling ? 'bubbly-animate' : ''}`}
+        >
+          {published ? (
+            <span className="flex animate-pop items-center gap-2 motion-reduce:animate-none">
+              <Check className="size-5" strokeWidth={3} />
+              Published!
+            </span>
+          ) : submitting ? (
+            'Publishing offer...'
+          ) : (
+            'Publish Barter Offer'
+          )}
+        </button>
+      </div>
     </MobileShell>
   );
 }
