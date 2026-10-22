@@ -32,7 +32,7 @@ export function SubjectSelect({ label, subjects, value, onChange, error, shakeKe
         <select
           value={value ?? ''}
           onChange={(event) => onChange(event.target.value ? Number(event.target.value) : null)}
-          className={`h-[44px] w-full cursor-pointer appearance-none rounded-[14px] border bg-white pr-12 pl-8 text-[15px] font-semibold outline-none transition ${fieldState}`}
+          className={`h-[44px] w-full cursor-pointer appearance-none rounded-[14px] border bg-white pr-12 pl-8 text-[16px] font-semibold sm:text-[15px] outline-none transition ${fieldState}`}
         >
           <option value="" disabled>
             Select a subject...

@@ -29,7 +29,7 @@ export function TopicsField({ label, placeholder, value, onChange, error, shakeK
           onChange={(event) => onChange(event.target.value.slice(0, TOPICS_MAX_LENGTH))}
           placeholder={placeholder}
           rows={2}
-          className={`w-full resize-none rounded-[14px] border p-3 pb-7 text-[14px] leading-relaxed font-semibold text-ink placeholder-placeholder outline-none transition ${
+          className={`w-full resize-none rounded-[14px] border p-3 pb-7 text-[16px] leading-relaxed sm:text-[14px] font-semibold text-ink placeholder-placeholder outline-none transition ${
             error ? 'border-danger ring-2 ring-red-100' : 'border-field focus:border-brand-from'
           }`}
         />
