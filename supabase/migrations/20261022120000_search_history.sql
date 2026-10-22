@@ -135,15 +135,3 @@ comment on function public.get_recent_searches(integer) is 'Recent searches of t
 comment on function public.add_recent_search(text)      is 'Saves a search for the current student; keeps the 10 newest.';
 comment on function public.delete_recent_search(uuid)   is 'Deletes one search of the current student.';
 comment on function public.clear_recent_searches()      is 'Deletes all searches of the current student.';
-
--- Demo data from the design, for the demo account only.
-insert into public.search_history (user_id, query, created_at)
-select u.id, v.query, now() - v.age
-from public.users u
-cross join (values
-  ('Calculus II', interval '1 minute'),
-  ('ITC', interval '2 minutes'),
-  ('Foreign Language B1', interval '3 minutes')
-) as v(query, age)
-where u.email = 'a.yerzhanuly@astanait.edu.kz'
-on conflict do nothing;
