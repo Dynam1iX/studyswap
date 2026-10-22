@@ -65,14 +65,14 @@ function NavTabItem({ config, active }: { config: TabConfig; active: boolean }) 
 }
 
 /**
- * On iPhones with a home indicator the bar is 56px + (inset − 12px): the icons sit close
- * to the indicator like in native tab bars instead of floating a full inset above it.
- * Elsewhere (inset 0) it stays 76px.
+ * Bottom bar shared by every page (rendered as MobileShell's footer).
+ * The white box-shadow extends the bar's background 100px further down: Chrome on
+ * iPhone shows a strip of page under the bar when its toolbars are hidden, and the
+ * shadow paints over it. It is off-screen in Safari and does not lengthen the page.
  */
-/** Bottom bar shared by every page (rendered as MobileShell's footer). */
 export function BottomNav({ active }: { active: NavTab }) {
   return (
-    <nav className="box-content flex h-[calc(76px_-_min(env(safe-area-inset-bottom),20px))] w-full items-center justify-around border-t border-line bg-white px-3 pb-[max(0px,calc(env(safe-area-inset-bottom)_-_12px))]">
+    <nav className="flex h-[76px] w-full items-center justify-around border-t border-line bg-white px-3 shadow-[0_100px_0_0_#fff]">
       {LEFT_TABS.map((config) => (
         <NavTabItem key={config.tab} config={config} active={config.tab === active} />
       ))}

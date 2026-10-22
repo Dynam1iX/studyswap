@@ -1,17 +1,6 @@
-import type { Metadata, Viewport } from 'next';
+import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import './globals.css';
-
-/**
- * viewport-fit=cover lets the page reach the very bottom edge of the iPhone screen.
- * Without it Chrome on iOS left an empty strip under the nav (the home-indicator area);
- * the bars add env(safe-area-inset-bottom) padding so their content stays above it.
- */
-export const viewport: Viewport = {
-  width: 'device-width',
-  initialScale: 1,
-  viewportFit: 'cover',
-};
 
 export const metadata: Metadata = {
   title: 'StudySwap — Academic Barter Platform',
