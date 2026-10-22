@@ -1,3 +1,7 @@
+'use client';
+
+import { useState } from 'react';
+import { useReplay } from '@/lib/useReplay';
 import type { CategoryPalette } from '@/lib/categoryPalette';
 import type { ContactMethod } from '@/types/database';
 
@@ -31,18 +35,38 @@ interface BarterCardProps {
 }
 
 function SubjectHalf({ label, half }: { label: string; half: CardHalf }) {
+  // Count subject changes after the first render, so only a change "blinks" (Create preview).
+  const [lastTitle, setLastTitle] = useState(half.title);
+  const [changes, setChanges] = useState(0);
+  if (half.title !== lastTitle) {
+    setLastTitle(half.title);
+    setChanges((n) => n + 1);
+  }
+
   return (
     <div
       style={{ backgroundColor: half.palette.bg }}
-      className="flex min-h-[83px] w-full flex-col justify-between rounded-xl p-3"
+      className="flex min-h-[83px] w-full flex-col justify-between rounded-xl p-3 transition-colors duration-500"
     >
-      <span style={{ color: half.palette.label }} className="block text-[10px] font-semibold tracking-wider uppercase">
+      <span
+        style={{ color: half.palette.label }}
+        className="block text-[10px] font-semibold tracking-wider uppercase transition-colors duration-500"
+      >
         {label}
       </span>
-      <span style={{ color: half.palette.title }} className="block truncate pr-8 text-[18px] leading-tight font-semibold">
+      <span
+        key={changes}
+        style={{ color: half.palette.title }}
+        className={`block truncate pr-8 text-[18px] leading-tight font-semibold transition-colors duration-500 ${
+          changes > 0 ? 'animate-rise motion-reduce:animate-none' : ''
+        }`}
+      >
         {half.title}
       </span>
-      <span style={{ color: half.palette.topic }} className="block truncate text-[12px] font-medium">
+      <span
+        style={{ color: half.palette.topic }}
+        className="block truncate text-[12px] font-medium transition-colors duration-500"
+      >
         {half.topic}
       </span>
     </div>
@@ -72,6 +96,8 @@ export function BarterCard({
   // With onOpen, a full-size button sits under the content. Content ignores clicks
   // so they reach that button; the heart and the contact link stay clickable on top.
   const layer = onOpen ? 'pointer-events-none relative' : '';
+  const [bursting, burst] = useReplay(600);
+  const [pops, setPops] = useState(0);
   const interactive = onOpen ? 'pointer-events-auto relative z-10' : '';
 
   const contact = CONTACT[contactMethod];
@@ -84,8 +110,8 @@ export function BarterCard({
 
   return (
     <div
-      className={`relative w-full space-y-2.5 rounded-2xl border border-line bg-white p-4 shadow-sm transition ${
-        onOpen ? 'hover:shadow-md' : ''
+      className={`group relative w-full space-y-2.5 rounded-2xl border border-line bg-white p-4 shadow-sm transition-[transform,box-shadow] duration-300 ease-out ${
+        onOpen ? 'hover:-translate-y-0.5 hover:shadow-[0_10px_24px_rgba(60,30,110,0.10)] active:scale-[0.98]' : ''
       }`}
     >
       {onOpen && (
@@ -113,12 +139,24 @@ export function BarterCard({
         {onToggleLike ? (
           <button
             type="button"
-            onClick={onToggleLike}
+            onClick={() => {
+              // Liking pops the heart and bursts bubbles; unliking only shrinks it (active:scale).
+              if (!liked) burst();
+              setPops((n) => n + 1);
+              onToggleLike();
+            }}
             aria-label="Wishlist toggle"
             aria-pressed={liked}
-            className={`shrink-0 cursor-pointer p-1 transition hover:scale-110 active:scale-95 ${interactive}`}
+            className={`bubbly-ring relative shrink-0 cursor-pointer p-1 transition hover:scale-110 active:scale-90 ${
+              bursting ? 'bubbly-animate' : ''
+            } ${interactive}`}
           >
-            <img src={liked ? '/liked.svg' : '/like.svg'} alt="Like" className="size-[22px]" />
+            <img
+              key={pops}
+              src={liked ? '/liked.svg' : '/like.svg'}
+              alt="Like"
+              className={`relative size-[22px] ${pops > 0 && liked ? 'animate-heart-pop motion-reduce:animate-none' : ''}`}
+            />
           </button>
         ) : (
           <span className="shrink-0 p-1">
@@ -134,7 +172,7 @@ export function BarterCard({
         <img
           src="/exchangeicon.svg"
           alt="Exchange"
-          className="pointer-events-none absolute top-1/2 right-[18px] z-10 block size-10 -translate-y-1/2 drop-shadow-[0_2px_8px_rgba(0,0,0,0.12)]"
+          className="pointer-events-none absolute top-1/2 right-[18px] z-10 block size-10 -translate-y-1/2 drop-shadow-[0_2px_8px_rgba(0,0,0,0.12)] transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:rotate-180 group-active:rotate-180"
         />
       </div>
 
@@ -143,7 +181,7 @@ export function BarterCard({
           href={contactHref}
           target={contactMethod === 'telegram' ? '_blank' : undefined}
           rel="noreferrer"
-          className={`${contactClasses} shadow-[0_3px_12px_rgba(173,70,255,0.25)] transition hover:opacity-95 active:scale-[0.99] ${interactive}`}
+          className={`${contactClasses} shine shadow-[0_3px_12px_rgba(173,70,255,0.25)] transition hover:opacity-95 active:scale-[0.99] ${interactive}`}
         >
           {contactContent}
         </a>

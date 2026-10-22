@@ -14,8 +14,12 @@ export function SubjectChipList({ title, subjects, emptyText }: SubjectChipListP
     <section className="flex flex-col gap-2">
       <h2 className="font-bricolage text-lg font-extrabold text-ink">{title}</h2>
       <ul className="flex flex-wrap items-center gap-2">
-        {subjects.map((subject) => (
-          <li key={subject.id}>
+        {subjects.map((subject, index) => (
+          <li
+            key={subject.id}
+            style={{ animationDelay: `${index * 60}ms` }}
+            className="animate-pop motion-reduce:animate-none"
+          >
             <SubjectChip subject={subject} />
           </li>
         ))}
@@ -23,7 +27,7 @@ export function SubjectChipList({ title, subjects, emptyText }: SubjectChipListP
         <li>
           <Link
             href="/create"
-            className="inline-flex h-10 items-center rounded-full border border-dashed border-field px-4 text-sm font-semibold text-muted transition hover:bg-white"
+            className="inline-flex h-10 items-center rounded-full border border-dashed border-field px-4 text-sm font-semibold text-muted transition hover:border-brand-from hover:bg-white hover:text-brand-from active:scale-95"
           >
             + Add
           </Link>

@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Loader2 } from 'lucide-react';
 import { FeedPostCard } from '@/components/feed/FeedPostCard';
+import { FeedSkeleton } from '@/components/feed/FeedSkeleton';
 import { SubjectFilter, type SubjectFilterValue } from '@/components/feed/SubjectFilter';
 import { SwapDetailModal } from '@/components/feed/SwapDetailModal';
 import { AppHeader } from '@/components/layout/AppHeader';
@@ -54,31 +54,36 @@ export default function FeedPage() {
   return (
     <MobileShell>
       <AppHeader />
-      <SubjectFilter subjects={subjects} value={selectedSubject} onChange={setSelectedSubject} />
+      <div className="animate-rise motion-reduce:animate-none">
+        <SubjectFilter subjects={subjects} value={selectedSubject} onChange={setSelectedSubject} />
+      </div>
 
-      <div className="px-4 pt-3 pb-1">
+      <div style={{ animationDelay: '80ms' }} className="animate-rise px-4 pt-3 pb-1 motion-reduce:animate-none">
         <h1 className="font-bricolage text-[22px] leading-[26px] font-bold text-black">Matches for you</h1>
       </div>
 
-      <main className="w-full space-y-4 p-4">
+      {/* key: the list fades in again whenever the subject filter changes */}
+      <main key={String(selectedSubject)} className="w-full space-y-4 p-4">
         {loading ? (
-          <div className="flex flex-col items-center justify-center gap-2 py-20 text-muted">
-            <Loader2 className="size-6 animate-spin text-brand-from" />
-            <span className="text-xs font-medium">Loading barter offers...</span>
-          </div>
+          <FeedSkeleton />
         ) : visiblePosts.length === 0 ? (
-          <div className="rounded-2xl border border-line bg-white p-6 py-16 text-center text-xs font-medium text-muted">
+          <div className="animate-pop rounded-2xl border border-line bg-white p-6 py-16 text-center text-xs font-medium text-muted motion-reduce:animate-none">
             No barter offers found for this subject
           </div>
         ) : (
-          visiblePosts.map((post) => (
-            <FeedPostCard
+          visiblePosts.map((post, index) => (
+            <div
               key={post.id}
-              post={post}
-              liked={likedPosts.has(post.id)}
-              onToggleLike={toggleLike}
-              onOpen={setActiveSwap}
-            />
+              style={{ animationDelay: `${120 + Math.min(index, 5) * 70}ms` }}
+              className="animate-rise motion-reduce:animate-none"
+            >
+              <FeedPostCard
+                post={post}
+                liked={likedPosts.has(post.id)}
+                onToggleLike={toggleLike}
+                onOpen={setActiveSwap}
+              />
+            </div>
           ))
         )}
       </main>

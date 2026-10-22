@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Check } from 'lucide-react';
 import { BarterCard, type CardHalf } from '@/components/barter/BarterCard';
 import { ContactMethodToggle } from '@/components/create/ContactMethodToggle';
 import { CreateNavBar } from '@/components/create/CreateNavBar';
@@ -12,6 +13,7 @@ import { MobileShell } from '@/components/layout/MobileShell';
 import { paletteFor } from '@/lib/categoryPalette';
 import { createBarterPost, fetchCreateFormData } from '@/lib/create';
 import { formatStudyInfo, getInitials, getShortName } from '@/lib/format';
+import { useReplay } from '@/lib/useReplay';
 import type { ContactMethod, Subject } from '@/types/database';
 
 interface FormErrors {
@@ -37,6 +39,9 @@ export default function CreateBarterPage() {
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [loadingSubjects, setLoadingSubjects] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  /** Published: the button turns into a check and bursts bubbles before going to the Feed. */
+  const [published, setPublished] = useState(false);
+  const [bubbling, bubble] = useReplay(700);
 
   const [neededSubjectId, setNeededSubjectId] = useState<number | null>(null);
   const [offeredSubjectId, setOfferedSubjectId] = useState<number | null>(null);
@@ -112,11 +117,13 @@ export default function CreateBarterPage() {
         contact_method: contactMethod,
         status: 'active',
       });
-      router.push('/');
-    } catch (err: unknown) {
-      failValidation(err instanceof Error ? err.message : 'Unknown network error');
-    } finally {
       setSubmitting(false);
+      setPublished(true);
+      bubble();
+      window.setTimeout(() => router.push('/'), 900);
+    } catch (err: unknown) {
+      setSubmitting(false);
+      failValidation(err instanceof Error ? err.message : 'Unknown network error');
     }
   };
 
@@ -136,7 +143,7 @@ export default function CreateBarterPage() {
       <AppHeader />
       <CreateNavBar />
 
-      <div className="px-4 py-2">
+      <div className="animate-rise px-4 py-2 motion-reduce:animate-none">
         <p className="text-[14px] leading-[21px] font-semibold text-muted">
           Exchange your academic strengths to get help with challenging subjects.
         </p>
@@ -152,7 +159,7 @@ export default function CreateBarterPage() {
       )}
 
       {/* Form */}
-      <div className="px-4 py-2">
+      <div style={{ animationDelay: '70ms' }} className="animate-rise px-4 py-2 motion-reduce:animate-none">
         <div className="space-y-4 rounded-[24px] border border-line bg-white p-4 shadow-sm">
           <SubjectSelect
             label="Subject you need help with"
@@ -212,7 +219,7 @@ export default function CreateBarterPage() {
       </div>
 
       {/* Live preview */}
-      <div className="px-4 pt-4 pb-2">
+      <div style={{ animationDelay: '140ms' }} className="animate-rise px-4 pt-4 pb-2 motion-reduce:animate-none">
         <h2 className="mb-2.5 text-[11px] font-bold tracking-[0.88px] text-muted uppercase">Preview in feed</h2>
         <BarterCard
           author={{ initials: getInitials(authorName), name: authorName, subtitle: authorSubtitle }}
@@ -222,7 +229,7 @@ export default function CreateBarterPage() {
         />
       </div>
 
-      <div className="px-4 py-2">
+      <div style={{ animationDelay: '210ms' }} className="animate-rise px-4 py-2 motion-reduce:animate-none">
         <div className="flex items-center gap-3 rounded-[16px] bg-[#F3E8FF] p-4">
           <span className="text-[18px]">🔒</span>
           <p className="text-[13px] leading-[19px] font-semibold text-[#3B2A66]">
@@ -236,10 +243,21 @@ export default function CreateBarterPage() {
         <button
           type="button"
           onClick={handleSubmit}
-          disabled={submitting || loadingSubjects}
-          className="flex h-[56px] w-full cursor-pointer items-center justify-center gap-2 rounded-[16px] bg-linear-to-r from-brand-from to-brand-to text-[17px] font-bold text-white shadow-[0_8px_20px_rgba(200,40,140,0.28)] transition hover:opacity-95 active:scale-[0.99] disabled:opacity-50"
+          disabled={submitting || loadingSubjects || published}
+          className={`bubbly flex h-[56px] w-full cursor-pointer items-center justify-center gap-2 rounded-[16px] bg-linear-to-r from-brand-from to-brand-to text-[17px] font-bold text-white shadow-[0_8px_20px_rgba(200,40,140,0.28)] transition hover:opacity-95 active:scale-[0.97] disabled:cursor-default ${
+            published ? '' : 'disabled:opacity-50'
+          } ${bubbling ? 'bubbly-animate' : ''}`}
         >
-          {submitting ? 'Publishing offer...' : 'Publish Barter Offer'}
+          {published ? (
+            <span className="flex animate-pop items-center gap-2 motion-reduce:animate-none">
+              <Check className="size-5" strokeWidth={3} />
+              Published!
+            </span>
+          ) : submitting ? (
+            'Publishing offer...'
+          ) : (
+            'Publish Barter Offer'
+          )}
         </button>
       </div>
     </MobileShell>
