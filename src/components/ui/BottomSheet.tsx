@@ -68,6 +68,8 @@ interface BottomSheetProps {
  */
 export function BottomSheet({ open, onClose, labelledBy, header, footer, children }: BottomSheetProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  /** The scrolling body; swipes inside it may scroll it, nothing else may scroll. */
+  const scrollRef = useRef<HTMLDivElement>(null);
   const dragStart = useRef<number | null>(null);
   /** Latest drag distance; read on pointerup so a fast swipe is not lost between renders. */
   const dragDistance = useRef(0);
@@ -104,6 +106,38 @@ export function BottomSheet({ open, onClose, labelledBy, header, footer, childre
     return () => window.clearTimeout(timer);
   }, [open]);
 
+  // iOS Safari: a swipe that the sheet body cannot use goes to the browser, which then
+  // collapses its address bar and drags the whole sheet up (seen when the page is near
+  // the top, where the bar is still expanded). Swallow every such swipe.
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!open || !dialog) return;
+    let startY = 0;
+
+    const onTouchStart = (event: TouchEvent) => {
+      startY = event.touches[0]?.clientY ?? 0;
+    };
+    const onTouchMove = (event: TouchEvent) => {
+      const scroller = scrollRef.current;
+      const target = event.target as Node | null;
+      if (scroller && target && scroller.contains(target)) {
+        const deltaY = (event.touches[0]?.clientY ?? 0) - startY;
+        const atTop = scroller.scrollTop <= 0;
+        const atBottom = scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 1;
+        // Let the body scroll as long as it has room in the swipe's direction.
+        if (!(deltaY > 0 && atTop) && !(deltaY < 0 && atBottom)) return;
+      }
+      if (event.cancelable) event.preventDefault();
+    };
+
+    dialog.addEventListener('touchstart', onTouchStart, { passive: true });
+    dialog.addEventListener('touchmove', onTouchMove, { passive: false });
+    return () => {
+      dialog.removeEventListener('touchstart', onTouchStart);
+      dialog.removeEventListener('touchmove', onTouchMove);
+    };
+  }, [open]);
+
   const onPointerDown = (event: PointerEvent<HTMLDivElement>) => {
     if (event.pointerType === 'mouse') return;
     dragStart.current = event.clientY;
@@ -136,7 +170,7 @@ export function BottomSheet({ open, onClose, labelledBy, header, footer, childre
         event.preventDefault();
         onClose();
       }}
-      className="fixed inset-0 m-0 h-full max-h-none w-full max-w-none overflow-hidden overscroll-none bg-transparent p-0 backdrop:bg-transparent"
+      className="fixed inset-0 m-0 h-dvh max-h-none w-full max-w-none overflow-hidden overscroll-none bg-transparent p-0 backdrop:bg-transparent"
     >
       {/* Backdrop */}
       <div
@@ -168,7 +202,7 @@ export function BottomSheet({ open, onClose, labelledBy, header, footer, childre
             {header}
           </div>
 
-          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+          <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
             {children}
             {/* Fades the text out above the actions while there is more to scroll */}
             <div aria-hidden className="pointer-events-none sticky bottom-0 -mt-10 h-10 bg-linear-to-t from-white to-white/0" />
