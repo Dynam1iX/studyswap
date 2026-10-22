@@ -57,6 +57,9 @@ export function BottomSheet({ open, onClose, labelledBy, header, footer, childre
 
     if (open) {
       if (!dialog.open) dialog.showModal();
+      // Force layout right after the dialog enters the top layer: iOS WebKit otherwise
+      // paints the sheet at a stale position until the next tap.
+      void dialog.getBoundingClientRect();
       const unlockScroll = lockPageScroll();
       // Two frames so the closed styles are painted before the enter transition starts.
       let second = 0;
@@ -144,46 +147,49 @@ export function BottomSheet({ open, onClose, labelledBy, header, footer, childre
         event.preventDefault();
         onClose();
       }}
-      className="fixed inset-0 m-0 h-dvh max-h-none w-full max-w-none overflow-hidden overscroll-none bg-transparent p-0 backdrop:bg-transparent"
+      className="fixed inset-0 m-0 h-full max-h-none w-full max-w-none overflow-hidden overscroll-none bg-transparent p-0 backdrop:bg-transparent"
     >
       {/* Backdrop */}
       <div
         aria-hidden
         onClick={onClose}
-        className={`absolute inset-0 touch-none bg-ink/50 backdrop-blur-[6px] transition-opacity duration-300 motion-reduce:transition-none ${
+        className={`absolute inset-0 touch-none bg-ink/55 transition-opacity duration-300 motion-reduce:transition-none ${
           shown ? 'opacity-100' : 'opacity-0'
         }`}
       />
 
-      <div className="pointer-events-none absolute inset-0 flex items-end justify-center">
+      {/* Pinned to the bottom edge itself (not aligned inside a full-height box) and moved
+          with a plain 3D transform: the most reliable combination on iOS WebKit. */}
+      <div
+        style={{
+          transform: shown ? `translate3d(0, ${dragY}px, 0)` : 'translate3d(0, 100%, 0)',
+          willChange: 'transform',
+        }}
+        className={`fixed inset-x-0 bottom-0 mx-auto flex max-h-[80%] w-full max-w-[576px] flex-col overflow-hidden rounded-t-[28px] bg-white shadow-[0_-8px_32px_rgba(27,21,48,0.18)] ${
+          dragY ? '' : 'transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] motion-reduce:transition-none'
+        }`}
+      >
+        {/* Handle + title: drag here to swipe the sheet down */}
         <div
-          style={dragY ? { transform: `translateY(${dragY}px)` } : undefined}
-          className={`pointer-events-auto relative flex max-h-[80dvh] w-full max-w-[576px] flex-col overflow-hidden rounded-t-[28px] bg-white shadow-[0_-8px_32px_rgba(27,21,48,0.18)] ${
-            dragY ? '' : 'transition-[translate] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] motion-reduce:transition-none'
-          } ${shown ? 'translate-y-0' : 'translate-y-full'}`}
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerEnd}
+          onPointerCancel={onPointerEnd}
+          className="shrink-0 touch-none select-none"
         >
-          {/* Handle + title: drag here to swipe the sheet down */}
-          <div
-            onPointerDown={onPointerDown}
-            onPointerMove={onPointerMove}
-            onPointerUp={onPointerEnd}
-            onPointerCancel={onPointerEnd}
-            className="shrink-0 touch-none select-none"
-          >
-            <div className="flex justify-center pt-2.5 pb-0.5">
-              <span className="h-[5px] w-10 rounded-full bg-line-strong" />
-            </div>
-            {header}
+          <div className="flex justify-center pt-2.5 pb-0.5">
+            <span className="h-[5px] w-10 rounded-full bg-line-strong" />
           </div>
-
-          <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
-            {children}
-            {/* Fades the text out above the actions while there is more to scroll */}
-            <div aria-hidden className="pointer-events-none sticky bottom-0 -mt-10 h-10 bg-linear-to-t from-white to-white/0" />
-          </div>
-
-          {footer}
+          {header}
         </div>
+
+        <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+          {children}
+          {/* Fades the text out above the actions while there is more to scroll */}
+          <div aria-hidden className="pointer-events-none sticky bottom-0 -mt-10 h-10 bg-linear-to-t from-white to-white/0" />
+        </div>
+
+        {footer}
       </div>
     </dialog>
   );
