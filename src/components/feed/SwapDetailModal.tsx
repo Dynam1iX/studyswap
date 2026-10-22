@@ -78,11 +78,10 @@ function SwapDetailBody({ post }: { post: FeedPost }) {
       <div className="relative grid grid-cols-2 gap-6">
         <SwapHalf label="Can teach" subject={post.offered} />
         <SwapHalf label="Needs help" subject={post.needed} />
-        <img
-          src="/exchangeicon.svg"
-          alt=""
-          className="pointer-events-none absolute top-1/2 left-1/2 size-10 -translate-x-1/2 -translate-y-1/2 rounded-full ring-4 ring-white"
-        />
+        {/* White disc behind the icon so no subject colour shows at its edge */}
+        <span className="pointer-events-none absolute top-1/2 left-1/2 flex size-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white">
+          <img src="/exchangeicon.svg" alt="" className="size-10" />
+        </span>
       </div>
 
       <TextBlock title="What they can teach" text={post.offered_description} />

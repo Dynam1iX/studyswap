@@ -56,7 +56,7 @@ export default function ProfilePage() {
   const notReadyYet = () => {};
 
   return (
-    <MobileShell>
+    <MobileShell footer={<BottomNav active="profile" />}>
       <AppHeader />
 
       {/* 16px sides, 8px top and bottom, 16px between blocks. */}
@@ -140,7 +140,6 @@ export default function ProfilePage() {
         )}
       </div>
 
-      <BottomNav active="profile" />
     </MobileShell>
   );
 }

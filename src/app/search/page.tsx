@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { SwapDetailModal } from '@/components/feed/SwapDetailModal';
 import { AppHeader } from '@/components/layout/AppHeader';
 import { BottomNav } from '@/components/layout/BottomNav';
-import { MobileShell } from '@/components/layout/MobileShell';
+import { MobileShell, scrollAppToTop } from '@/components/layout/MobileShell';
 import { CategoryGrid } from '@/components/search/CategoryGrid';
 import { FilterBar, type FilterKind } from '@/components/search/FilterBar';
 import { FilterSheet } from '@/components/search/FilterSheet';
@@ -107,7 +107,7 @@ function SearchView() {
 
   const applyFilters = useCallback((next: SearchFilters) => {
     window.history.pushState(null, '', `/search${filtersToSearch(next)}`);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    scrollAppToTop();
   }, []);
 
   const submitSearch = (query: string) => {
@@ -218,12 +218,11 @@ function SearchView() {
 
 export default function SearchPage() {
   return (
-    <MobileShell>
+    <MobileShell footer={<BottomNav active="search" />}>
       <AppHeader />
       <Suspense>
         <SearchView />
       </Suspense>
-      <BottomNav active="search" />
     </MobileShell>
   );
 }
