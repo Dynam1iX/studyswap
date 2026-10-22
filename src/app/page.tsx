@@ -52,7 +52,7 @@ export default function FeedPage() {
       : posts.filter((post) => post.needed?.id === selectedSubject || post.offered?.id === selectedSubject);
 
   return (
-    <MobileShell>
+    <MobileShell footer={<BottomNav active="feed" />}>
       <AppHeader />
       <div className="animate-rise motion-reduce:animate-none">
         <SubjectFilter subjects={subjects} value={selectedSubject} onChange={setSelectedSubject} />
@@ -90,7 +90,6 @@ export default function FeedPage() {
 
       <SwapDetailModal post={activeSwap} onClose={() => setActiveSwap(null)} />
 
-      <BottomNav active="feed" />
     </MobileShell>
   );
 }

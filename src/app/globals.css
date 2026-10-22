@@ -152,8 +152,12 @@
 
 html,
 body {
+  height: 100%;
   margin: 0;
   padding: 0;
+  /* Only #app-scroll scrolls (see MobileShell); the page itself stays put. */
+  overflow: hidden;
+  overscroll-behavior: none;
   background-color: var(--color-page);
   color: var(--color-ink);
   font-family: var(--font-montserrat);

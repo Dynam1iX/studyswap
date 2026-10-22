@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, type PointerEvent, type ReactNode } from 'react';
+import { APP_SCROLL_ID } from '@/components/layout/MobileShell';
 
 /** Must match the duration-300 transition below. */
 const EXIT_MS = 300;
@@ -8,43 +9,16 @@ const EXIT_MS = 300;
 const SWIPE_CLOSE_PX = 100;
 
 /**
- * Freezes the page under the sheet and returns a function that unfreezes it.
- *
- * `overflow: hidden` on <html> is enough on desktop, but iOS Safari still scrolls
- * the page on touch, and the open sheet moved up with it. Pinning <body> with
- * position: fixed at the current scroll offset stops that on every browser.
+ * Freezes the page content under the sheet and returns a function that unfreezes it.
+ * The document never scrolls (see MobileShell); only the #app-scroll area does.
  */
 function lockPageScroll(): () => void {
-  const { body, documentElement: html } = document;
-  const scrollY = window.scrollY;
-  const previous = {
-    htmlOverflow: html.style.overflow,
-    position: body.style.position,
-    top: body.style.top,
-    left: body.style.left,
-    right: body.style.right,
-    width: body.style.width,
-    overflow: body.style.overflow,
-  };
-
-  html.style.overflow = 'hidden';
-  body.style.position = 'fixed';
-  body.style.top = `-${scrollY}px`;
-  body.style.left = '0';
-  body.style.right = '0';
-  body.style.width = '100%';
-  body.style.overflow = 'hidden';
-
+  const scroller = document.getElementById(APP_SCROLL_ID);
+  if (!scroller) return () => {};
+  const previous = scroller.style.overflowY;
+  scroller.style.overflowY = 'hidden';
   return () => {
-    html.style.overflow = previous.htmlOverflow;
-    body.style.position = previous.position;
-    body.style.top = previous.top;
-    body.style.left = previous.left;
-    body.style.right = previous.right;
-    body.style.width = previous.width;
-    body.style.overflow = previous.overflow;
-    // Back to where the student was, without the smooth-scroll animation.
-    window.scrollTo({ top: scrollY, behavior: 'instant' });
+    scroller.style.overflowY = previous;
   };
 }
 

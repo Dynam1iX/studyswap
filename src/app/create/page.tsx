@@ -138,8 +138,32 @@ export default function CreateBarterPage() {
       : 'Please select a subject you can teach'
     : null;
 
+  const publishBar = (
+    <div className="border-t border-line bg-white px-4 pt-3 pb-5">
+      <button
+        type="button"
+        onClick={handleSubmit}
+        disabled={submitting || loadingSubjects || published}
+        className={`bubbly flex h-[56px] w-full cursor-pointer items-center justify-center gap-2 rounded-[16px] bg-linear-to-r from-brand-from to-brand-to text-[17px] font-bold text-white shadow-[0_8px_20px_rgba(200,40,140,0.28)] transition hover:opacity-95 active:scale-[0.97] disabled:cursor-default ${
+          published ? '' : 'disabled:opacity-50'
+        } ${bubbling ? 'bubbly-animate' : ''}`}
+      >
+        {published ? (
+          <span className="flex animate-pop items-center gap-2 motion-reduce:animate-none">
+            <Check className="size-5" strokeWidth={3} />
+            Published!
+          </span>
+        ) : submitting ? (
+          'Publishing offer...'
+        ) : (
+          'Publish Barter Offer'
+        )}
+      </button>
+    </div>
+  );
+
   return (
-    <MobileShell bottomPadding="action-bar">
+    <MobileShell footer={publishBar}>
       <AppHeader />
       <CreateNavBar />
 
@@ -240,28 +264,6 @@ export default function CreateBarterPage() {
         </div>
       </div>
 
-      {/* Publish bar */}
-      <div className="fixed bottom-0 left-1/2 z-50 w-full max-w-[576px] -translate-x-1/2 border-t border-line bg-white px-4 pt-3 pb-5">
-        <button
-          type="button"
-          onClick={handleSubmit}
-          disabled={submitting || loadingSubjects || published}
-          className={`bubbly flex h-[56px] w-full cursor-pointer items-center justify-center gap-2 rounded-[16px] bg-linear-to-r from-brand-from to-brand-to text-[17px] font-bold text-white shadow-[0_8px_20px_rgba(200,40,140,0.28)] transition hover:opacity-95 active:scale-[0.97] disabled:cursor-default ${
-            published ? '' : 'disabled:opacity-50'
-          } ${bubbling ? 'bubbly-animate' : ''}`}
-        >
-          {published ? (
-            <span className="flex animate-pop items-center gap-2 motion-reduce:animate-none">
-              <Check className="size-5" strokeWidth={3} />
-              Published!
-            </span>
-          ) : submitting ? (
-            'Publishing offer...'
-          ) : (
-            'Publish Barter Offer'
-          )}
-        </button>
-      </div>
     </MobileShell>
   );
 }
