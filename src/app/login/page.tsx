@@ -4,23 +4,28 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { ArrowLeft, Loader2, MailCheck } from 'lucide-react';
 import { CodeInput } from '@/components/auth/CodeInput';
 import { HeroCard } from '@/components/auth/HeroCard';
+import { MicrosoftLogo } from '@/components/auth/MicrosoftLogo';
 import { AppHeader } from '@/components/layout/AppHeader';
 import { MobileShell } from '@/components/layout/MobileShell';
-import { Toast, useToast } from '@/components/ui/Toast';
-import { RESEND_SECONDS, STUDENT_EMAIL_RE, sendCode, verifyCode } from '@/lib/auth';
+import {
+  RESEND_SECONDS,
+  STUDENT_EMAIL_RE,
+  sendCode,
+  signInWithMicrosoft,
+  takeRedirectError,
+  verifyCode,
+} from '@/lib/auth';
 import { useReplay } from '@/lib/useReplay';
 
 const HEADLINE = 'Trade what you know for what you need.';
 
-function MicrosoftLogo() {
-  return (
-    <svg aria-hidden viewBox="0 0 21 21" className="size-5 shrink-0">
-      <rect x="0" y="0" width="10" height="10" fill="#F25022" />
-      <rect x="11" y="0" width="10" height="10" fill="#7FBA00" />
-      <rect x="0" y="11" width="10" height="10" fill="#00A4EF" />
-      <rect x="11" y="11" width="10" height="10" fill="#FFB900" />
-    </svg>
-  );
+/** Error from a failed Microsoft sign-in, read from the address once per page load. */
+let redirectError: string | null | undefined;
+function initialRedirectError(): string | null {
+  // The page renders only in the browser (behind the AuthGate splash).
+  if (typeof window === 'undefined') return null;
+  if (redirectError === undefined) redirectError = takeRedirectError();
+  return redirectError;
 }
 
 /** The headline, word by word. */
@@ -50,7 +55,32 @@ export default function LoginPage() {
   const [shake, setShake] = useState(0);
   const [resendIn, setResendIn] = useState(0);
   const [bubbling, bubble] = useReplay(700);
-  const { toast, show: showToast, hide: hideToast } = useToast();
+  /** Leaving for the Microsoft sign-in page. */
+  const [msBusy, setMsBusy] = useState(false);
+  const [msError, setMsError] = useState<string | null>(initialRedirectError);
+
+  useEffect(() => {
+    redirectError = undefined;
+    // Back button from the Microsoft page: the browser restores this page as it was.
+    const onPageShow = (event: PageTransitionEvent) => {
+      if (event.persisted) setMsBusy(false);
+    };
+    window.addEventListener('pageshow', onPageShow);
+    return () => window.removeEventListener('pageshow', onPageShow);
+  }, []);
+
+  const continueWithMicrosoft = async () => {
+    if (msBusy) return;
+    setMsBusy(true);
+    setMsError(null);
+    try {
+      await signInWithMicrosoft();
+      // The browser is now leaving for Microsoft; the button keeps animating until then.
+    } catch (err: unknown) {
+      setMsError(err instanceof Error ? err.message : 'Could not open Microsoft sign-in');
+      setMsBusy(false);
+    }
+  };
 
   useEffect(() => {
     if (resendIn <= 0) return;
@@ -101,14 +131,8 @@ export default function LoginPage() {
     }
   };
 
-  const footer = (
-    <div className="relative">
-      <Toast toast={toast} onHide={hideToast} />
-    </div>
-  );
-
   return (
-    <MobileShell footer={footer}>
+    <MobileShell>
       <AppHeader />
 
       {/* 16px sides, 8px top and bottom, 16px between blocks. */}
@@ -172,12 +196,25 @@ export default function LoginPage() {
               <div className="h-px bg-line-strong" />
               <button
                 type="button"
-                onClick={() => showToast('Microsoft sign-in is coming soon')}
-                className="flex h-12 cursor-pointer items-center justify-center gap-2.5 rounded-xl border border-line-strong bg-white text-base font-semibold text-ink transition hover:bg-soft active:scale-[0.98]"
+                onClick={() => void continueWithMicrosoft()}
+                disabled={msBusy}
+                aria-busy={msBusy}
+                className={`flex h-12 cursor-pointer items-center justify-center gap-2.5 rounded-xl border bg-white text-base font-semibold text-ink transition-[background-color,border-color,transform] hover:bg-soft active:scale-[0.98] disabled:cursor-default ${
+                  msBusy ? 'scale-[0.98] border-brand-from' : 'border-line-strong'
+                }`}
               >
-                <MicrosoftLogo />
-                Login with Microsoft
+                <MicrosoftLogo loading={msBusy} />
+                {msBusy ? 'Opening Microsoft…' : 'Login with Microsoft'}
               </button>
+              {msError && (
+                <p
+                  key={msError}
+                  role="alert"
+                  className="animate-shake rounded-xl border border-red-300 bg-red-50 p-3 text-sm font-semibold text-red-700 motion-reduce:animate-none"
+                >
+                  {msError}
+                </p>
+              )}
             </div>
           </>
         ) : (

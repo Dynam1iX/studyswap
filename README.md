@@ -25,8 +25,8 @@ npm run dev                  # http://localhost:3000
 src/
   app/                    Pages (one folder per route)
     page.tsx              /         Feed
-    login/                /login    Sign in with a code sent to the university e-mail
-    welcome/              /welcome  Complete your profile (first sign-in)
+    login/                /login    Sign in: code to the university e-mail, or Microsoft (AITU accounts)
+    welcome/              /welcome  Complete your profile (first sign-in; Microsoft fills in the name)
     create/               /create   Create a barter offer
     profile/              /profile  Student profile; profile/edit: Telegram + student details
     search/               /search   Search: categories, filters, recent searches, results
@@ -46,7 +46,7 @@ src/
     favorites.ts          Likes: Supabase functions + useFavoriteIds (shared by Feed and Search)
     avatar.ts             Profile photos: crop to 256×256 WebP/JPEG, upload, public URL
     format.ts             Small text helpers (initials, short names)
-    auth.ts               Sign-in: e-mail codes, current student, complete profile
+    auth.ts               Sign-in: e-mail codes, Microsoft, current student, complete profile
   types/
     database.ts           Row types of the Supabase tables
 public/                   Logo and icons
