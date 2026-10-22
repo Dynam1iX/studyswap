@@ -13,6 +13,7 @@ Every change to the database lives in `migrations/` as a numbered SQL file, so t
 | `20261020194600_phase1c_cleanup.sql` | Restores phase 1b, keeping the `public_read_*` policies (the only read policies after the reset) | Applied (SQL Editor) |
 | `20261022120000_search_history.sql` | Recent searches: `search_history` table + `get/add/delete_recent_search(es)`, `clear_recent_searches` | Applied (SQL Editor) |
 | `20261022140000_favorites.sql` | Likes: `favorites` table + `get_favorites`, `add_favorite`, `remove_favorite` | Applied (SQL Editor) |
+| `20261022180000_avatars.sql` | Storage bucket `avatars` (own-folder policies), `users.avatar_path`, `set_my_avatar`, `remove_my_avatar` | Applied (SQL Editor) |
 | `20261022160000_profile_settings.sql` | `users.telegram_visibility`; `get_my_cards`, `update_my_card`, `set_my_card_status`, `delete_my_card`, `set_telegram_visibility`, `export_my_data` | Applied (SQL Editor) |
 
 ### Never re-run the setup script
@@ -49,6 +50,7 @@ Supabase asks for confirmation before destructive statements (`DROP`, `DELETE`).
 - Visitors can create active cards only (temporary, until sign-in); they cannot update, delete or create users
 - The API roles have no `TRUNCATE`, `TRIGGER` or `REFERENCES` rights; only admins edit the subject catalogue
 - A student's own cards (any status), card edits, Telegram visibility and the data export go through `SECURITY DEFINER` functions limited to the current student
+- Profile photos: anyone can view them; a student can add, replace or delete files only in `avatars/<own id>/` (WebP/JPEG, max 512 KB)
 - `search_history` and `favorites` have no table rights for the API roles; it is reached only through `SECURITY DEFINER` functions that act on the current student (the Supabase advisor flags these as callable without sign-in: intended until phase 2)
 
 ## Roadmap

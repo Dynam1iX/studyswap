@@ -1,3 +1,4 @@
+import { avatarUrl } from '@/lib/avatar';
 import { CURRENT_USER_EMAIL } from '@/lib/currentUser';
 import { getInitials, getShortName } from '@/lib/format';
 import { supabase } from '@/lib/supabase';
@@ -35,6 +36,10 @@ export interface ProfileUser {
   /** Without the leading "@"; null when the student has not linked Telegram. */
   telegramHandle: string | null;
   telegramVisibility: TelegramVisibility;
+  /** Storage path of the photo, or null. */
+  avatarPath: string | null;
+  /** Public URL of the photo, or null for initials. */
+  avatarUrl: string | null;
 }
 
 export interface ProfileStats {
@@ -54,7 +59,7 @@ export interface ProfileData {
 
 type UserRow = Pick<
   User,
-  'id' | 'full_name' | 'email' | 'telegram_handle' | 'telegram_visibility' | 'major' | 'study_year' | 'degree_level'
+  'id' | 'full_name' | 'email' | 'telegram_handle' | 'telegram_visibility' | 'major' | 'study_year' | 'degree_level' | 'avatar_path'
 >;
 
 /** A row of get_my_cards(). */
@@ -96,7 +101,7 @@ function uniqueSubjects(subjects: ProfileSubject[]): ProfileSubject[] {
 export async function fetchProfile(email: string = CURRENT_USER_EMAIL): Promise<ProfileData | null> {
   const { data: userData, error: userError } = await supabase
     .from('users')
-    .select('id, full_name, email, telegram_handle, telegram_visibility, major, study_year, degree_level')
+    .select('id, full_name, email, telegram_handle, telegram_visibility, major, study_year, degree_level, avatar_path')
     .eq('email', email)
     .maybeSingle();
 
@@ -155,6 +160,8 @@ export async function fetchProfile(email: string = CURRENT_USER_EMAIL): Promise<
       studyYear: toStudyYear(userRow.study_year),
       telegramHandle: userRow.telegram_handle?.replace(/^@/, '') || null,
       telegramVisibility: userRow.telegram_visibility === 'accepted' ? 'accepted' : 'everyone',
+      avatarPath: userRow.avatar_path ?? null,
+      avatarUrl: avatarUrl(userRow.avatar_path),
     },
     stats: {
       swapsDone: swapsDone ?? 0,

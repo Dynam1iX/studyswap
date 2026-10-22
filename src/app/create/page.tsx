@@ -10,6 +10,7 @@ import { SubjectSelect } from '@/components/create/SubjectSelect';
 import { TopicsField } from '@/components/create/TopicsField';
 import { AppHeader } from '@/components/layout/AppHeader';
 import { MobileShell } from '@/components/layout/MobileShell';
+import { avatarUrl } from '@/lib/avatar';
 import { paletteFor } from '@/lib/categoryPalette';
 import { createBarterPost, fetchCreateFormData } from '@/lib/create';
 import { formatStudyInfo, getInitials, getShortName } from '@/lib/format';
@@ -56,6 +57,7 @@ export default function CreateBarterPage() {
   const [authorId, setAuthorId] = useState('');
   /** Telegram is offered as a contact method only when the author has linked it. */
   const [hasTelegram, setHasTelegram] = useState(false);
+  const [authorAvatar, setAuthorAvatar] = useState<string | null>(null);
   const [authorName, setAuthorName] = useState('Alzhan Y.');
   const [authorSubtitle, setAuthorSubtitle] = useState('Software Engineering, Year 1');
 
@@ -68,6 +70,7 @@ export default function CreateBarterPage() {
         if (author) {
           setAuthorId(author.id);
           setHasTelegram(Boolean(author.telegram_handle));
+          setAuthorAvatar(avatarUrl(author.avatar_path));
           setAuthorName(getShortName(author.full_name));
           setAuthorSubtitle(formatStudyInfo(author.major, author.study_year));
         }
@@ -242,7 +245,7 @@ export default function CreateBarterPage() {
       <div style={{ animationDelay: '140ms' }} className="animate-rise px-4 pt-4 pb-2 motion-reduce:animate-none">
         <h2 className="mb-2.5 text-[11px] font-bold tracking-[0.88px] text-muted uppercase">Preview in feed</h2>
         <BarterCard
-          author={{ initials: getInitials(authorName), name: authorName, subtitle: authorSubtitle }}
+          author={{ initials: getInitials(authorName), avatarUrl: authorAvatar, name: authorName, subtitle: authorSubtitle }}
           needs={previewHalf(neededSubject, neededDetails, 'Topics you need help with...')}
           teaches={previewHalf(offeredSubject, offeredDetails, 'Topics you can teach...')}
           contactMethod={contactMethod}

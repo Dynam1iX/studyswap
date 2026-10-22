@@ -41,6 +41,7 @@ src/
     categoryPalette.ts    Colours for each subject category (the only place they live)
     search.ts             Search filters, AITU programs, recent-search functions
     favorites.ts          Likes: Supabase functions + useFavoriteIds (shared by Feed and Search)
+    avatar.ts             Profile photos: crop to 256×256 WebP/JPEG, upload, public URL
     format.ts             Small text helpers (initials, short names)
   types/
     database.ts           Row types of the Supabase tables

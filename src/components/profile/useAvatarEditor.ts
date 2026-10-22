@@ -1,0 +1,66 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { avatarUrl, removeAvatar, uploadAvatar, type PreparedAvatar } from '@/lib/avatar';
+
+interface AvatarOwner {
+  id: string;
+  avatarPath: string | null;
+}
+
+interface UseAvatarEditorOptions {
+  /** Called with the new path (or null) once the database has it. */
+  onChange: (avatarPath: string | null) => void;
+  /** Short message for the page's toast. */
+  notify: (message: string) => void;
+}
+
+/**
+ * Photo editing shared by Profile and Edit profile. Saving closes the sheet at once
+ * and shows the new photo straight away with a spinning ring while it uploads; if the
+ * upload fails the old photo comes back and a toast says so.
+ */
+export function useAvatarEditor(user: AvatarOwner | null, { onChange, notify }: UseAvatarEditorOptions) {
+  const [open, setOpen] = useState(false);
+  const [busy, setBusy] = useState(false);
+  /** Local preview of the photo being uploaded. */
+  const [pendingUrl, setPendingUrl] = useState<string | null>(null);
+
+  useEffect(
+    () => () => {
+      if (pendingUrl) URL.revokeObjectURL(pendingUrl);
+    },
+    [pendingUrl],
+  );
+
+  const save = async (avatar: PreparedAvatar) => {
+    if (!user) return;
+    setOpen(false);
+    setBusy(true);
+    setPendingUrl(URL.createObjectURL(avatar.blob));
+    try {
+      const path = await uploadAvatar(user.id, avatar, user.avatarPath);
+      onChange(path);
+      notify('Photo updated');
+    } catch (err: unknown) {
+      console.error('Error uploading the photo:', err);
+      notify('Could not upload the photo. Try again.');
+    } finally {
+      setPendingUrl(null);
+      setBusy(false);
+    }
+  };
+
+  const remove = async () => {
+    if (!user) return;
+    await removeAvatar(user.avatarPath);
+    onChange(null);
+    setOpen(false);
+    notify('Photo removed');
+  };
+
+  /** What the avatar shows right now: the uploading preview, else the saved photo. */
+  const displayUrl = pendingUrl ?? avatarUrl(user?.avatarPath);
+
+  return { open, setOpen, busy, save, remove, displayUrl };
+}

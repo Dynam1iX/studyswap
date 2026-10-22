@@ -3,7 +3,7 @@ import type { BarterPost, ContactMethod, Subject, User } from '@/types/database'
 
 export type FeedAuthor = Pick<
   User,
-  'id' | 'full_name' | 'email' | 'telegram_handle' | 'telegram_visibility' | 'role' | 'major' | 'study_year'
+  'id' | 'full_name' | 'email' | 'telegram_handle' | 'telegram_visibility' | 'role' | 'major' | 'study_year' | 'avatar_path'
 >;
 
 /** One active barter post with its subjects and author, as the Feed shows it. */
@@ -28,7 +28,7 @@ export const FEED_POST_SELECT = `
         created_at,
         needed:subjects!barter_posts_needed_subject_id_fkey(id, code, name, category, department),
         offered:subjects!barter_posts_offered_subject_id_fkey(id, code, name, category, department),
-        author:users!barter_posts_author_id_fkey(id, full_name, email, telegram_handle, telegram_visibility, role, major, study_year)
+        author:users!barter_posts_author_id_fkey(id, full_name, email, telegram_handle, telegram_visibility, role, major, study_year, avatar_path)
       `;
 
 /** Active posts (newest first) and the subject catalogue for the filter chips. */
