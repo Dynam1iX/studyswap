@@ -27,6 +27,7 @@ import {
   type ProfileCard,
   type ProfileData,
 } from '@/lib/profile';
+import { signOut } from '@/lib/auth';
 import { avatarUrl } from '@/lib/avatar';
 import type { TelegramVisibility } from '@/types/database';
 
@@ -84,8 +85,16 @@ export default function ProfilePage() {
       ),
   });
 
-  // Telegram linking and sign-out arrive with Microsoft sign-in and the Telegram bot.
-  const afterSignIn = () => showToast('Available after sign-in');
+  const [loggingOut, setLoggingOut] = useState(false);
+  const logOut = async () => {
+    setLoggingOut(true);
+    await signOut();
+    // A full load clears every page Next.js keeps alive in the background.
+    window.location.assign('/login');
+  };
+
+  // Telegram linking arrives with the Telegram bot.
+  const telegramSoon = () => showToast('Telegram linking is coming soon');
 
   const saveCard = async (card: ProfileCard, changes: CardChanges) => {
     if (changes.neededTopic !== card.neededTopic || changes.offeredTopic !== card.offeredTopic) {
@@ -165,7 +174,7 @@ export default function ProfilePage() {
                 user={{ ...state.data.user, avatarUrl: avatar.displayUrl }}
                 onEditAvatar={() => avatar.setOpen(true)}
                 avatarBusy={avatar.busy}
-                onLinkTelegram={afterSignIn}
+                onLinkTelegram={telegramSoon}
               />
             </Rise>
             <Rise index={1}>
@@ -200,11 +209,12 @@ export default function ProfilePage() {
 
             <button
               type="button"
-              onClick={afterSignIn}
+              onClick={logOut}
+              disabled={loggingOut}
               style={{ animationDelay: '420ms' }}
               className="flex h-14 animate-rise cursor-pointer items-center justify-center gap-2 rounded-2xl border border-[#F2C6D4] bg-white text-base font-extrabold text-[#C0264B] transition hover:bg-[#FFF5F8] active:scale-[0.98] motion-reduce:animate-none"
             >
-              <LogOut className="size-4" />
+              {loggingOut ? <Loader2 className="size-4 animate-spin" /> : <LogOut className="size-4" />}
               Log out
             </button>
           </>

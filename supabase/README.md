@@ -13,6 +13,7 @@ Every change to the database lives in `migrations/` as a numbered SQL file, so t
 | `20261020194600_phase1c_cleanup.sql` | Restores phase 1b, keeping the `public_read_*` policies (the only read policies after the reset) | Applied (SQL Editor) |
 | `20261022120000_search_history.sql` | Recent searches: `search_history` table + `get/add/delete_recent_search(es)`, `clear_recent_searches` | Applied (SQL Editor) |
 | `20261022140000_favorites.sql` | Likes: `favorites` table + `get_favorites`, `add_favorite`, `remove_favorite` | Applied (SQL Editor) |
+| `20261022200000_sign_in.sql` | Only `6 digits@astanait.edu.kz` can sign up (trigger on `auth.users`); `complete_my_profile`; signed-in students never fall back to the demo account | Applied (SQL Editor) |
 | `20261022180000_avatars.sql` | Storage bucket `avatars` (own-folder policies), `users.avatar_path`, `set_my_avatar`, `remove_my_avatar` | Applied (SQL Editor) |
 | `20261022160000_profile_settings.sql` | `users.telegram_visibility`; `get_my_cards`, `update_my_card`, `set_my_card_status`, `delete_my_card`, `set_telegram_visibility`, `export_my_data` | Applied (SQL Editor) |
 

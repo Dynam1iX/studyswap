@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
+import { AuthGate } from '@/components/auth/AuthGate';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -29,7 +30,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           rel="stylesheet"
         />
       </head>
-      <body className="bg-page text-ink antialiased">{children}</body>
+      <body className="bg-page text-ink antialiased">
+        <AuthGate>{children}</AuthGate>
+      </body>
     </html>
   );
 }
