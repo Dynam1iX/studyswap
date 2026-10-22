@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { Loader2, LogOut, Pencil } from 'lucide-react';
 import { AppHeader } from '@/components/layout/AppHeader';
 import { BottomNav } from '@/components/layout/BottomNav';
@@ -17,6 +17,15 @@ type LoadState =
   | { status: 'error'; message: string }
   | { status: 'not-found' }
   | { status: 'ready'; data: ProfileData };
+
+/** Fades a block in, each one a little after the previous. */
+function Rise({ index, children }: { index: number; children: ReactNode }) {
+  return (
+    <div style={{ animationDelay: `${index * 70}ms` }} className="animate-rise motion-reduce:animate-none">
+      {children}
+    </div>
+  );
+}
 
 function SectionTitle({ children }: { children: string }) {
   return <h2 className="font-bricolage text-lg font-extrabold text-ink">{children}</h2>;
@@ -53,7 +62,7 @@ export default function ProfilePage() {
       {/* 16px sides, 8px top and bottom, 16px between blocks. */}
       <div className="flex flex-col gap-4 px-4 py-2">
         <div className="flex items-center justify-between">
-          <h1 className="font-bricolage text-2xl font-extrabold text-ink">Profile</h1>
+          <h1 className="animate-rise font-bricolage text-2xl font-extrabold text-ink motion-reduce:animate-none">Profile</h1>
           <button
             type="button"
             onClick={notReadyYet}
@@ -85,12 +94,20 @@ export default function ProfilePage() {
 
         {state.status === 'ready' && (
           <>
-            <ProfileHeaderCard user={state.data.user} onEditAvatar={notReadyYet} />
-            <StatsRow stats={state.data.stats} />
-            <SubjectChipList title="I need help with" subjects={state.data.needsHelp} emptyText="Nothing yet" />
-            <SubjectChipList title="I can teach" subjects={state.data.canTeach} emptyText="Nothing yet" />
+            <Rise index={0}>
+              <ProfileHeaderCard user={state.data.user} onEditAvatar={notReadyYet} />
+            </Rise>
+            <Rise index={1}>
+              <StatsRow stats={state.data.stats} />
+            </Rise>
+            <Rise index={2}>
+              <SubjectChipList title="I need help with" subjects={state.data.needsHelp} emptyText="Nothing yet" />
+            </Rise>
+            <Rise index={3}>
+              <SubjectChipList title="I can teach" subjects={state.data.canTeach} emptyText="Nothing yet" />
+            </Rise>
 
-            <section className="flex flex-col gap-4">
+            <section style={{ animationDelay: '280ms' }} className="flex animate-rise flex-col gap-4 motion-reduce:animate-none">
               <SectionTitle>My cards</SectionTitle>
               {state.data.cards.length > 0 ? (
                 <ul className="flex flex-col gap-4">
@@ -105,7 +122,7 @@ export default function ProfilePage() {
               )}
             </section>
 
-            <section className="flex flex-col gap-4">
+            <section style={{ animationDelay: '350ms' }} className="flex animate-rise flex-col gap-4 motion-reduce:animate-none">
               <SectionTitle>Settings</SectionTitle>
               <SettingsPanel language={language} onLanguageChange={setLanguage} onOpenNotifications={notReadyYet} />
             </section>
@@ -113,7 +130,8 @@ export default function ProfilePage() {
             <button
               type="button"
               onClick={notReadyYet}
-              className="flex h-14 cursor-pointer items-center justify-center gap-2 rounded-2xl border border-[#F2C6D4] bg-white text-base font-extrabold text-[#C0264B] transition hover:bg-[#FFF5F8]"
+              style={{ animationDelay: '420ms' }}
+              className="flex h-14 animate-rise cursor-pointer items-center justify-center gap-2 rounded-2xl border border-[#F2C6D4] bg-white text-base font-extrabold text-[#C0264B] transition hover:bg-[#FFF5F8] active:scale-[0.98] motion-reduce:animate-none"
             >
               <LogOut className="size-4" />
               Log out

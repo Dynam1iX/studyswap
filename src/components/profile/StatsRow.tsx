@@ -1,5 +1,6 @@
 import { Star } from 'lucide-react';
 import type { ReactNode } from 'react';
+import { CountUp } from '@/components/ui/CountUp';
 import type { ProfileStats } from '@/lib/profile';
 
 interface StatTileProps {
@@ -23,7 +24,7 @@ export function StatsRow({ stats }: { stats: ProfileStats }) {
 
   return (
     <div className="grid grid-cols-3 gap-2.5">
-      <StatTile value={stats.swapsDone} label="Swaps done" />
+      <StatTile value={<CountUp value={stats.swapsDone} />} label="Swaps done" />
       <StatTile
         value={
           rating ? (
@@ -37,7 +38,7 @@ export function StatsRow({ stats }: { stats: ProfileStats }) {
         }
         label={rating ? `${rating.count} ratings` : 'No ratings yet'}
       />
-      <StatTile value={stats.activeCards} label="Active cards" />
+      <StatTile value={<CountUp value={stats.activeCards} />} label="Active cards" />
     </div>
   );
 }

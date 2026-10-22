@@ -26,7 +26,11 @@ const RIGHT_TABS: TabConfig[] = [
 function NavTabItem({ config, active }: { config: TabConfig; active: boolean }) {
   const content = (
     <>
-      <img src={active ? config.activeIcon : config.icon} alt={config.label} className="size-[22px]" />
+      <img
+        src={active ? config.activeIcon : config.icon}
+        alt={config.label}
+        className={`size-[22px] ${active ? 'animate-nav-bounce motion-reduce:animate-none' : ''}`}
+      />
       <span
         className={`text-[11px] font-semibold ${
           active ? 'bg-linear-to-r from-brand-from to-brand-to bg-clip-text text-transparent' : 'text-muted'
@@ -54,7 +58,7 @@ function NavTabItem({ config, active }: { config: TabConfig; active: boolean }) 
   }
 
   return (
-    <Link href={config.href} className="flex w-12 flex-col items-center gap-1 text-center select-none">
+    <Link href={config.href} className="flex w-12 flex-col items-center gap-1 text-center transition-transform select-none active:scale-90">
       {content}
     </Link>
   );
@@ -72,9 +76,12 @@ export function BottomNav({ active }: { active: NavTab }) {
         <Link
           href="/create"
           aria-label="Create barter card"
-          className="absolute -top-5 flex size-[58px] cursor-pointer items-center justify-center rounded-full border-4 border-white bg-linear-135 from-[#A23BF5] to-[#E5237F] text-white shadow-[0_8px_20px_rgba(200,40,140,0.35)] transition hover:scale-105 active:scale-95"
+          className="halo group absolute -top-5 flex size-[58px] cursor-pointer items-center justify-center rounded-full border-4 border-white bg-linear-135 from-[#A23BF5] to-[#E5237F] text-white shadow-[0_8px_20px_rgba(200,40,140,0.35)] transition hover:scale-105 active:scale-95"
         >
-          <Plus className="size-7" strokeWidth={2.5} />
+          <Plus
+            className="size-7 transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:rotate-90 group-active:rotate-90"
+            strokeWidth={2.5}
+          />
         </Link>
       </div>
 

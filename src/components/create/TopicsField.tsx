@@ -9,7 +9,14 @@ interface TopicsFieldProps {
   shakeKey: number;
 }
 
+/** Counter colour as the text gets close to the limit. */
+const COUNTER_COLOR = { ok: 'text-muted', near: 'text-amber-600', max: 'text-danger' } as const;
+
 export function TopicsField({ label, placeholder, value, onChange, error, shakeKey }: TopicsFieldProps) {
+  // The counter trembles once when it enters "near" (130+) and again at the limit.
+  const counterLevel: keyof typeof COUNTER_COLOR =
+    value.length >= TOPICS_MAX_LENGTH ? 'max' : value.length >= TOPICS_MAX_LENGTH - 20 ? 'near' : 'ok';
+
   return (
     <div key={shakeKey} className={`space-y-1.5 pt-1 transition ${error ? 'animate-shake' : ''}`}>
       <label className="block text-[14px] font-bold text-ink">
@@ -26,7 +33,12 @@ export function TopicsField({ label, placeholder, value, onChange, error, shakeK
             error ? 'border-danger ring-2 ring-red-100' : 'border-field focus:border-brand-from'
           }`}
         />
-        <span className="absolute right-3 bottom-2 text-[12px] font-semibold text-muted select-none">
+        <span
+          key={counterLevel}
+          className={`absolute right-3 bottom-2 text-[12px] font-semibold transition-colors duration-300 select-none ${
+            COUNTER_COLOR[counterLevel]
+          } ${counterLevel === 'ok' ? '' : 'animate-tremble motion-reduce:animate-none'}`}
+        >
           {value.length} / {TOPICS_MAX_LENGTH}
         </span>
       </div>

@@ -25,6 +25,52 @@
   --animate-wiggle: wiggle 0.5s ease-in-out;
   --animate-float: float 3s ease-in-out infinite;
   --animate-shimmer: shimmer 1.4s linear infinite;
+  --animate-heart-pop: heart-pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+  --animate-nav-bounce: nav-bounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  --animate-tremble: tremble 0.3s ease-in-out;
+
+  @keyframes heart-pop {
+    0% {
+      transform: scale(1);
+    }
+    35% {
+      transform: scale(1.4);
+    }
+    65% {
+      transform: scale(0.88);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  @keyframes nav-bounce {
+    0% {
+      transform: translateY(0) scale(1);
+    }
+    35% {
+      transform: translateY(-6px) scale(1.12);
+    }
+    65% {
+      transform: translateY(1px) scale(0.96);
+    }
+    100% {
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes tremble {
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+    25% {
+      transform: translateX(-2px) rotate(-2deg);
+    }
+    75% {
+      transform: translateX(2px) rotate(2deg);
+    }
+  }
 
   @keyframes rise {
     from {
@@ -120,6 +166,194 @@ body {
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* ---------------------------------------------------------------------------
+ * Bubbly button: bubbles burst from the top and bottom edges.
+ * Add .bubbly to a button and toggle .bubbly-animate for 700ms (useReplay).
+ * ------------------------------------------------------------------------- */
+.bubbly {
+  position: relative;
+}
+
+.bubbly::before,
+.bubbly::after {
+  content: '';
+  position: absolute;
+  left: -20%;
+  z-index: -1;
+  display: none;
+  width: 140%;
+  height: 100%;
+  background-repeat: no-repeat;
+  pointer-events: none;
+}
+
+.bubbly::before {
+  top: -75%;
+  background-image:
+    radial-gradient(circle, var(--color-brand-from) 20%, transparent 20%),
+    radial-gradient(circle, transparent 20%, var(--color-brand-to) 20%, transparent 30%),
+    radial-gradient(circle, var(--color-brand-to) 20%, transparent 20%),
+    radial-gradient(circle, var(--color-brand-from) 20%, transparent 20%),
+    radial-gradient(circle, transparent 10%, var(--color-brand-from) 15%, transparent 20%),
+    radial-gradient(circle, var(--color-brand-to) 20%, transparent 20%),
+    radial-gradient(circle, var(--color-brand-from) 20%, transparent 20%),
+    radial-gradient(circle, var(--color-brand-to) 20%, transparent 20%),
+    radial-gradient(circle, var(--color-brand-from) 20%, transparent 20%);
+  background-size: 10% 10%, 20% 20%, 15% 15%, 20% 20%, 18% 18%, 10% 10%, 15% 15%, 10% 10%, 18% 18%;
+}
+
+.bubbly::after {
+  bottom: -75%;
+  background-image:
+    radial-gradient(circle, var(--color-brand-to) 20%, transparent 20%),
+    radial-gradient(circle, var(--color-brand-from) 20%, transparent 20%),
+    radial-gradient(circle, transparent 10%, var(--color-brand-to) 15%, transparent 20%),
+    radial-gradient(circle, var(--color-brand-from) 20%, transparent 20%),
+    radial-gradient(circle, var(--color-brand-to) 20%, transparent 20%),
+    radial-gradient(circle, var(--color-brand-from) 20%, transparent 20%),
+    radial-gradient(circle, var(--color-brand-to) 20%, transparent 20%);
+  background-size: 15% 15%, 20% 20%, 18% 18%, 20% 20%, 15% 15%, 10% 10%, 20% 20%;
+}
+
+.bubbly.bubbly-animate::before {
+  display: block;
+  animation: bubbly-top 0.75s ease-in-out forwards;
+}
+
+.bubbly.bubbly-animate::after {
+  display: block;
+  animation: bubbly-bottom 0.75s ease-in-out forwards;
+}
+
+@keyframes bubbly-top {
+  0% {
+    background-position: 5% 90%, 10% 90%, 10% 90%, 15% 90%, 25% 90%, 25% 90%, 40% 90%, 55% 90%, 70% 90%;
+  }
+  50% {
+    background-position: 0% 80%, 0% 20%, 10% 40%, 20% 0%, 30% 30%, 22% 50%, 50% 50%, 65% 20%, 90% 30%;
+  }
+  100% {
+    background-position: 0% 70%, 0% 10%, 10% 30%, 20% -10%, 30% 20%, 22% 40%, 50% 40%, 65% 10%, 90% 20%;
+    background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+  }
+}
+
+@keyframes bubbly-bottom {
+  0% {
+    background-position: 10% -10%, 30% 10%, 55% -10%, 70% -10%, 85% -10%, 70% -10%, 70% 0%;
+  }
+  50% {
+    background-position: 0% 80%, 20% 80%, 45% 60%, 60% 100%, 75% 70%, 95% 60%, 105% 0%;
+  }
+  100% {
+    background-position: 0% 90%, 20% 90%, 45% 70%, 60% 110%, 75% 80%, 95% 70%, 110% 10%;
+    background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+  }
+}
+
+/* The heart's version: a ring of the same bubbles around a small icon. */
+.bubbly-ring::before {
+  content: '';
+  position: absolute;
+  inset: -90%;
+  display: none;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  background-image:
+    radial-gradient(circle, var(--color-brand-from) 45%, transparent 50%),
+    radial-gradient(circle, var(--color-brand-to) 45%, transparent 50%),
+    radial-gradient(circle, var(--color-brand-from) 45%, transparent 50%),
+    radial-gradient(circle, var(--color-brand-to) 45%, transparent 50%),
+    radial-gradient(circle, var(--color-brand-from) 45%, transparent 50%),
+    radial-gradient(circle, var(--color-brand-to) 45%, transparent 50%),
+    radial-gradient(circle, var(--color-brand-from) 45%, transparent 50%),
+    radial-gradient(circle, var(--color-brand-to) 45%, transparent 50%);
+  background-size: 9% 9%, 7% 7%, 9% 9%, 7% 7%, 9% 9%, 7% 7%, 9% 9%, 7% 7%;
+  background-position: 50% 6%, 82% 18%, 94% 50%, 82% 82%, 50% 94%, 18% 82%, 6% 50%, 18% 18%;
+}
+
+.bubbly-ring.bubbly-animate::before {
+  display: block;
+  animation: bubbly-ring 0.6s ease-out forwards;
+}
+
+@keyframes bubbly-ring {
+  0% {
+    opacity: 1;
+    transform: scale(0.35);
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.1);
+  }
+}
+
+/* A light sweep that runs across a button every few seconds. */
+.shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.shine::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(105deg, transparent 35%, rgb(255 255 255 / 0.35) 50%, transparent 65%);
+  transform: translateX(-120%);
+  animation: shine 5s ease-in-out infinite;
+  animation-delay: var(--shine-delay, 1.5s);
+}
+
+@keyframes shine {
+  0% {
+    transform: translateX(-120%);
+  }
+  18%,
+  100% {
+    transform: translateX(120%);
+  }
+}
+
+/* A soft halo that breathes around the "+" button. */
+.halo::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  z-index: -1;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, var(--color-brand-from), var(--color-brand-to));
+  opacity: 0.35;
+  animation: halo 2.4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes halo {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: scale(1.18);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bubbly.bubbly-animate::before,
+  .bubbly.bubbly-animate::after,
+  .bubbly-ring.bubbly-animate::before,
+  .shine::after,
+  .halo::before {
+    display: none;
+    animation: none;
+  }
 }
 
 nextjs-portal,
