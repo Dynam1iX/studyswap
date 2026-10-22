@@ -19,6 +19,28 @@ export interface FeedData {
   subjects: Subject[];
 }
 
+/**
+ * Telegram handles are not readable from the users table; the database returns only
+ * the ones this student may see (see get_telegram_handles). Fills author.telegram_handle.
+ */
+export async function attachTelegramHandles(posts: FeedPost[]): Promise<FeedPost[]> {
+  const ids = [...new Set(posts.flatMap((post) => (post.author ? [post.author.id] : [])))];
+  if (ids.length === 0) return posts;
+  const handles = await fetchTelegramHandles(ids);
+  return posts.map((post) =>
+    post.author ? { ...post, author: { ...post.author, telegram_handle: handles.get(post.author.id) ?? null } } : post,
+  );
+}
+
+/** id → handle (without "@") for the students whose Telegram the caller may see. */
+export async function fetchTelegramHandles(ids: string[]): Promise<Map<string, string>> {
+  const { data, error } = await supabase.rpc('get_telegram_handles', { p_ids: ids });
+  if (error) throw error;
+  return new Map(
+    ((data ?? []) as { id: string; telegram_handle: string }[]).map((row) => [row.id, row.telegram_handle.replace(/^@/, '')]),
+  );
+}
+
 /** Columns of a Feed card: the post, both subjects and the author. */
 export const FEED_POST_SELECT = `
         id,
@@ -28,7 +50,7 @@ export const FEED_POST_SELECT = `
         created_at,
         needed:subjects!barter_posts_needed_subject_id_fkey(id, code, name, category, department),
         offered:subjects!barter_posts_offered_subject_id_fkey(id, code, name, category, department),
-        author:users!barter_posts_author_id_fkey(id, full_name, email, telegram_handle, telegram_visibility, role, major, study_year, avatar_path)
+        author:users!barter_posts_author_id_fkey(id, full_name, email, telegram_visibility, role, major, study_year, avatar_path)
       `;
 
 /** Active posts (newest first) and the subject catalogue for the filter chips. */
@@ -46,7 +68,7 @@ export async function fetchFeed(): Promise<FeedData> {
   if (subjectsRes.error) throw subjectsRes.error;
 
   return {
-    posts: (postsRes.data ?? []) as unknown as FeedPost[],
+    posts: await attachTelegramHandles((postsRes.data ?? []) as unknown as FeedPost[]),
     subjects: (subjectsRes.data ?? []) as Subject[],
   };
 }

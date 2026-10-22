@@ -1,4 +1,5 @@
 import { avatarUrl } from '@/lib/avatar';
+import { fetchTelegramHandles } from '@/lib/feed';
 import { currentEmail } from '@/lib/auth';
 import { getInitials, getShortName } from '@/lib/format';
 import { supabase } from '@/lib/supabase';
@@ -103,13 +104,15 @@ export async function fetchProfile(emailOverride?: string): Promise<ProfileData 
   if (!email) return null;
   const { data: userData, error: userError } = await supabase
     .from('users')
-    .select('id, full_name, email, telegram_handle, telegram_visibility, major, study_year, degree_level, avatar_path')
+    .select('id, full_name, email, telegram_visibility, major, study_year, degree_level, avatar_path')
     .eq('email', email)
     .maybeSingle();
 
   if (userError) throw userError;
   const userRow = userData as UserRow | null;
   if (!userRow) return null;
+  // The handle is not readable from the table (see get_telegram_handles); your own always is.
+  userRow.telegram_handle = (await fetchTelegramHandles([userRow.id])).get(userRow.id) ?? null;
 
   const { data: postData, error: postsError } = await supabase.rpc('get_my_cards');
 
@@ -225,4 +228,14 @@ export async function downloadMyData(): Promise<void> {
   link.click();
   link.remove();
   URL.revokeObjectURL(url);
+}
+
+/**
+ * Deletes the signed-in student for good: the photo file first (SQL cannot remove
+ * Storage files), then everything in the database and the sign-in account.
+ */
+export async function deleteMyAccount(avatarPath: string | null): Promise<void> {
+  if (avatarPath) await supabase.storage.from('avatars').remove([avatarPath]);
+  const { error } = await supabase.rpc('delete_my_account');
+  if (error) throw error;
 }

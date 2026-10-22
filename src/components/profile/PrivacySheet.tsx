@@ -11,6 +11,8 @@ interface PrivacySheetProps {
   telegramVisibility: TelegramVisibility;
   onTelegramVisibilityChange: (visibility: TelegramVisibility) => Promise<void>;
   onDownload: () => Promise<void>;
+  /** Deletes the account; the page signs out and leaves afterwards. */
+  onDeleteAccount: () => Promise<void>;
 }
 
 const VISIBILITY_OPTIONS: { value: TelegramVisibility; title: string; hint: string }[] = [
@@ -30,11 +32,20 @@ function SectionTitle({ children }: { children: string }) {
 }
 
 /** Privacy and security: Telegram visibility, download my data, delete account. */
-export function PrivacySheet({ open, onClose, telegramVisibility, onTelegramVisibilityChange, onDownload }: PrivacySheetProps) {
+export function PrivacySheet({
+  open,
+  onClose,
+  telegramVisibility,
+  onTelegramVisibilityChange,
+  onDownload,
+  onDeleteAccount,
+}: PrivacySheetProps) {
   const titleId = useId();
   const [saving, setSaving] = useState<TelegramVisibility | null>(null);
   const [downloading, setDownloading] = useState(false);
   const [deleteWord, setDeleteWord] = useState('');
+  const [deleting, setDeleting] = useState(false);
+  const canDelete = deleteWord.trim().toUpperCase() === DELETE_WORD;
   const [error, setError] = useState<string | null>(null);
 
   const chooseVisibility = async (value: TelegramVisibility) => {
@@ -59,6 +70,18 @@ export function PrivacySheet({ open, onClose, telegramVisibility, onTelegramVisi
       setError(err instanceof Error ? err.message : 'Could not prepare your data');
     } finally {
       setDownloading(false);
+    }
+  };
+
+  const deleteAccount = async () => {
+    if (!canDelete || deleting) return;
+    setDeleting(true);
+    setError(null);
+    try {
+      await onDeleteAccount();
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Could not delete the account');
+      setDeleting(false);
     }
   };
 
@@ -142,7 +165,7 @@ export function PrivacySheet({ open, onClose, telegramVisibility, onTelegramVisi
           </button>
         </section>
 
-        {/* Delete account: enabled once sign-in exists */}
+        {/* Delete account: the button unlocks once DELETE is typed */}
         <section className="flex flex-col gap-3">
           <SectionTitle>Delete account</SectionTitle>
           <p className="text-sm font-medium text-muted">
@@ -161,14 +184,13 @@ export function PrivacySheet({ open, onClose, telegramVisibility, onTelegramVisi
           />
           <button
             type="button"
-            disabled
-            title="Coming soon"
-            className="flex h-12 cursor-not-allowed items-center justify-center gap-2 rounded-2xl bg-[#C0264B] text-sm font-bold text-white opacity-40"
+            onClick={deleteAccount}
+            disabled={!canDelete || deleting}
+            className="flex h-12 cursor-pointer items-center justify-center gap-2 rounded-2xl bg-[#C0264B] text-sm font-bold text-white transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
           >
-            <Trash2 className="size-4" />
+            {deleting ? <Loader2 className="size-4 animate-spin" /> : <Trash2 className="size-4" />}
             Delete my account
           </button>
-          <p className="text-xs font-medium text-muted">Coming soon: account deletion is being finished.</p>
         </section>
 
         {error && (

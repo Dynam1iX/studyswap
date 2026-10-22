@@ -13,6 +13,7 @@ Every change to the database lives in `migrations/` as a numbered SQL file, so t
 | `20261020194600_phase1c_cleanup.sql` | Restores phase 1b, keeping the `public_read_*` policies (the only read policies after the reset) | Applied (SQL Editor) |
 | `20261022120000_search_history.sql` | Recent searches: `search_history` table + `get/add/delete_recent_search(es)`, `clear_recent_searches` | Applied (SQL Editor) |
 | `20261022140000_favorites.sql` | Likes: `favorites` table + `get_favorites`, `add_favorite`, `remove_favorite` | Applied (SQL Editor) |
+| `20261023010000_owner_rules.sql` | Phase 2: no access without sign-in, own cards/requests only, read-only profile, Telegram handle hidden by column (`get_telegram_handles`), participants-only swap requests, `delete_my_account`, demo fallback removed | Applied (SQL Editor) |
 | `20261022200000_sign_in.sql` | Only `6 digits@astanait.edu.kz` can sign up (trigger on `auth.users`); `complete_my_profile`; signed-in students never fall back to the demo account | Applied (SQL Editor) |
 | `20261022180000_avatars.sql` | Storage bucket `avatars` (own-folder policies), `users.avatar_path`, `set_my_avatar`, `remove_my_avatar` | Applied (SQL Editor) |
 | `20261022160000_profile_settings.sql` | `users.telegram_visibility`; `get_my_cards`, `update_my_card`, `set_my_card_status`, `delete_my_card`, `set_telegram_visibility`, `export_my_data` | Applied (SQL Editor) |
@@ -39,20 +40,21 @@ Supabase asks for confirmation before destructive statements (`DROP`, `DELETE`).
 ## Rules enforced by the database
 
 **Data**
-- E-mail must be `…@astanait.edu.kz`
+- Accounts: only `6 digits@astanait.edu.kz` can sign up (trigger on `auth.users`)
 - Telegram is optional; when set: 5–32 letters, digits or `_`, without `@`
 - Topic texts are required, at most 150 characters (same as the Create form)
 - The two subjects of a card must differ
 - One swap request per student per card; you cannot request your own card (trigger `prevent_self_swap`)
 - Status, contact method, role, year and category only accept the listed values
 
-**Access (Row Level Security)**
-- Anyone can read subjects, active cards and swap requests
-- Visitors can create active cards only (temporary, until sign-in); they cannot update, delete or create users
-- The API roles have no `TRUNCATE`, `TRIGGER` or `REFERENCES` rights; only admins edit the subject catalogue
-- A student's own cards (any status), card edits, Telegram visibility and the data export go through `SECURITY DEFINER` functions limited to the current student
-- Profile photos: anyone can view them; a student can add, replace or delete files only in `avatars/<own id>/` (WebP/JPEG, max 512 KB)
-- `search_history` and `favorites` have no table rights for the API roles; it is reached only through `SECURITY DEFINER` functions that act on the current student (the Supabase advisor flags these as callable without sign-in: intended until phase 2)
+**Access (Row Level Security, phase 2)**
+- Nothing is readable or callable without signing in
+- Students create cards and swap requests only as themselves; cards change only through `update_my_card` / `set_my_card_status` / `delete_my_card`
+- The profile row is read-only; it changes only through functions (avatar, Telegram visibility)
+- Telegram handles are not readable from the table: `get_telegram_handles` returns your own, public ones, and those of students with an accepted swap between you
+- Swap requests are visible only to the sender and the card's author
+- `search_history`, `favorites` and every `*_my_*` function act only on the signed-in student
+- Profile photos: anyone signed in can view them; a student can change files only in `avatars/<own id>/`
 
 ## Roadmap
 
