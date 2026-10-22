@@ -1,4 +1,4 @@
-import { CURRENT_USER_EMAIL } from '@/lib/currentUser';
+import { currentEmail } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
 import type { NewBarterPost, Subject, User } from '@/types/database';
 
@@ -12,23 +12,19 @@ export interface CreateFormData {
 
 /** Subjects for the selects and the author shown in the preview. */
 export async function fetchCreateFormData(): Promise<CreateFormData> {
+  const email = await currentEmail();
   const [subjectsRes, userRes] = await Promise.all([
     supabase.from('subjects').select('*').order('name', { ascending: true }),
-    supabase
-      .from('users')
-      .select('id, full_name, major, study_year, telegram_handle, avatar_path')
-      .eq('email', CURRENT_USER_EMAIL)
-      .maybeSingle(),
+    email
+      ? supabase
+          .from('users')
+          .select('id, full_name, major, study_year, telegram_handle, avatar_path')
+          .eq('email', email)
+          .maybeSingle()
+      : Promise.resolve({ data: null }),
   ]);
 
-  let author = userRes.data as CreateAuthor | null;
-  if (!author) {
-    // Fall back to any account so the page still works on a fresh database.
-    const { data } = await supabase.from('users').select('id, full_name, major, study_year, telegram_handle, avatar_path').limit(1).maybeSingle();
-    author = data as CreateAuthor | null;
-  }
-
-  return { subjects: (subjectsRes.data ?? []) as Subject[], author };
+  return { subjects: (subjectsRes.data ?? []) as Subject[], author: userRes.data as CreateAuthor | null };
 }
 
 export async function createBarterPost(post: NewBarterPost): Promise<void> {

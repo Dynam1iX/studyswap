@@ -1,5 +1,5 @@
 import { avatarUrl } from '@/lib/avatar';
-import { CURRENT_USER_EMAIL } from '@/lib/currentUser';
+import { currentEmail } from '@/lib/auth';
 import { getInitials, getShortName } from '@/lib/format';
 import { supabase } from '@/lib/supabase';
 import type { DegreeLevel, PostStatus, StudyYear, Subject, TelegramVisibility, User } from '@/types/database';
@@ -98,7 +98,9 @@ function uniqueSubjects(subjects: ProfileSubject[]): ProfileSubject[] {
  * Loads everything the profile page shows. The student's own cards come from
  * get_my_cards(), which also returns inactive (archived) ones that RLS hides elsewhere.
  */
-export async function fetchProfile(email: string = CURRENT_USER_EMAIL): Promise<ProfileData | null> {
+export async function fetchProfile(emailOverride?: string): Promise<ProfileData | null> {
+  const email = emailOverride ?? (await currentEmail());
+  if (!email) return null;
   const { data: userData, error: userError } = await supabase
     .from('users')
     .select('id, full_name, email, telegram_handle, telegram_visibility, major, study_year, degree_level, avatar_path')

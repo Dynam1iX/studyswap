@@ -108,8 +108,8 @@ export default function EditProfilePage() {
       ),
   });
 
-  // Linking, changing and unlinking Telegram arrive with sign-in and the Telegram bot.
-  const afterSignIn = () => showToast('Available after sign-in');
+  // Linking, changing and unlinking Telegram arrive with the Telegram bot.
+  const telegramSoon = () => showToast('Telegram linking is coming soon');
 
   return (
     <MobileShell
@@ -159,7 +159,7 @@ export default function EditProfilePage() {
 
             <section style={{ animationDelay: '120ms' }} className="flex animate-rise flex-col gap-3 motion-reduce:animate-none">
               <SectionTitle>Telegram</SectionTitle>
-              <TelegramSection handle={state.user.telegramHandle} onAction={afterSignIn} />
+              <TelegramSection handle={state.user.telegramHandle} onAction={telegramSoon} />
             </section>
 
             <section style={{ animationDelay: '180ms' }} className="flex animate-rise flex-col gap-3 motion-reduce:animate-none">

@@ -162,13 +162,13 @@ export function PrivacySheet({ open, onClose, telegramVisibility, onTelegramVisi
           <button
             type="button"
             disabled
-            title="Available after sign-in"
+            title="Coming soon"
             className="flex h-12 cursor-not-allowed items-center justify-center gap-2 rounded-2xl bg-[#C0264B] text-sm font-bold text-white opacity-40"
           >
             <Trash2 className="size-4" />
             Delete my account
           </button>
-          <p className="text-xs font-medium text-muted">Available after sign-in with your university account.</p>
+          <p className="text-xs font-medium text-muted">Coming soon: account deletion is being finished.</p>
         </section>
 
         {error && (

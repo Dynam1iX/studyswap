@@ -25,6 +25,8 @@ npm run dev                  # http://localhost:3000
 src/
   app/                    Pages (one folder per route)
     page.tsx              /         Feed
+    login/                /login    Sign in with a code sent to the university e-mail
+    welcome/              /welcome  Complete your profile (first sign-in)
     create/               /create   Create a barter offer
     profile/              /profile  Student profile; profile/edit: Telegram + student details
     search/               /search   Search: categories, filters, recent searches, results
@@ -33,6 +35,7 @@ src/
     globals.css           Design tokens (colours, fonts, animations)
   components/
     layout/               AppHeader, BottomNav, MobileShell: used on every page
+    auth/                 AuthGate (redirects to /login or /welcome), login page parts
     barter/               BarterCard: the "Needs help / Can teach" card
     ui/                   Generic UI: BottomSheet (accessible modal / bottom sheet)
     feed/ create/ profile/ search/ favorites/  Components used by one page only
@@ -43,6 +46,7 @@ src/
     favorites.ts          Likes: Supabase functions + useFavoriteIds (shared by Feed and Search)
     avatar.ts             Profile photos: crop to 256×256 WebP/JPEG, upload, public URL
     format.ts             Small text helpers (initials, short names)
+    auth.ts               Sign-in: e-mail codes, current student, complete profile
   types/
     database.ts           Row types of the Supabase tables
 public/                   Logo and icons
