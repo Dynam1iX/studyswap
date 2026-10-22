@@ -44,6 +44,8 @@ export interface User {
   study_year: StudyYear;
   degree_level: DegreeLevel;
   telegram_visibility: TelegramVisibility;
+  /** Photo in the avatars Storage bucket; null shows initials. */
+  avatar_path: string | null;
 }
 
 export interface BarterPost {

@@ -5,15 +5,17 @@ import { Avatar } from './Avatar';
 interface ProfileHeaderCardProps {
   user: ProfileUser;
   onEditAvatar?: () => void;
+  /** Spins the avatar ring while a new photo uploads. */
+  avatarBusy?: boolean;
   /** "Link Telegram" when the student has not linked it yet. */
   onLinkTelegram?: () => void;
 }
 
-export function ProfileHeaderCard({ user, onEditAvatar, onLinkTelegram }: ProfileHeaderCardProps) {
+export function ProfileHeaderCard({ user, onEditAvatar, avatarBusy, onLinkTelegram }: ProfileHeaderCardProps) {
   return (
     <div className="flex flex-col gap-4 rounded-3xl border border-line bg-white p-4">
       <div className="flex items-center gap-4">
-        <Avatar initials={user.initials} onEdit={onEditAvatar} />
+        <Avatar initials={user.initials} url={user.avatarUrl} onEdit={onEditAvatar} busy={avatarBusy} />
         <div className="flex min-w-0 flex-col gap-0.5">
           <p className="truncate font-bricolage text-2xl font-extrabold text-ink">{user.displayName}</p>
           <p className="text-sm font-medium text-muted">

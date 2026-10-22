@@ -1,12 +1,15 @@
 'use client';
 
 import { useState } from 'react';
+import { UserAvatar } from '@/components/ui/UserAvatar';
 import { useReplay } from '@/lib/useReplay';
 import type { CategoryPalette } from '@/lib/categoryPalette';
 import type { ContactMethod } from '@/types/database';
 
 export interface CardAuthor {
   initials: string;
+  /** Profile photo, or null/undefined for initials. */
+  avatarUrl?: string | null;
   name: string;
   /** "Software Engineering, Year 1" */
   subtitle: string;
@@ -127,9 +130,7 @@ export function BarterCard({
       {/* Author and wishlist */}
       <div className={`flex items-center justify-between ${layer}`}>
         <div className="flex min-w-0 items-center gap-2.5">
-          <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#F1E9FF] text-xs font-semibold text-[#6D1FC4]">
-            {author.initials}
-          </div>
+          <UserAvatar initials={author.initials} url={author.avatarUrl ?? null} className="size-10 text-xs" />
           <div className="flex min-w-0 flex-col leading-tight">
             <span className="truncate text-[15px] font-semibold text-ink">{author.name}</span>
             <span className="truncate text-[13px] font-medium text-muted">{author.subtitle}</span>

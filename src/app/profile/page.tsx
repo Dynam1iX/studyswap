@@ -6,6 +6,7 @@ import { Loader2, LogOut, Pencil } from 'lucide-react';
 import { AppHeader } from '@/components/layout/AppHeader';
 import { BottomNav } from '@/components/layout/BottomNav';
 import { MobileShell } from '@/components/layout/MobileShell';
+import { AvatarSheet } from '@/components/profile/AvatarSheet';
 import { ManageCardSheet, type CardChanges } from '@/components/profile/ManageCardSheet';
 import { MyCardItem } from '@/components/profile/MyCardItem';
 import { PrivacySheet } from '@/components/profile/PrivacySheet';
@@ -13,6 +14,7 @@ import { ProfileHeaderCard } from '@/components/profile/ProfileHeaderCard';
 import { SettingsPanel } from '@/components/profile/SettingsPanel';
 import { StatsRow } from '@/components/profile/StatsRow';
 import { SubjectChipList } from '@/components/profile/SubjectChipList';
+import { useAvatarEditor } from '@/components/profile/useAvatarEditor';
 import { Toast, useToast } from '@/components/ui/Toast';
 import {
   deleteMyCard,
@@ -25,6 +27,7 @@ import {
   type ProfileCard,
   type ProfileData,
 } from '@/lib/profile';
+import { avatarUrl } from '@/lib/avatar';
 import type { TelegramVisibility } from '@/types/database';
 
 type LoadState =
@@ -67,6 +70,19 @@ export default function ProfilePage() {
     // Also runs again when the page comes back into view (Next keeps it alive while hidden).
     void load();
   }, [load]);
+
+  const avatar = useAvatarEditor(state.status === 'ready' ? state.data.user : null, {
+    notify: showToast,
+    onChange: (avatarPath) =>
+      setState((prev) =>
+        prev.status === 'ready'
+          ? {
+              status: 'ready',
+              data: { ...prev.data, user: { ...prev.data.user, avatarPath, avatarUrl: avatarUrl(avatarPath) } },
+            }
+          : prev,
+      ),
+  });
 
   // Telegram linking and sign-out arrive with Microsoft sign-in and the Telegram bot.
   const afterSignIn = () => showToast('Available after sign-in');
@@ -145,7 +161,12 @@ export default function ProfilePage() {
         {state.status === 'ready' && (
           <>
             <Rise index={0}>
-              <ProfileHeaderCard user={state.data.user} onEditAvatar={afterSignIn} onLinkTelegram={afterSignIn} />
+              <ProfileHeaderCard
+                user={{ ...state.data.user, avatarUrl: avatar.displayUrl }}
+                onEditAvatar={() => avatar.setOpen(true)}
+                avatarBusy={avatar.busy}
+                onLinkTelegram={afterSignIn}
+              />
             </Rise>
             <Rise index={1}>
               <StatsRow stats={state.data.stats} />
@@ -191,6 +212,16 @@ export default function ProfilePage() {
       </div>
 
       <ManageCardSheet card={managing} onClose={() => setManaging(null)} onSave={saveCard} onDelete={removeCard} />
+      {state.status === 'ready' && (
+        <AvatarSheet
+          open={avatar.open}
+          onClose={() => avatar.setOpen(false)}
+          initials={state.data.user.initials}
+          currentUrl={state.data.user.avatarUrl}
+          onSave={avatar.save}
+          onRemove={avatar.remove}
+        />
+      )}
       {state.status === 'ready' && (
         <PrivacySheet
           open={privacyOpen}

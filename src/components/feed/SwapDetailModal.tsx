@@ -3,6 +3,8 @@
 import { useId, useState, type CSSProperties, type ReactNode } from 'react';
 import { CalendarDays, Mail, Send, Star, Tag, X } from 'lucide-react';
 import { BottomSheet } from '@/components/ui/BottomSheet';
+import { UserAvatar } from '@/components/ui/UserAvatar';
+import { avatarUrl } from '@/lib/avatar';
 import { paletteFor } from '@/lib/categoryPalette';
 import { getAuthorName, getContactHref, getContactMethod, type FeedPost } from '@/lib/feed';
 import { formatPostedAt, formatStudyInfo, getInitials } from '@/lib/format';
@@ -58,9 +60,11 @@ function SwapDetailBody({ post }: { post: FeedPost }) {
     <div className="flex flex-col gap-4 px-6 pt-2 pb-10">
       {/* Author */}
       <div className="flex items-center gap-3">
-        <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#F1E9FF] text-base font-bold text-[#6D1FC4]">
-          {getInitials(authorName)}
-        </div>
+        <UserAvatar
+          initials={getInitials(authorName)}
+          url={avatarUrl(post.author?.avatar_path)}
+          className="size-12 text-base font-bold"
+        />
         <div className="flex min-w-0 flex-1 flex-col gap-0.5">
           <span className="truncate text-[17px] font-bold text-ink">{authorName}</span>
           <span className="text-[13px] font-medium break-words text-muted">

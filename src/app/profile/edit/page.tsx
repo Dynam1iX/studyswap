@@ -6,7 +6,10 @@ import { ChevronLeft, Loader2, Lock, RefreshCw, Unlink } from 'lucide-react';
 import { AppHeader } from '@/components/layout/AppHeader';
 import { MobileShell } from '@/components/layout/MobileShell';
 import { Avatar } from '@/components/profile/Avatar';
+import { AvatarSheet } from '@/components/profile/AvatarSheet';
+import { useAvatarEditor } from '@/components/profile/useAvatarEditor';
 import { Toast, useToast } from '@/components/ui/Toast';
+import { avatarUrl } from '@/lib/avatar';
 import { degreeLabel, fetchProfile, type ProfileUser } from '@/lib/profile';
 
 type LoadState =
@@ -97,6 +100,14 @@ export default function EditProfilePage() {
     };
   }, []);
 
+  const avatar = useAvatarEditor(state.status === 'ready' ? state.user : null, {
+    notify: showToast,
+    onChange: (avatarPath) =>
+      setState((prev) =>
+        prev.status === 'ready' ? { status: 'ready', user: { ...prev.user, avatarPath, avatarUrl: avatarUrl(avatarPath) } } : prev,
+      ),
+  });
+
   // Linking, changing and unlinking Telegram arrive with sign-in and the Telegram bot.
   const afterSignIn = () => showToast('Available after sign-in');
 
@@ -138,7 +149,12 @@ export default function EditProfilePage() {
         {state.status === 'ready' && (
           <>
             <div style={{ animationDelay: '60ms' }} className="flex animate-rise justify-center motion-reduce:animate-none">
-              <Avatar initials={state.user.initials} onEdit={afterSignIn} />
+              <Avatar
+                initials={state.user.initials}
+                url={avatar.displayUrl}
+                busy={avatar.busy}
+                onEdit={() => avatar.setOpen(true)}
+              />
             </div>
 
             <section style={{ animationDelay: '120ms' }} className="flex animate-rise flex-col gap-3 motion-reduce:animate-none">
@@ -164,6 +180,17 @@ export default function EditProfilePage() {
           </>
         )}
       </div>
+
+      {state.status === 'ready' && (
+        <AvatarSheet
+          open={avatar.open}
+          onClose={() => avatar.setOpen(false)}
+          initials={state.user.initials}
+          currentUrl={state.user.avatarUrl}
+          onSave={avatar.save}
+          onRemove={avatar.remove}
+        />
+      )}
     </MobileShell>
   );
 }
