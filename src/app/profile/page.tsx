@@ -17,6 +17,7 @@ import { SubjectChipList } from '@/components/profile/SubjectChipList';
 import { useAvatarEditor } from '@/components/profile/useAvatarEditor';
 import { Toast, useToast } from '@/components/ui/Toast';
 import {
+  deleteMyAccount,
   deleteMyCard,
   downloadMyData,
   fetchProfile,
@@ -239,6 +240,11 @@ export default function ProfilePage() {
           telegramVisibility={state.data.user.telegramVisibility}
           onTelegramVisibilityChange={changeVisibility}
           onDownload={downloadMyData}
+          onDeleteAccount={async () => {
+            await deleteMyAccount(state.data.user.avatarPath);
+            await signOut();
+            window.location.assign('/login');
+          }}
         />
       )}
     </MobileShell>

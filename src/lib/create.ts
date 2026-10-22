@@ -1,4 +1,5 @@
 import { currentEmail } from '@/lib/auth';
+import { fetchTelegramHandles } from '@/lib/feed';
 import { supabase } from '@/lib/supabase';
 import type { NewBarterPost, Subject, User } from '@/types/database';
 
@@ -18,13 +19,18 @@ export async function fetchCreateFormData(): Promise<CreateFormData> {
     email
       ? supabase
           .from('users')
-          .select('id, full_name, major, study_year, telegram_handle, avatar_path')
+          .select('id, full_name, major, study_year, avatar_path')
           .eq('email', email)
           .maybeSingle()
       : Promise.resolve({ data: null }),
   ]);
 
-  return { subjects: (subjectsRes.data ?? []) as Subject[], author: userRes.data as CreateAuthor | null };
+  const row = userRes.data as Omit<CreateAuthor, 'telegram_handle'> | null;
+  // The handle is not readable from the table; your own comes from get_telegram_handles.
+  const author: CreateAuthor | null = row
+    ? { ...row, telegram_handle: (await fetchTelegramHandles([row.id])).get(row.id) ?? null }
+    : null;
+  return { subjects: (subjectsRes.data ?? []) as Subject[], author };
 }
 
 export async function createBarterPost(post: NewBarterPost): Promise<void> {

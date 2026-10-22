@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { FEED_POST_SELECT, type FeedPost } from '@/lib/feed';
+import { FEED_POST_SELECT, attachTelegramHandles, type FeedPost } from '@/lib/feed';
 import { supabase } from '@/lib/supabase';
 
 /** Fired on window when a card is liked, so the nav can bounce its Favorite tab. */
@@ -42,10 +42,12 @@ export async function fetchFavoritePosts(): Promise<FeedPost[]> {
     .eq('status', 'active');
   if (error) throw error;
   const byId = new Map(((data ?? []) as unknown as FeedPost[]).map((post) => [post.id, post]));
-  return ids.flatMap((id) => {
-    const post = byId.get(id);
-    return post ? [post] : [];
-  });
+  return attachTelegramHandles(
+    ids.flatMap((id) => {
+      const post = byId.get(id);
+      return post ? [post] : [];
+    }),
+  );
 }
 
 // ---------------------------------------------------------------------------
