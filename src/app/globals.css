@@ -403,3 +403,44 @@ nextjs-portal,
 [data-nextjs-dev-indicator] {
   display: none !important;
 }
+
+/* Microsoft logo: while the sign-in page opens, the four squares fly apart into
+   dots, orbit and snap back together. */
+.ms-logo {
+  display: grid;
+  grid-template-columns: repeat(2, 9px);
+  gap: 2px;
+}
+.ms-logo > span {
+  width: 9px;
+  height: 9px;
+  border-radius: 1px;
+}
+.ms-logo.is-loading {
+  animation: ms-orbit 1.3s cubic-bezier(0.6, 0, 0.4, 1) infinite;
+}
+.ms-logo.is-loading > span {
+  animation: ms-scatter 1.3s ease-in-out infinite;
+}
+@keyframes ms-orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes ms-scatter {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+    border-radius: 1px;
+  }
+  50% {
+    transform: translate(var(--dx), var(--dy)) scale(0.6);
+    border-radius: 50%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ms-logo.is-loading,
+  .ms-logo.is-loading > span {
+    animation: none;
+  }
+}

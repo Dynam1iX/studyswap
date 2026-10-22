@@ -39,6 +39,56 @@ export async function verifyCode(email: string, code: string): Promise<void> {
   if (error) throw friendly(error);
 }
 
+/**
+ * Sends the student to the Microsoft sign-in page (AITU accounts only: the Azure app
+ * is single-tenant). Microsoft returns them to /login, where supabase-js picks up the session.
+ */
+export async function signInWithMicrosoft(): Promise<void> {
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: 'azure',
+    options: {
+      scopes: 'openid email profile',
+      redirectTo: `${window.location.origin}/login`,
+    },
+  });
+  if (error) throw friendly(error);
+}
+
+/**
+ * Error sent back by Microsoft or Supabase after a failed redirect sign-in (in the query
+ * string or the #fragment). Removes it from the address bar so a reload does not show it again.
+ */
+export function takeRedirectError(): string | null {
+  const params = new URLSearchParams(window.location.search);
+  const hash = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+  const code = params.get('error') ?? hash.get('error');
+  if (!code) return null;
+  const description = params.get('error_description') ?? hash.get('error_description') ?? '';
+  window.history.replaceState(null, '', window.location.pathname);
+
+  if (code === 'access_denied') return 'Microsoft sign-in was cancelled.';
+  if (/student e-mails|Database error saving new user|email/i.test(description)) {
+    return 'Only student accounts can sign in: 6 digits @astanait.edu.kz.';
+  }
+  return friendly({ message: description }).message;
+}
+
+/** First and last name from the Microsoft account, to fill in "Complete your profile". */
+export async function nameFromAccount(): Promise<{ firstName: string; lastName: string } | null> {
+  const { data } = await supabase.auth.getSession();
+  const meta = (data.session?.user.user_metadata ?? {}) as Record<string, unknown>;
+  const claims = (meta.custom_claims ?? {}) as Record<string, unknown>;
+  const text = (value: unknown) => (typeof value === 'string' ? value.trim() : '');
+
+  const given = text(meta.given_name) || text(claims.given_name);
+  const family = text(meta.family_name) || text(claims.family_name);
+  if (given || family) return { firstName: given, lastName: family };
+
+  const full = (text(meta.full_name) || text(meta.name)).split(/\s+/).filter(Boolean);
+  if (full.length === 0) return null;
+  return { firstName: full[0], lastName: full.slice(1).join(' ') };
+}
+
 export async function signOut(): Promise<void> {
   await supabase.auth.signOut();
 }

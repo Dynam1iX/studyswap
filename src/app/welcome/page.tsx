@@ -4,7 +4,7 @@ import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
 import { ChevronDown, Loader2, Lock } from 'lucide-react';
 import { AppHeader } from '@/components/layout/AppHeader';
 import { MobileShell } from '@/components/layout/MobileShell';
-import { completeProfile, currentEmail, signOut, type NewProfile } from '@/lib/auth';
+import { completeProfile, currentEmail, nameFromAccount, signOut, type NewProfile } from '@/lib/auth';
 import { PROGRAM_GROUPS, STUDY_YEARS } from '@/lib/search';
 import type { StudyYear } from '@/types/database';
 
@@ -81,6 +81,12 @@ export default function WelcomePage() {
 
   useEffect(() => {
     void currentEmail().then(setEmail);
+    // Signed in with Microsoft: start from the name on the account (still editable).
+    void nameFromAccount().then((name) => {
+      if (!name) return;
+      setFirstName((current) => current || name.firstName.slice(0, 50));
+      setLastName((current) => current || name.lastName.slice(0, 50));
+    });
   }, []);
 
   const missing =
