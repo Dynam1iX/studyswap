@@ -105,7 +105,8 @@ export function AvatarSheet({ open, onClose, initials, currentUrl, onSave, onRem
                 key={previewUrl}
                 src={previewUrl}
                 alt="Profile photo preview"
-                className="size-full animate-pop object-cover motion-reduce:animate-none"
+                draggable={false}
+                className="size-full animate-pop rounded-full object-cover pointer-events-none select-none [-webkit-touch-callout:none] motion-reduce:animate-none"
               />
             ) : (
               <span className="font-bricolage text-5xl font-extrabold text-[#6D1FC4]">{initials}</span>

@@ -26,8 +26,10 @@ export function UserAvatar({ initials, url, className = 'size-10 text-xs' }: Use
           alt=""
           loading="lazy"
           decoding="async"
+          draggable={false}
           onError={() => setFailedUrl(url)}
-          className="size-full animate-pop object-cover motion-reduce:animate-none"
+          // Round itself and not touchable: iOS long-press previews showed it square.
+          className="size-full animate-pop rounded-full object-cover pointer-events-none select-none [-webkit-touch-callout:none] motion-reduce:animate-none"
         />
       ) : (
         initials

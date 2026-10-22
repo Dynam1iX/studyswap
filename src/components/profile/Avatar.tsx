@@ -36,8 +36,10 @@ export function Avatar({ initials, url = null, onEdit, busy = false }: AvatarPro
               key={url}
               src={url}
               alt=""
+              draggable={false}
               onError={() => setFailedUrl(url)}
-              className="size-full animate-pop object-cover motion-reduce:animate-none"
+              // Round itself and not touchable: iOS long-press previews showed it square.
+              className="size-full animate-pop rounded-full object-cover pointer-events-none select-none [-webkit-touch-callout:none] motion-reduce:animate-none"
             />
           ) : (
             <span className="font-bricolage text-2xl font-extrabold text-[#6D1FC4]">{initials}</span>
