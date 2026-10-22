@@ -67,7 +67,7 @@ function NavTabItem({ config, active }: { config: TabConfig; active: boolean }) 
 /** Bottom bar shared by every page (rendered as MobileShell's footer). */
 export function BottomNav({ active }: { active: NavTab }) {
   return (
-    <nav className="flex h-[76px] w-full items-center justify-around border-t border-line bg-white px-3">
+    <nav className="box-content flex h-[76px] w-full items-center justify-around border-t border-line bg-white px-3 pb-[env(safe-area-inset-bottom)]">
       {LEFT_TABS.map((config) => (
         <NavTabItem key={config.tab} config={config} active={config.tab === active} />
       ))}
