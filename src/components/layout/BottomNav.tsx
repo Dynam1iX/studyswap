@@ -64,10 +64,15 @@ function NavTabItem({ config, active }: { config: TabConfig; active: boolean }) 
   );
 }
 
+/**
+ * On iPhones with a home indicator the bar is 56px + (inset − 12px): the icons sit close
+ * to the indicator like in native tab bars instead of floating a full inset above it.
+ * Elsewhere (inset 0) it stays 76px.
+ */
 /** Bottom bar shared by every page (rendered as MobileShell's footer). */
 export function BottomNav({ active }: { active: NavTab }) {
   return (
-    <nav className="box-content flex h-[76px] w-full items-center justify-around border-t border-line bg-white px-3 pb-[env(safe-area-inset-bottom)]">
+    <nav className="box-content flex h-[calc(76px_-_min(env(safe-area-inset-bottom),20px))] w-full items-center justify-around border-t border-line bg-white px-3 pb-[max(0px,calc(env(safe-area-inset-bottom)_-_12px))]">
       {LEFT_TABS.map((config) => (
         <NavTabItem key={config.tab} config={config} active={config.tab === active} />
       ))}

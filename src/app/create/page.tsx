@@ -139,7 +139,7 @@ export default function CreateBarterPage() {
     : null;
 
   const publishBar = (
-    <div className="border-t border-line bg-white px-4 pt-3 pb-[calc(20px+env(safe-area-inset-bottom))]">
+    <div className="border-t border-line bg-white px-4 pt-3 pb-[max(20px,calc(env(safe-area-inset-bottom)_+_4px))]">
       <button
         type="button"
         onClick={handleSubmit}
