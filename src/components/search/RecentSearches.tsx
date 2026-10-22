@@ -96,14 +96,14 @@ export function RecentSearches({ items, onPick, onRemove, onClearAll, delay = 0 
           ))}
         </div>
       ) : hasItems ? (
-        <ul className="flex flex-col pb-3">
+        <ul className="flex flex-col overflow-x-clip pb-3">
           {items!.map((item, index) => {
             const isLeaving = leaving.has(item.id);
             const isLast = index === items!.length - 1;
             return (
               <li
                 key={item.id}
-                className={`grid transition-[grid-template-rows,opacity] duration-300 ease-out ${
+                className={`grid grid-cols-[minmax(0,1fr)] transition-[grid-template-rows,opacity] duration-300 ease-out ${
                   isLeaving ? 'grid-rows-[0fr] opacity-0' : 'grid-rows-[1fr] opacity-100'
                 }`}
               >
