@@ -1,7 +1,6 @@
 'use client';
 
 import { BarterCard } from '@/components/barter/BarterCard';
-import { avatarUrl } from '@/lib/avatar';
 import { CATEGORY_PALETTE } from '@/lib/categoryPalette';
 import { getAuthorName, getContactHref, getContactMethod, type FeedPost } from '@/lib/feed';
 import { formatStudyInfo, getInitials } from '@/lib/format';
@@ -24,7 +23,7 @@ export function FeedPostCard({ post, liked, onToggleLike, onOpen }: FeedPostCard
     <BarterCard
       author={{
         initials: getInitials(authorName),
-        avatarUrl: avatarUrl(post.author?.avatar_path),
+        avatarPath: post.author?.avatar_path,
         name: authorName,
         subtitle: formatStudyInfo(t, post.author?.major, post.author?.study_year),
       }}

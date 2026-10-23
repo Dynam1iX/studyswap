@@ -1,10 +1,15 @@
 import { supabase } from '@/lib/supabase';
 import type { BarterPost, ContactMethod, Subject, User } from '@/types/database';
 
-export type FeedAuthor = Pick<
-  User,
-  'id' | 'full_name' | 'email' | 'telegram_handle' | 'telegram_visibility' | 'role' | 'major' | 'study_year' | 'avatar_path'
->;
+/** What other students may see about an author (see migration private_data). */
+export type FeedAuthor = Pick<User, 'id' | 'full_name' | 'major' | 'study_year' | 'avatar_path'>;
+
+/** How to reach the author of a card: a visible Telegram handle, or the university e-mail. */
+export interface PostContact {
+  method: ContactMethod;
+  /** Handle without "@", or the e-mail address. */
+  value: string;
+}
 
 /** One active barter post with its subjects and author, as the Feed shows it. */
 export interface FeedPost
@@ -12,6 +17,8 @@ export interface FeedPost
   needed: Subject | null;
   offered: Subject | null;
   author: FeedAuthor | null;
+  /** null until get_post_contacts has answered (or for cards the database no longer shows). */
+  contact: PostContact | null;
 }
 
 export interface FeedData {
@@ -20,16 +27,22 @@ export interface FeedData {
 }
 
 /**
- * Telegram handles are not readable from the users table; the database returns only
- * the ones this student may see (see get_telegram_handles). Fills author.telegram_handle.
+ * Fills each post's contact. Neither e-mails nor Telegram handles are readable from the
+ * users table: get_post_contacts returns the handle when the author chose Telegram and
+ * lets this student see it, otherwise the e-mail (and never an e-mail for a Telegram card
+ * that is shown through Telegram).
  */
-export async function attachTelegramHandles(posts: FeedPost[]): Promise<FeedPost[]> {
-  const ids = [...new Set(posts.flatMap((post) => (post.author ? [post.author.id] : [])))];
-  if (ids.length === 0) return posts;
-  const handles = await fetchTelegramHandles(ids);
-  return posts.map((post) =>
-    post.author ? { ...post, author: { ...post.author, telegram_handle: handles.get(post.author.id) ?? null } } : post,
+export async function attachContacts(posts: Omit<FeedPost, 'contact'>[]): Promise<FeedPost[]> {
+  if (posts.length === 0) return [];
+  const { data, error } = await supabase.rpc('get_post_contacts', { p_post_ids: posts.map((post) => post.id) });
+  if (error) throw error;
+  const contacts = new Map(
+    ((data ?? []) as { post_id: string; method: ContactMethod; contact: string }[]).map((row) => [
+      row.post_id,
+      { method: row.method, value: row.contact.replace(/^@/, '') },
+    ]),
   );
+  return posts.map((post) => ({ ...post, contact: contacts.get(post.id) ?? null }));
 }
 
 /** id → handle (without "@") for the students whose Telegram the caller may see. */
@@ -50,7 +63,7 @@ export const FEED_POST_SELECT = `
         created_at,
         needed:subjects!barter_posts_needed_subject_id_fkey(id, code, name, category, department),
         offered:subjects!barter_posts_offered_subject_id_fkey(id, code, name, category, department),
-        author:users!barter_posts_author_id_fkey(id, full_name, email, telegram_visibility, role, major, study_year, avatar_path)
+        author:users!barter_posts_author_id_fkey(id, full_name, major, study_year, avatar_path)
       `;
 
 /** Active posts (newest first) and the subject catalogue for the filter chips. */
@@ -68,7 +81,7 @@ export async function fetchFeed(): Promise<FeedData> {
   if (subjectsRes.error) throw subjectsRes.error;
 
   return {
-    posts: await attachTelegramHandles((postsRes.data ?? []) as unknown as FeedPost[]),
+    posts: await attachContacts((postsRes.data ?? []) as unknown as Omit<FeedPost, 'contact'>[]),
     subjects: (subjectsRes.data ?? []) as Subject[],
   };
 }
@@ -78,24 +91,17 @@ export function getAuthorName(post: FeedPost): string {
   return post.author?.full_name || 'AITU Student';
 }
 
-/**
- * How to contact the author: Telegram only when the author has a handle and shows it
- * to everyone, otherwise e-mail. ("accepted" will reveal it after an accepted swap
- * request once requests exist in the app.)
- */
+/** How to contact the author (e-mail until the contact is known). */
 export function getContactMethod(post: FeedPost): ContactMethod {
-  const author = post.author;
-  return post.contact_method === 'telegram' && author?.telegram_handle && author.telegram_visibility !== 'accepted'
-    ? 'telegram'
-    : 'email';
+  return post.contact?.method ?? 'email';
 }
 
 /** Telegram link or a prefilled mailto: link for the post's contact method. */
 export function getContactHref(post: FeedPost): string {
-  if (getContactMethod(post) === 'telegram') {
-    return `https://t.me/${post.author?.telegram_handle}`;
+  if (post.contact?.method === 'telegram') {
+    return `https://t.me/${post.contact.value}`;
   }
-  const email = post.author?.email || 'student@astanait.edu.kz';
+  const email = post.contact?.value ?? '';
   const subjectName = post.needed?.name;
   const subject = encodeURIComponent(`StudySwap: ${subjectName || 'Academic Exchange'}`);
   const body = encodeURIComponent(

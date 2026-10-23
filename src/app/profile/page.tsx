@@ -29,7 +29,6 @@ import {
   type ProfileData,
 } from '@/lib/profile';
 import { signOut } from '@/lib/auth';
-import { avatarUrl } from '@/lib/avatar';
 import type { TelegramVisibility } from '@/types/database';
 import { messages, useT } from '@/i18n';
 
@@ -81,7 +80,7 @@ export default function ProfilePage() {
         prev.status === 'ready'
           ? {
               status: 'ready',
-              data: { ...prev.data, user: { ...prev.data.user, avatarPath, avatarUrl: avatarUrl(avatarPath) } },
+              data: { ...prev.data, user: { ...prev.data.user, avatarPath } },
             }
           : prev,
       ),
@@ -180,7 +179,8 @@ export default function ProfilePage() {
           <>
             <Rise index={0}>
               <ProfileHeaderCard
-                user={{ ...state.data.user, avatarUrl: avatar.displayUrl }}
+                user={state.data.user}
+                avatarUrl={avatar.displayUrl}
                 onEditAvatar={() => avatar.setOpen(true)}
                 avatarBusy={avatar.busy}
                 onLinkTelegram={() => setLinkingTelegram(true)}
@@ -237,7 +237,7 @@ export default function ProfilePage() {
           open={avatar.open}
           onClose={() => avatar.setOpen(false)}
           initials={state.data.user.initials}
-          currentUrl={state.data.user.avatarUrl}
+          currentUrl={avatar.savedUrl}
           onSave={avatar.save}
           onRemove={avatar.remove}
         />

@@ -1,17 +1,19 @@
 'use client';
 
 import { useState } from 'react';
+import { useAvatarUrl } from '@/lib/avatar';
 
 interface UserAvatarProps {
   initials: string;
-  /** Photo URL, or null for initials. */
-  url: string | null;
+  /** Storage path of the photo, or null for initials. */
+  path: string | null | undefined;
   /** Tailwind size and text classes, e.g. "size-10 text-xs". */
   className?: string;
 }
 
 /** Round avatar: the profile photo, or the initials on lilac when there is none (or it fails to load). */
-export function UserAvatar({ initials, url, className = 'size-10 text-xs' }: UserAvatarProps) {
+export function UserAvatar({ initials, path, className = 'size-10 text-xs' }: UserAvatarProps) {
+  const url = useAvatarUrl(path);
   const [failedUrl, setFailedUrl] = useState<string | null>(null);
   const showPhoto = url !== null && url !== failedUrl;
 

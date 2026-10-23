@@ -10,7 +10,6 @@ import { SubjectSelect } from '@/components/create/SubjectSelect';
 import { TopicsField } from '@/components/create/TopicsField';
 import { AppHeader } from '@/components/layout/AppHeader';
 import { MobileShell } from '@/components/layout/MobileShell';
-import { avatarUrl } from '@/lib/avatar';
 import { paletteFor } from '@/lib/categoryPalette';
 import { createBarterPost, fetchCreateFormData } from '@/lib/create';
 import { formatStudyInfo, getInitials, getShortName } from '@/lib/format';
@@ -72,7 +71,7 @@ export default function CreateBarterPage() {
         if (author) {
           setAuthorId(author.id);
           setHasTelegram(Boolean(author.telegram_handle));
-          setAuthorAvatar(avatarUrl(author.avatar_path));
+          setAuthorAvatar(author.avatar_path);
           setAuthorName(getShortName(author.full_name));
           setAuthorStudy({ major: author.major, year: author.study_year });
         }
@@ -239,7 +238,7 @@ export default function CreateBarterPage() {
       <div style={{ animationDelay: '140ms' }} className="animate-rise px-4 pt-4 pb-2 motion-reduce:animate-none">
         <h2 className="mb-2.5 text-[11px] font-bold tracking-[0.88px] text-muted uppercase">{t.create.preview}</h2>
         <BarterCard
-          author={{ initials: getInitials(authorName), avatarUrl: authorAvatar, name: authorName, subtitle: formatStudyInfo(t, authorStudy.major, authorStudy.year) }}
+          author={{ initials: getInitials(authorName), avatarPath: authorAvatar, name: authorName, subtitle: formatStudyInfo(t, authorStudy.major, authorStudy.year) }}
           needs={previewHalf(neededSubject, neededDetails, t.create.previewSubject, t.create.previewNeeded)}
           teaches={previewHalf(offeredSubject, offeredDetails, t.create.previewSubject, t.create.previewOffered)}
           contactMethod={contactMethod}

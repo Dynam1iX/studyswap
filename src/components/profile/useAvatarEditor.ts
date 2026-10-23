@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { avatarUrl, removeAvatar, uploadAvatar, type PreparedAvatar } from '@/lib/avatar';
+import { removeAvatar, useAvatarUrl, uploadAvatar, type PreparedAvatar } from '@/lib/avatar';
 import { messages } from '@/i18n';
 
 interface AvatarOwner {
@@ -61,7 +61,8 @@ export function useAvatarEditor(user: AvatarOwner | null, { onChange, notify }: 
   };
 
   /** What the avatar shows right now: the uploading preview, else the saved photo. */
-  const displayUrl = pendingUrl ?? avatarUrl(user?.avatarPath);
+  const savedUrl = useAvatarUrl(user?.avatarPath);
+  const displayUrl = pendingUrl ?? savedUrl;
 
-  return { open, setOpen, busy, save, remove, displayUrl };
+  return { open, setOpen, busy, save, remove, displayUrl, savedUrl };
 }

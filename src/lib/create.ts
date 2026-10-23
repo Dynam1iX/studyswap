@@ -1,5 +1,4 @@
-import { currentEmail } from '@/lib/auth';
-import { fetchTelegramHandles } from '@/lib/feed';
+import { fetchMyProfileRow } from '@/lib/profile';
 import { supabase } from '@/lib/supabase';
 import type { NewBarterPost, Subject, User } from '@/types/database';
 
@@ -13,22 +12,19 @@ export interface CreateFormData {
 
 /** Subjects for the selects and the author shown in the preview. */
 export async function fetchCreateFormData(): Promise<CreateFormData> {
-  const email = await currentEmail();
-  const [subjectsRes, userRes] = await Promise.all([
+  const [subjectsRes, me] = await Promise.all([
     supabase.from('subjects').select('*').order('name', { ascending: true }),
-    email
-      ? supabase
-          .from('users')
-          .select('id, full_name, major, study_year, avatar_path')
-          .eq('email', email)
-          .maybeSingle()
-      : Promise.resolve({ data: null }),
+    fetchMyProfileRow(),
   ]);
-
-  const row = userRes.data as Omit<CreateAuthor, 'telegram_handle'> | null;
-  // The handle is not readable from the table; your own comes from get_telegram_handles.
-  const author: CreateAuthor | null = row
-    ? { ...row, telegram_handle: (await fetchTelegramHandles([row.id])).get(row.id) ?? null }
+  const author: CreateAuthor | null = me
+    ? {
+        id: me.id,
+        full_name: me.full_name,
+        major: me.major,
+        study_year: me.study_year,
+        avatar_path: me.avatar_path,
+        telegram_handle: me.telegram_handle,
+      }
     : null;
   return { subjects: (subjectsRes.data ?? []) as Subject[], author };
 }
