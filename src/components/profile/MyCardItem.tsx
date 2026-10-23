@@ -1,6 +1,7 @@
 import { paletteFor } from '@/lib/categoryPalette';
 import type { ProfileCard, ProfileSubject } from '@/lib/profile';
 import type { PostStatus } from '@/types/database';
+import { ExchangeIcon } from '@/components/ui/ExchangeIcon';
 
 const STATUS_VIEW: Record<PostStatus, { label: string; dot: string; text: string }> = {
   active: { label: 'Active', dot: 'var(--color-success)', text: 'var(--color-success)' },
@@ -54,7 +55,7 @@ export function MyCardItem({ card, onManage }: MyCardItemProps) {
         <CardHalf label="Needs" subject={card.needed} topic={card.neededTopic} />
         <CardHalf label="Teaches" subject={card.offered} topic={card.offeredTopic} />
         <span className="pointer-events-none absolute top-1/2 left-1/2 flex size-[42px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-surface">
-          <img src="/exchangeicon.svg" alt="" className="size-9" />
+          <ExchangeIcon className="size-9" />
         </span>
       </div>
 

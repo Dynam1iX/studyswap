@@ -9,6 +9,7 @@ import { paletteFor } from '@/lib/categoryPalette';
 import { getAuthorName, getContactHref, getContactMethod, type FeedPost } from '@/lib/feed';
 import { formatPostedAt, formatStudyInfo, getInitials } from '@/lib/format';
 import type { Subject } from '@/types/database';
+import { ExchangeIcon } from '@/components/ui/ExchangeIcon';
 
 interface SwapDetailModalProps {
   /** The card to show, or null when the modal is closed. */
@@ -82,9 +83,9 @@ function SwapDetailBody({ post }: { post: FeedPost }) {
       <div className="relative grid grid-cols-2 gap-6">
         <SwapHalf label="Can teach" subject={post.offered} />
         <SwapHalf label="Needs help" subject={post.needed} />
-        {/* White disc behind the icon so no subject colour shows at its edge */}
+        {/* Card-coloured disc behind the icon so no subject colour shows at its edge */}
         <span className="pointer-events-none absolute top-1/2 left-1/2 flex size-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-surface">
-          <img src="/exchangeicon.svg" alt="" className="size-10" />
+          <ExchangeIcon className="size-10" />
         </span>
       </div>
 

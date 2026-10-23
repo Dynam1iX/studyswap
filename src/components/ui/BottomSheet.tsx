@@ -156,7 +156,7 @@ export function BottomSheet({ open, onClose, labelledBy, header, footer, childre
       <div
         aria-hidden
         onClick={onClose}
-        className={`absolute inset-0 touch-none bg-ink/55 transition-opacity duration-300 motion-reduce:transition-none ${
+        className={`absolute inset-0 touch-none bg-scrim transition-opacity duration-300 motion-reduce:transition-none ${
           shown ? 'opacity-100' : 'opacity-0'
         }`}
       />
