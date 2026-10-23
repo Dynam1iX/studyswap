@@ -13,6 +13,7 @@ import { PrivacySheet } from '@/components/profile/PrivacySheet';
 import { ProfileHeaderCard } from '@/components/profile/ProfileHeaderCard';
 import { SettingsPanel } from '@/components/profile/SettingsPanel';
 import { StatsRow } from '@/components/profile/StatsRow';
+import { TelegramLinkSheet } from '@/components/profile/TelegramLinkSheet';
 import { SubjectChipList } from '@/components/profile/SubjectChipList';
 import { useAvatarEditor } from '@/components/profile/useAvatarEditor';
 import { Toast, useToast } from '@/components/ui/Toast';
@@ -94,8 +95,15 @@ export default function ProfilePage() {
     window.location.assign('/login');
   };
 
-  // Telegram linking arrives with the Telegram bot.
-  const telegramSoon = () => showToast('Telegram linking is coming soon');
+  const [linkingTelegram, setLinkingTelegram] = useState(false);
+  const telegramLinked = (telegramHandle: string) => {
+    setState((prev) =>
+      prev.status === 'ready'
+        ? { status: 'ready', data: { ...prev.data, user: { ...prev.data.user, telegramHandle: telegramHandle || null } } }
+        : prev,
+    );
+    showToast('Telegram linked');
+  };
 
   const saveCard = async (card: ProfileCard, changes: CardChanges) => {
     if (changes.neededTopic !== card.neededTopic || changes.offeredTopic !== card.offeredTopic) {
@@ -175,7 +183,7 @@ export default function ProfilePage() {
                 user={{ ...state.data.user, avatarUrl: avatar.displayUrl }}
                 onEditAvatar={() => avatar.setOpen(true)}
                 avatarBusy={avatar.busy}
-                onLinkTelegram={telegramSoon}
+                onLinkTelegram={() => setLinkingTelegram(true)}
               />
             </Rise>
             <Rise index={1}>
@@ -222,6 +230,7 @@ export default function ProfilePage() {
         )}
       </div>
 
+      <TelegramLinkSheet open={linkingTelegram} onClose={() => setLinkingTelegram(false)} onLinked={telegramLinked} />
       <ManageCardSheet card={managing} onClose={() => setManaging(null)} onSave={saveCard} onDelete={removeCard} />
       {state.status === 'ready' && (
         <AvatarSheet

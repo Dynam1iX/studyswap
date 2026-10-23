@@ -444,3 +444,83 @@ nextjs-portal,
     animation: none;
   }
 }
+
+/* Telegram linking: the paper plane bobs while the site waits for the bot, launches
+   when Telegram opens, and a burst of dots celebrates the link. */
+.tg-ripple {
+  animation: tg-ripple 1.8s ease-out infinite;
+}
+@keyframes tg-ripple {
+  from {
+    transform: scale(1);
+    opacity: 0.45;
+  }
+  to {
+    transform: scale(1.75);
+    opacity: 0;
+  }
+}
+.tg-fly {
+  animation: tg-fly 1.6s ease-in-out infinite;
+}
+@keyframes tg-fly {
+  0%,
+  100% {
+    transform: translate(-2px, 2px) rotate(0deg);
+  }
+  50% {
+    transform: translate(3px, -3px) rotate(-8deg);
+  }
+}
+.tg-launch {
+  animation: tg-launch 0.9s cubic-bezier(0.5, 0, 0.3, 1);
+}
+@keyframes tg-launch {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+  45% {
+    transform: translate(46px, -46px) scale(0.4);
+    opacity: 0;
+  }
+  55% {
+    transform: translate(-46px, 46px) scale(0.4);
+    opacity: 0;
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+}
+.burst > span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 9px;
+  height: 9px;
+  border-radius: 9999px;
+  animation: burst 0.95s cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
+}
+@keyframes burst {
+  from {
+    transform: translate(-50%, -50%) scale(1.2);
+    opacity: 1;
+  }
+  to {
+    transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0.3);
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tg-ripple,
+  .tg-fly,
+  .tg-launch,
+  .burst > span {
+    animation: none;
+  }
+  .tg-ripple,
+  .burst {
+    display: none;
+  }
+}

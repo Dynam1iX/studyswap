@@ -6,6 +6,8 @@ import { ChevronLeft, Loader2, Lock, RefreshCw, Unlink } from 'lucide-react';
 import { AppHeader } from '@/components/layout/AppHeader';
 import { MobileShell } from '@/components/layout/MobileShell';
 import { Avatar } from '@/components/profile/Avatar';
+import { TelegramLinkSheet } from '@/components/profile/TelegramLinkSheet';
+import { TelegramUnlinkSheet } from '@/components/profile/TelegramUnlinkSheet';
 import { AvatarSheet } from '@/components/profile/AvatarSheet';
 import { useAvatarEditor } from '@/components/profile/useAvatarEditor';
 import { Toast, useToast } from '@/components/ui/Toast';
@@ -34,16 +36,25 @@ function ReadOnlyField({ label, value }: { label: string; value: ReactNode }) {
   );
 }
 
-function TelegramSection({ handle, onAction }: { handle: string | null; onAction: () => void }) {
+function TelegramSection({
+  handle,
+  onLink,
+  onUnlink,
+}: {
+  handle: string | null;
+  onLink: () => void;
+  onUnlink: () => void;
+}) {
   if (!handle) {
     return (
-      <div className="flex flex-col gap-3 rounded-3xl border border-line bg-white p-4">
+      <div className="flex animate-pop flex-col gap-3 rounded-3xl border border-line bg-white p-4 motion-reduce:animate-none">
         <p className="text-sm font-medium text-muted">
           Link Telegram so other students can message you there. Until then they contact you by university e-mail.
         </p>
         <button
           type="button"
-          onClick={onAction}
+          onClick={onLink}
+          aria-haspopup="dialog"
           className="shine flex h-12 cursor-pointer items-center justify-center gap-2.5 rounded-2xl bg-linear-to-r from-[#2AABEE] to-[#229ED9] text-base font-bold text-white shadow-[0_6px_16px_rgba(34,158,217,0.3)] transition active:scale-[0.98]"
         >
           <img src="/telegram.svg" alt="" className="size-6 shrink-0" />
@@ -55,13 +66,17 @@ function TelegramSection({ handle, onAction }: { handle: string | null; onAction
 
   return (
     <div className="flex flex-col gap-3 rounded-3xl border border-line bg-white p-4">
-      <div className="flex h-12 items-center gap-2.5 rounded-2xl bg-soft px-3.5 text-base font-semibold text-ink">
+      <div
+        key={handle}
+        className="flex h-12 animate-pop items-center gap-2.5 rounded-2xl bg-soft px-3.5 text-base font-semibold text-ink motion-reduce:animate-none"
+      >
         <img src="/telegram-circle.svg" alt="" className="size-7 shrink-0" />@{handle}
       </div>
       <div className="grid grid-cols-2 gap-2">
         <button
           type="button"
-          onClick={onAction}
+          onClick={onLink}
+          aria-haspopup="dialog"
           className="flex h-12 cursor-pointer items-center justify-center gap-2 rounded-2xl border border-line-strong bg-white text-sm font-bold text-ink transition hover:bg-soft active:scale-[0.98]"
         >
           <RefreshCw className="size-4" />
@@ -69,7 +84,8 @@ function TelegramSection({ handle, onAction }: { handle: string | null; onAction
         </button>
         <button
           type="button"
-          onClick={onAction}
+          onClick={onUnlink}
+          aria-haspopup="dialog"
           className="flex h-12 cursor-pointer items-center justify-center gap-2 rounded-2xl border border-[#F2C6D4] bg-white text-sm font-bold text-[#C0264B] transition hover:bg-[#FFF5F8] active:scale-[0.98]"
         >
           <Unlink className="size-4" />
@@ -108,8 +124,9 @@ export default function EditProfilePage() {
       ),
   });
 
-  // Linking, changing and unlinking Telegram arrive with the Telegram bot.
-  const telegramSoon = () => showToast('Telegram linking is coming soon');
+  const [telegramSheet, setTelegramSheet] = useState<'link' | 'unlink' | null>(null);
+  const setHandle = (telegramHandle: string | null) =>
+    setState((prev) => (prev.status === 'ready' ? { status: 'ready', user: { ...prev.user, telegramHandle } } : prev));
 
   return (
     <MobileShell
@@ -159,7 +176,11 @@ export default function EditProfilePage() {
 
             <section style={{ animationDelay: '120ms' }} className="flex animate-rise flex-col gap-3 motion-reduce:animate-none">
               <SectionTitle>Telegram</SectionTitle>
-              <TelegramSection handle={state.user.telegramHandle} onAction={telegramSoon} />
+              <TelegramSection
+                handle={state.user.telegramHandle}
+                onLink={() => setTelegramSheet('link')}
+                onUnlink={() => setTelegramSheet('unlink')}
+              />
             </section>
 
             <section style={{ animationDelay: '180ms' }} className="flex animate-rise flex-col gap-3 motion-reduce:animate-none">
@@ -180,6 +201,29 @@ export default function EditProfilePage() {
           </>
         )}
       </div>
+
+      {state.status === 'ready' && (
+        <>
+          <TelegramLinkSheet
+            open={telegramSheet === 'link'}
+            onClose={() => setTelegramSheet(null)}
+            currentHandle={state.user.telegramHandle}
+            onLinked={(handle) => {
+              setHandle(handle || null);
+              showToast('Telegram linked');
+            }}
+          />
+          <TelegramUnlinkSheet
+            open={telegramSheet === 'unlink'}
+            handle={state.user.telegramHandle}
+            onClose={() => setTelegramSheet(null)}
+            onUnlinked={() => {
+              setHandle(null);
+              showToast('Telegram unlinked');
+            }}
+          />
+        </>
+      )}
 
       {state.status === 'ready' && (
         <AvatarSheet
