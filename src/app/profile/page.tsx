@@ -12,7 +12,6 @@ import { MyCardItem } from '@/components/profile/MyCardItem';
 import { PrivacySheet } from '@/components/profile/PrivacySheet';
 import { ProfileHeaderCard } from '@/components/profile/ProfileHeaderCard';
 import { SettingsPanel } from '@/components/profile/SettingsPanel';
-import { StatsRow } from '@/components/profile/StatsRow';
 import { TelegramLinkSheet } from '@/components/profile/TelegramLinkSheet';
 import { SubjectChipList } from '@/components/profile/SubjectChipList';
 import { useAvatarEditor } from '@/components/profile/useAvatarEditor';
@@ -23,13 +22,11 @@ import {
   downloadMyData,
   fetchProfile,
   setMyCardStatus,
-  setTelegramVisibility,
   updateMyCard,
   type ProfileCard,
   type ProfileData,
 } from '@/lib/profile';
 import { signOut } from '@/lib/auth';
-import type { TelegramVisibility } from '@/types/database';
 import { messages, useT } from '@/i18n';
 
 type LoadState =
@@ -123,15 +120,6 @@ export default function ProfilePage() {
     showToast(t.profile.cardDeleted);
   };
 
-  const changeVisibility = async (visibility: TelegramVisibility) => {
-    await setTelegramVisibility(visibility);
-    setState((prev) =>
-      prev.status === 'ready'
-        ? { status: 'ready', data: { ...prev.data, user: { ...prev.data.user, telegramVisibility: visibility } } }
-        : prev,
-    );
-  };
-
   const footer = (
     <div className="relative">
       <Toast toast={toast} onHide={hideToast} />
@@ -187,12 +175,9 @@ export default function ProfilePage() {
               />
             </Rise>
             <Rise index={1}>
-              <StatsRow stats={state.data.stats} />
-            </Rise>
-            <Rise index={2}>
               <SubjectChipList title={t.profile.needHelpWith} subjects={state.data.needsHelp} emptyText={t.profile.nothingYet} />
             </Rise>
-            <Rise index={3}>
+            <Rise index={2}>
               <SubjectChipList title={t.profile.canTeach} subjects={state.data.canTeach} emptyText={t.profile.nothingYet} />
             </Rise>
 
@@ -246,8 +231,6 @@ export default function ProfilePage() {
         <PrivacySheet
           open={privacyOpen}
           onClose={() => setPrivacyOpen(false)}
-          telegramVisibility={state.data.user.telegramVisibility}
-          onTelegramVisibilityChange={changeVisibility}
           onDownload={downloadMyData}
           onDeleteAccount={async () => {
             await deleteMyAccount(state.data.user.avatarPath);

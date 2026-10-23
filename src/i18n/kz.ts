@@ -55,7 +55,6 @@ export const kz: Messages = {
 
   details: {
     title: 'Алмасу туралы',
-    noRatings: 'Әзірге баға жоқ',
     whatTheyTeach: 'Нені түсіндіре алады',
     whatTheyNeed: 'Неге көмек керек',
     subjects: 'Пәндер',
@@ -152,9 +151,6 @@ export const kz: Messages = {
     loading: 'Профиль жүктелуде...',
     loadError: 'Профильді жүктеу мүмкін болмады',
     notFound: 'Профиль табылмады',
-    swapsDone: 'Алмасу',
-    ratings: (count) => `${count} баға`,
-    activeCards: 'Белсенді карточка',
     needHelpWith: 'Маған көмек керек',
     canTeach: 'Түсіндіре аламын',
     nothingYet: 'Әзірге ештеңе жоқ',
@@ -197,14 +193,8 @@ export const kz: Messages = {
   },
 
   privacy: {
-    whoSees: 'Менің Telegram-ымды кім көреді',
-    visibility: {
-      everyone: { title: 'Барлық студенттер', hint: 'Карточкаларыңызда «Telegram-да жазу» батырмасы болады.' },
-      accepted: { title: 'Өтінімді қабылдағаннан кейін ғана', hint: 'Оған дейін студенттер сізге университет поштасына жазады.' },
-    },
-    saveError: 'Баптауды сақтау мүмкін болмады',
     yourData: 'Сіздің деректеріңіз',
-    yourDataHint: 'StudySwap сіз туралы сақтайтын барлық деректерді жүктеп алыңыз: профиль, карточкалар, алмасу өтінімдері, лайктар және соңғы іздеулер.',
+    yourDataHint: 'StudySwap сіз туралы сақтайтын барлық деректерді жүктеп алыңыз: профиль, карточкалар, лайктар және соңғы іздеулер.',
     download: 'Деректерімді жүктеу (JSON)',
     downloadError: 'Деректерді дайындау мүмкін болмады',
     deleteTitle: 'Аккаунтты өшіру',

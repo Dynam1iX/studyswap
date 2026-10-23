@@ -1,6 +1,6 @@
 import { getInitials, getShortName } from '@/lib/format';
 import { supabase } from '@/lib/supabase';
-import type { DegreeLevel, PostStatus, StudyYear, Subject, TelegramVisibility, User } from '@/types/database';
+import type { DegreeLevel, PostStatus, StudyYear, Subject, User } from '@/types/database';
 import type { Messages } from '@/i18n';
 
 export type ProfileSubject = Pick<Subject, 'id' | 'code' | 'name' | 'category'>;
@@ -31,21 +31,12 @@ export interface ProfileUser {
   studyYear: StudyYear;
   /** Without the leading "@"; null when the student has not linked Telegram. */
   telegramHandle: string | null;
-  telegramVisibility: TelegramVisibility;
   /** Storage path of the photo, or null. */
   avatarPath: string | null;
 }
 
-export interface ProfileStats {
-  swapsDone: number;
-  activeCards: number;
-  /** null until a ratings table exists. */
-  rating: { average: number; count: number } | null;
-}
-
 export interface ProfileData {
   user: ProfileUser;
-  stats: ProfileStats;
   needsHelp: ProfileSubject[];
   canTeach: ProfileSubject[];
   cards: ProfileCard[];
@@ -53,7 +44,7 @@ export interface ProfileData {
 
 type UserRow = Pick<
   User,
-  'id' | 'full_name' | 'email' | 'telegram_handle' | 'telegram_visibility' | 'major' | 'study_year' | 'degree_level' | 'avatar_path'
+  'id' | 'full_name' | 'email' | 'telegram_handle' | 'major' | 'study_year' | 'degree_level' | 'avatar_path'
 >;
 
 /**
@@ -125,20 +116,6 @@ export async function fetchProfile(): Promise<ProfileData | null> {
       : [],
   );
 
-  // A swap counts once it is accepted, whether the student sent it or received it on their post.
-  const postIds = cards.map((card) => card.id);
-  const swapFilter = postIds.length
-    ? `sender_id.eq.${userRow.id},post_id.in.(${postIds.join(',')})`
-    : `sender_id.eq.${userRow.id}`;
-
-  const { count: swapsDone, error: swapsError } = await supabase
-    .from('swap_requests')
-    .select('id', { count: 'exact', head: true })
-    .eq('status', 'accepted')
-    .or(swapFilter);
-
-  if (swapsError) throw swapsError;
-
   const [firstName, lastName] = splitName(userRow.full_name);
   // Inactive cards stay in My cards but do not count as subjects the student needs or teaches.
   const activeCards = cards.filter((card) => card.status === 'active');
@@ -156,13 +133,7 @@ export async function fetchProfile(): Promise<ProfileData | null> {
       major: userRow.major || 'Software Engineering',
       studyYear: toStudyYear(userRow.study_year),
       telegramHandle: userRow.telegram_handle?.replace(/^@/, '') || null,
-      telegramVisibility: userRow.telegram_visibility === 'accepted' ? 'accepted' : 'everyone',
       avatarPath: userRow.avatar_path ?? null,
-    },
-    stats: {
-      swapsDone: swapsDone ?? 0,
-      activeCards: activeCards.length,
-      rating: null,
     },
     // No user_subjects table yet, so both lists come from the student's own cards.
     needsHelp: uniqueSubjects(activeCards.map((card) => card.needed)),
@@ -196,11 +167,6 @@ export async function setMyCardStatus(id: string, status: 'active' | 'archived')
 
 export async function deleteMyCard(id: string): Promise<void> {
   const { error } = await supabase.rpc('delete_my_card', { p_id: id });
-  if (error) throw error;
-}
-
-export async function setTelegramVisibility(visibility: TelegramVisibility): Promise<void> {
-  const { error } = await supabase.rpc('set_telegram_visibility', { p_visibility: visibility });
   if (error) throw error;
 }
 
