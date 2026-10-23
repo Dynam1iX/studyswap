@@ -47,6 +47,7 @@ src/
     avatar.ts             Profile photos: crop to 256×256 WebP/JPEG, upload, public URL
     format.ts             Small text helpers (initials, short names)
     auth.ts               Sign-in: e-mail codes, Microsoft, current student, complete profile
+    telegram.ts           Telegram linking through the bot: link token, status, unlink
   types/
     database.ts           Row types of the Supabase tables
 public/                   Logo and icons
