@@ -34,7 +34,7 @@ function SavedBadge({ count }: { count: number }) {
     <span
       // A new key pops the badge every time the number changes.
       key={count}
-      className="flex h-8 shrink-0 animate-pop items-center rounded-2xl bg-[#F3E8FF] px-3.5 text-xs font-bold motion-reduce:animate-none"
+      className="flex h-8 shrink-0 animate-pop items-center rounded-2xl bg-brand-soft px-3.5 text-xs font-bold motion-reduce:animate-none"
     >
       <span className="bg-linear-to-r from-brand-from to-brand-to bg-clip-text text-transparent">
         {count} saved
@@ -45,8 +45,8 @@ function SavedBadge({ count }: { count: number }) {
 
 function EmptyState() {
   return (
-    <div className="flex animate-pop flex-col items-center gap-3 rounded-3xl border border-dashed border-line-strong bg-white/60 px-6 py-12 text-center motion-reduce:animate-none">
-      <span className="flex size-16 items-center justify-center rounded-full bg-[#F3E8FF]">
+    <div className="flex animate-pop flex-col items-center gap-3 rounded-3xl border border-dashed border-line-strong bg-surface/60 px-6 py-12 text-center motion-reduce:animate-none">
+      <span className="flex size-16 items-center justify-center rounded-full bg-brand-soft">
         <Heart
           aria-hidden
           className="size-7 animate-breathe fill-brand-to/15 text-brand-to motion-reduce:animate-none"
@@ -175,7 +175,7 @@ export default function FavoritesPage() {
         {state.status === 'loading' && <FeedSkeleton count={2} />}
 
         {state.status === 'error' && (
-          <p className="rounded-2xl border border-[#F2C6D4] bg-white p-6 text-center text-sm font-medium text-[#C0264B]">
+          <p className="rounded-2xl border border-danger-line bg-surface p-6 text-center text-sm font-medium text-danger-ink">
             {state.message}
           </p>
         )}

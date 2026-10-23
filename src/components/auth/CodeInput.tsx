@@ -48,7 +48,7 @@ export function CodeInput({ value, onChange, onComplete, disabled, error }: Code
           return (
             <span
               key={index}
-              className={`flex h-14 items-center justify-center rounded-xl border bg-white font-bricolage text-2xl font-extrabold text-ink transition-[border-color,box-shadow,transform] duration-200 ${
+              className={`flex h-14 items-center justify-center rounded-xl border bg-surface font-bricolage text-2xl font-extrabold text-ink transition-[border-color,box-shadow,transform] duration-200 ${
                 error
                   ? 'border-danger'
                   : active

@@ -47,7 +47,7 @@ function TelegramSection({
 }) {
   if (!handle) {
     return (
-      <div className="flex animate-pop flex-col gap-3 rounded-3xl border border-line bg-white p-4 motion-reduce:animate-none">
+      <div className="flex animate-pop flex-col gap-3 rounded-3xl border border-line bg-surface p-4 motion-reduce:animate-none">
         <p className="text-sm font-medium text-muted">
           Link Telegram so other students can message you there. Until then they contact you by university e-mail.
         </p>
@@ -65,7 +65,7 @@ function TelegramSection({
   }
 
   return (
-    <div className="flex flex-col gap-3 rounded-3xl border border-line bg-white p-4">
+    <div className="flex flex-col gap-3 rounded-3xl border border-line bg-surface p-4">
       <div
         key={handle}
         className="flex h-12 animate-pop items-center gap-2.5 rounded-2xl bg-soft px-3.5 text-base font-semibold text-ink motion-reduce:animate-none"
@@ -77,7 +77,7 @@ function TelegramSection({
           type="button"
           onClick={onLink}
           aria-haspopup="dialog"
-          className="flex h-12 cursor-pointer items-center justify-center gap-2 rounded-2xl border border-line-strong bg-white text-sm font-bold text-ink transition hover:bg-soft active:scale-[0.98]"
+          className="flex h-12 cursor-pointer items-center justify-center gap-2 rounded-2xl border border-line-strong bg-surface text-sm font-bold text-ink transition hover:bg-soft active:scale-[0.98]"
         >
           <RefreshCw className="size-4" />
           Change
@@ -86,7 +86,7 @@ function TelegramSection({
           type="button"
           onClick={onUnlink}
           aria-haspopup="dialog"
-          className="flex h-12 cursor-pointer items-center justify-center gap-2 rounded-2xl border border-[#F2C6D4] bg-white text-sm font-bold text-[#C0264B] transition hover:bg-[#FFF5F8] active:scale-[0.98]"
+          className="flex h-12 cursor-pointer items-center justify-center gap-2 rounded-2xl border border-danger-line bg-surface text-sm font-bold text-danger-ink transition hover:bg-danger-soft active:scale-[0.98]"
         >
           <Unlink className="size-4" />
           Unlink
@@ -158,7 +158,7 @@ export default function EditProfilePage() {
         )}
 
         {state.status === 'error' && (
-          <p className="rounded-2xl border border-[#F2C6D4] bg-white p-6 text-center text-sm font-medium text-[#C0264B]">
+          <p className="rounded-2xl border border-danger-line bg-surface p-6 text-center text-sm font-medium text-danger-ink">
             {state.message}
           </p>
         )}
@@ -185,7 +185,7 @@ export default function EditProfilePage() {
 
             <section style={{ animationDelay: '180ms' }} className="flex animate-rise flex-col gap-3 motion-reduce:animate-none">
               <SectionTitle>Student details</SectionTitle>
-              <div className="flex flex-col rounded-3xl border border-line bg-white px-4 py-1">
+              <div className="flex flex-col rounded-3xl border border-line bg-surface px-4 py-1">
                 <ReadOnlyField label="First name" value={state.user.firstName} />
                 <ReadOnlyField label="Last name" value={state.user.lastName} />
                 <ReadOnlyField label="Major" value={state.user.major} />

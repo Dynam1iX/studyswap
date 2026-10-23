@@ -56,10 +56,10 @@ export function HeroCard() {
   return (
     <div aria-hidden className="flex justify-center py-2">
       <div className="animate-float motion-reduce:animate-none">
-        <div className="relative flex w-72 -rotate-4 flex-col gap-2 rounded-2xl bg-white p-2 shadow-[0_8px_24px_rgba(60,30,110,0.16)]">
+        <div className="relative flex w-72 -rotate-4 flex-col gap-2 rounded-2xl bg-surface p-2 shadow-[0_8px_24px_rgba(60,30,110,0.16)]">
           <Half label="Needs help" subject={pair.needs} turn={turn} />
           <Half label="Can teach" subject={pair.teaches} turn={turn} />
-          <span className="absolute top-1/2 right-6 flex size-11 -translate-y-1/2 items-center justify-center rounded-full bg-white">
+          <span className="absolute top-1/2 right-6 flex size-11 -translate-y-1/2 items-center justify-center rounded-full bg-surface">
             <img
               src="/exchangeicon.svg"
               alt=""

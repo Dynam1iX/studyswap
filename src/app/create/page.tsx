@@ -183,7 +183,7 @@ export default function CreateBarterPage() {
 
       {/* Form */}
       <div style={{ animationDelay: '70ms' }} className="animate-rise px-4 py-2 motion-reduce:animate-none">
-        <div className="space-y-4 rounded-[24px] border border-line bg-white p-4 shadow-sm">
+        <div className="space-y-4 rounded-[24px] border border-line bg-surface p-4 shadow-sm">
           <SubjectSelect
             label="Subject you need help with"
             subjects={subjects}
@@ -253,11 +253,11 @@ export default function CreateBarterPage() {
       </div>
 
       <div style={{ animationDelay: '210ms' }} className="animate-rise px-4 py-2 motion-reduce:animate-none">
-        <div className="flex items-center gap-3 rounded-[16px] bg-[#F3E8FF] p-4">
+        <div className="flex items-center gap-3 rounded-[16px] bg-brand-soft p-4">
           <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-brand-from to-brand-to text-white shadow-[0_4px_12px_rgba(173,70,255,0.3)]">
             <ShieldCheck aria-hidden className="size-5" strokeWidth={2.2} />
           </span>
-          <p className="text-[13px] leading-[19px] font-semibold text-[#3B2A66]">
+          <p className="text-[13px] leading-[19px] font-semibold text-ink">
             Contact details are only shared with verified university students.
           </p>
         </div>

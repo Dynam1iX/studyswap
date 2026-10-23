@@ -161,7 +161,7 @@ function ManageForm({
           }`}
         >
           <span
-            className={`absolute top-1 left-1 size-6 rounded-full bg-white shadow-[0_2px_6px_rgba(27,21,48,0.2)] transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
+            className={`absolute top-1 left-1 size-6 rounded-full bg-surface shadow-[0_2px_6px_rgba(27,21,48,0.2)] transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
               active ? 'translate-x-6' : 'translate-x-0'
             }`}
           />
@@ -187,14 +187,14 @@ function ManageForm({
       {/* Delete, with a second step */}
       <div>
         {confirmDelete ? (
-          <div className="flex animate-pop flex-col gap-3 rounded-2xl border border-[#F2C6D4] bg-[#FFF5F8] p-4 motion-reduce:animate-none">
-            <p className="text-sm font-bold text-[#8A1538]">Delete this card? This cannot be undone.</p>
+          <div className="flex animate-pop flex-col gap-3 rounded-2xl border border-danger-line bg-danger-soft p-4 motion-reduce:animate-none">
+            <p className="text-sm font-bold text-danger-ink">Delete this card? This cannot be undone.</p>
             <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
                 onClick={() => setConfirmDelete(false)}
                 disabled={busy !== null}
-                className="h-12 cursor-pointer rounded-xl border border-line-strong bg-white text-sm font-bold text-ink transition active:scale-[0.98]"
+                className="h-12 cursor-pointer rounded-xl border border-line-strong bg-surface text-sm font-bold text-ink transition active:scale-[0.98]"
               >
                 Keep it
               </button>
@@ -213,7 +213,7 @@ function ManageForm({
           <button
             type="button"
             onClick={() => setConfirmDelete(true)}
-            className="flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-2xl border border-[#F2C6D4] bg-white text-sm font-bold text-[#C0264B] transition hover:bg-[#FFF5F8] active:scale-[0.98]"
+            className="flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-2xl border border-danger-line bg-surface text-sm font-bold text-danger-ink transition hover:bg-danger-soft active:scale-[0.98]"
           >
             <Trash2 className="size-4" />
             Delete card

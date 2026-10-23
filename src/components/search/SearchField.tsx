@@ -31,7 +31,7 @@ export function SearchField({ value, onChange, onSubmit, inputRef }: SearchField
         className="pointer-events-none absolute -inset-1.5 rounded-[22px] bg-linear-to-r from-brand-from/25 to-brand-to/25 opacity-0 blur-md transition-opacity duration-500 group-focus-within:opacity-100"
       />
 
-      <label className="relative flex h-14 cursor-text items-center gap-3 rounded-2xl border border-field bg-white px-4 shadow-[0_6px_18px_rgba(60,30,110,0.06)] transition-colors duration-300 group-focus-within:border-transparent">
+      <label className="relative flex h-14 cursor-text items-center gap-3 rounded-2xl border border-field bg-surface px-4 shadow-[0_6px_18px_rgba(60,30,110,0.06)] transition-colors duration-300 group-focus-within:border-transparent">
         <Search
           aria-hidden
           className="size-5 shrink-0 text-muted transition-[color,transform] duration-300 group-focus-within:scale-110 group-focus-within:text-brand-from"

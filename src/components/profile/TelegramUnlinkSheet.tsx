@@ -68,7 +68,7 @@ export function TelegramUnlinkSheet({ open, handle, onClose, onUnlinked }: Teleg
           <button
             type="button"
             onClick={onClose}
-            className="h-12 cursor-pointer rounded-2xl border border-line-strong bg-white text-sm font-bold text-ink transition hover:bg-soft active:scale-[0.98]"
+            className="h-12 cursor-pointer rounded-2xl border border-line-strong bg-surface text-sm font-bold text-ink transition hover:bg-soft active:scale-[0.98]"
           >
             Cancel
           </button>

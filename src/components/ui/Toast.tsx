@@ -50,7 +50,7 @@ export function Toast({ toast, onHide }: ToastProps) {
       {shown && (
         <span
           key={shown.key}
-          className="animate-pop rounded-2xl bg-ink px-4 py-3 text-center text-sm font-semibold text-white shadow-[0_10px_28px_rgba(27,21,48,0.3)] motion-reduce:animate-none"
+          className="animate-pop rounded-2xl bg-toast px-4 py-3 text-center text-sm font-semibold text-white shadow-[0_10px_28px_rgba(27,21,48,0.3)] motion-reduce:animate-none"
         >
           {shown.message}
         </span>

@@ -66,7 +66,7 @@ function CategoryCard({
         className="pointer-events-none absolute -top-10 -right-10 size-32 rounded-full bg-white/40 opacity-0 blur-2xl transition-opacity duration-500 group-hover:opacity-100"
       />
 
-      <span className="relative flex size-10 items-center justify-center rounded-[20px] bg-white shadow-[0_2px_6px_rgba(60,30,110,0.06)] transition-transform duration-300 group-hover:scale-105">
+      <span className="relative flex size-10 items-center justify-center rounded-[20px] bg-surface shadow-[0_2px_6px_rgba(60,30,110,0.06)] transition-transform duration-300 group-hover:scale-105">
         <Icon
           key={wiggle}
           aria-hidden

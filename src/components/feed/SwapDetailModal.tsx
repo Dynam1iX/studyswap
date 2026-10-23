@@ -83,7 +83,7 @@ function SwapDetailBody({ post }: { post: FeedPost }) {
         <SwapHalf label="Can teach" subject={post.offered} />
         <SwapHalf label="Needs help" subject={post.needed} />
         {/* White disc behind the icon so no subject colour shows at its edge */}
-        <span className="pointer-events-none absolute top-1/2 left-1/2 flex size-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white">
+        <span className="pointer-events-none absolute top-1/2 left-1/2 flex size-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-surface">
           <img src="/exchangeicon.svg" alt="" className="size-10" />
         </span>
       </div>
@@ -113,7 +113,7 @@ function SwapDetailBody({ post }: { post: FeedPost }) {
           })}
           {departments.map((department) => (
             <li key={department}>
-              <Chip className="border border-line-strong bg-white text-muted">{department}</Chip>
+              <Chip className="border border-line-strong bg-surface text-muted">{department}</Chip>
             </li>
           ))}
         </ul>
@@ -149,7 +149,7 @@ function SwapHalf({ label, subject }: { label: string; subject: Subject | null }
         {subject?.name ?? 'Not specified'}
       </span>
       {subject && (
-        <Chip style={{ color: palette.title }} className="bg-white/70">
+        <Chip style={{ color: palette.title }} className="bg-surface/70">
           {subject.code}
         </Chip>
       )}
@@ -163,7 +163,7 @@ function TextBlock({ title, text }: { title: string; text: string }) {
       <h3 className="font-bricolage text-[17px] font-bold text-ink">{title}</h3>
       <p
         className={`text-[15px] leading-[23px] font-medium break-words whitespace-pre-line ${
-          text.trim() ? 'text-[#3B3552]' : 'text-muted'
+          text.trim() ? 'text-ink' : 'text-muted'
         }`}
       >
         {text.trim() || 'No details yet.'}
@@ -205,11 +205,11 @@ function DetailRow({
 function SwapDetailActions({ post, onClose }: { post: FeedPost; onClose: () => void }) {
   const isTelegram = getContactMethod(post) === 'telegram';
   return (
-    <div className="grid shrink-0 grid-cols-4 gap-6 border-t border-line bg-white px-6 pt-4 pb-[max(24px,env(safe-area-inset-bottom))]">
+    <div className="grid shrink-0 grid-cols-4 gap-6 border-t border-line bg-surface px-6 pt-4 pb-[max(24px,env(safe-area-inset-bottom))]">
       <button
         type="button"
         onClick={onClose}
-        className="col-span-1 h-14 cursor-pointer rounded-2xl border-[1.5px] border-line-strong bg-white text-base font-bold text-ink transition hover:bg-soft"
+        className="col-span-1 h-14 cursor-pointer rounded-2xl border-[1.5px] border-line-strong bg-surface text-base font-bold text-ink transition hover:bg-soft"
       >
         Close
       </button>

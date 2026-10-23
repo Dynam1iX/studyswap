@@ -168,7 +168,7 @@ export function BottomSheet({ open, onClose, labelledBy, header, footer, childre
           transform: shown ? `translate3d(0, ${dragY}px, 0)` : 'translate3d(0, 100%, 0)',
           willChange: 'transform',
         }}
-        className={`fixed inset-x-0 bottom-0 mx-auto flex max-h-[80%] w-full max-w-[576px] flex-col overflow-hidden rounded-t-[28px] bg-white shadow-[0_-8px_32px_rgba(27,21,48,0.18)] ${
+        className={`fixed inset-x-0 bottom-0 mx-auto flex max-h-[80%] w-full max-w-[576px] flex-col overflow-hidden rounded-t-[28px] bg-surface shadow-[0_-8px_32px_rgba(27,21,48,0.18)] ${
           dragY ? '' : 'transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] motion-reduce:transition-none'
         }`}
       >
@@ -189,7 +189,7 @@ export function BottomSheet({ open, onClose, labelledBy, header, footer, childre
         <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
           {children}
           {/* Fades the text out above the actions while there is more to scroll */}
-          <div aria-hidden className="pointer-events-none sticky bottom-0 -mt-10 h-10 bg-linear-to-t from-white to-white/0" />
+          <div aria-hidden className="pointer-events-none sticky bottom-0 -mt-10 h-10 bg-linear-to-t from-surface to-surface/0" />
         </div>
 
         {footer}

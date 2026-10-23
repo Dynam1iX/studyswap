@@ -220,7 +220,7 @@ function LinkFlow({
         <button
           type="button"
           onClick={() => void start()}
-          className="flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-2xl border border-line-strong bg-white text-sm font-bold text-ink transition hover:bg-soft active:scale-[0.98]"
+          className="flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-2xl border border-line-strong bg-surface text-sm font-bold text-ink transition hover:bg-soft active:scale-[0.98]"
         >
           <RefreshCw className="size-4" />
           Get a new link
@@ -248,7 +248,7 @@ function StatusText({ state, currentHandle }: { state: FlowState; currentHandle:
   } else if (state.status === 'no_username') {
     title = 'Add a Telegram username';
     body = 'Your Telegram has no username yet. Set one in Telegram → Settings → Username, then open the bot again.';
-    tone = 'text-[#B45309]';
+    tone = 'text-warning';
   } else if (state.status === 'taken') {
     title = 'Already linked elsewhere';
     body = 'This Telegram account is linked to another StudySwap student. Unlink it there first.';

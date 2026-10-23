@@ -17,7 +17,7 @@ export function UserAvatar({ initials, url, className = 'size-10 text-xs' }: Use
 
   return (
     <span
-      className={`relative flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#F1E9FF] font-semibold text-[#6D1FC4] ${className}`}
+      className={`relative flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-brand-soft font-semibold text-brand-ink ${className}`}
     >
       {showPhoto ? (
         <img

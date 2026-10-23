@@ -1,10 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-
-export type ThemeChoice = 'light' | 'dark';
-
-const STORAGE_KEY = 'studyswap-theme';
+import { useEffect, useState, type MouseEvent } from 'react';
+import { applyTheme, currentTheme, type ThemeChoice } from '@/lib/theme';
 
 /** Stars that light up on the night sky, left side of the track. */
 const STARS = [
@@ -14,36 +11,24 @@ const STARS = [
   { left: 13, top: 25, size: 1.5, delay: 380 },
 ];
 
-function readTheme(): ThemeChoice {
-  try {
-    return window.localStorage.getItem(STORAGE_KEY) === 'dark' ? 'dark' : 'light';
-  } catch {
-    return 'light';
-  }
-}
-
 /**
  * Day / night switch: the sun rolls across a sky that turns from day to night,
  * a shadow slides over it until only a crescent moon is left, and stars come out.
- * For now it only remembers the choice; the dark theme itself comes later.
+ * Switching spreads the new theme over the screen in a circle from the switch.
  */
 export function ThemeToggle() {
   const [theme, setTheme] = useState<ThemeChoice>('light');
   const night = theme === 'dark';
 
   useEffect(() => {
-    const frame = requestAnimationFrame(() => setTheme(readTheme()));
+    const frame = requestAnimationFrame(() => setTheme(currentTheme()));
     return () => cancelAnimationFrame(frame);
   }, []);
 
-  const toggle = () => {
+  const toggle = (event: MouseEvent<HTMLButtonElement>) => {
     const next: ThemeChoice = night ? 'light' : 'dark';
     setTheme(next);
-    try {
-      window.localStorage.setItem(STORAGE_KEY, next);
-    } catch {
-      // Not saved (private mode); the switch still works for this visit.
-    }
+    applyTheme(next, event.currentTarget);
   };
 
   const ease = 'ease-[cubic-bezier(0.68,-0.3,0.32,1.3)]';

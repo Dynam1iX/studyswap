@@ -141,7 +141,7 @@ export function RecentSearches({ items, onPick, onRemove, onClearAll, delay = 0 
           })}
         </ul>
       ) : (
-        <div className="flex animate-pop flex-col items-center gap-2 rounded-3xl border border-dashed border-line-strong bg-white/60 px-6 py-8 text-center motion-reduce:animate-none">
+        <div className="flex animate-pop flex-col items-center gap-2 rounded-3xl border border-dashed border-line-strong bg-surface/60 px-6 py-8 text-center motion-reduce:animate-none">
           <span className="flex size-14 animate-float items-center justify-center rounded-full bg-soft motion-reduce:animate-none">
             <History aria-hidden className="size-6 text-brand-from" strokeWidth={2} />
           </span>

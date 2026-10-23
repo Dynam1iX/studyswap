@@ -5,7 +5,7 @@ function SkeletonCard({ index }: { index: number }) {
   return (
     <div
       style={{ animationDelay: `${index * 90}ms` }}
-      className="w-full animate-rise space-y-2.5 rounded-2xl border border-line bg-white p-4 shadow-sm motion-reduce:animate-none"
+      className="w-full animate-rise space-y-2.5 rounded-2xl border border-line bg-surface p-4 shadow-sm motion-reduce:animate-none"
     >
       <div className="flex items-center gap-2.5">
         <span className={`size-10 rounded-full ${SHIMMER}`} />

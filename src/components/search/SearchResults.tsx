@@ -64,7 +64,7 @@ export function SearchResults({
               onClick={() => onClearFilter(chip.key)}
               aria-label={`Remove filter ${chip.label}`}
               style={{ animationDelay: `${index * 50}ms` }}
-              className="flex h-9 shrink-0 animate-pop cursor-pointer items-center gap-1.5 rounded-full bg-ink py-0 pr-2.5 pl-3.5 text-[13px] font-semibold text-white transition active:scale-95 motion-reduce:animate-none"
+              className="flex h-9 shrink-0 animate-pop cursor-pointer items-center gap-1.5 rounded-full bg-ink py-0 pr-2.5 pl-3.5 text-[13px] font-semibold text-page transition active:scale-95 motion-reduce:animate-none"
             >
               <span className="max-w-[200px] truncate">{chip.label}</span>
               <X aria-hidden className="size-3.5 opacity-70" strokeWidth={2.6} />
@@ -79,7 +79,7 @@ export function SearchResults({
           <span className="text-xs font-medium">Searching barter offers...</span>
         </div>
       ) : posts.length === 0 ? (
-        <div className="flex animate-pop flex-col items-center gap-2 rounded-3xl border border-dashed border-line-strong bg-white/60 px-6 py-10 text-center motion-reduce:animate-none">
+        <div className="flex animate-pop flex-col items-center gap-2 rounded-3xl border border-dashed border-line-strong bg-surface/60 px-6 py-10 text-center motion-reduce:animate-none">
           <span className="flex size-14 animate-float items-center justify-center rounded-full bg-soft motion-reduce:animate-none">
             <SearchX aria-hidden className="size-6 text-brand-from" strokeWidth={2} />
           </span>

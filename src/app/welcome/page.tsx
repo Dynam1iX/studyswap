@@ -15,7 +15,7 @@ const DEGREES: { value: NewProfile['degree']; label: string }[] = [
 ];
 
 const FIELD =
-  'h-12 w-full rounded-xl border border-field bg-white px-4 text-[16px] font-semibold text-ink outline-none transition-[border-color,box-shadow] placeholder:text-placeholder focus:border-brand-from focus:shadow-[0_0_0_3px_rgba(173,70,255,0.15)] sm:text-[15px]';
+  'h-12 w-full rounded-xl border border-field bg-surface px-4 text-[16px] font-semibold text-ink outline-none transition-[border-color,box-shadow] placeholder:text-placeholder focus:border-brand-from focus:shadow-[0_0_0_3px_rgba(173,70,255,0.15)] sm:text-[15px]';
 
 function Field({ label, children, delay }: { label: string; children: ReactNode; delay: number }) {
   return (

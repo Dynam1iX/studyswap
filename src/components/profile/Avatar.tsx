@@ -30,7 +30,7 @@ export function Avatar({ initials, url = null, onEdit, busy = false }: AvatarPro
               : 'bg-linear-to-br from-brand-from to-brand-to'
           }`}
         />
-        <div className="relative flex size-full items-center justify-center overflow-hidden rounded-full border-[3px] border-white bg-[#F1E9FF]">
+        <div className="relative flex size-full items-center justify-center overflow-hidden rounded-full border-[3px] border-surface bg-brand-soft">
           {showPhoto ? (
             <img
               key={url}
@@ -42,7 +42,7 @@ export function Avatar({ initials, url = null, onEdit, busy = false }: AvatarPro
               className="size-full animate-pop rounded-full object-cover pointer-events-none select-none [-webkit-touch-callout:none] motion-reduce:animate-none"
             />
           ) : (
-            <span className="font-bricolage text-2xl font-extrabold text-[#6D1FC4]">{initials}</span>
+            <span className="font-bricolage text-2xl font-extrabold text-brand-ink">{initials}</span>
           )}
         </div>
       </div>
@@ -51,7 +51,7 @@ export function Avatar({ initials, url = null, onEdit, busy = false }: AvatarPro
         onClick={onEdit}
         aria-label="Change photo"
         aria-haspopup="dialog"
-        className="relative z-10 col-start-1 row-start-1 flex size-8 cursor-pointer items-center justify-center self-end justify-self-end rounded-full border-[3px] border-white bg-ink text-white transition-transform hover:-rotate-12 hover:scale-110 active:scale-90"
+        className="relative z-10 col-start-1 row-start-1 flex size-8 cursor-pointer items-center justify-center self-end justify-self-end rounded-full border-[3px] border-surface bg-ink text-page transition-transform hover:-rotate-12 hover:scale-110 active:scale-90"
       >
         <Pencil className="size-3.5" strokeWidth={2.4} />
       </button>

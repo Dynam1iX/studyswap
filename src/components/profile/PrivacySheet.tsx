@@ -121,7 +121,7 @@ export function PrivacySheet({
                   aria-checked={selected}
                   onClick={() => chooseVisibility(option.value)}
                   className={`flex cursor-pointer items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-left transition-[border-color,background-color,transform] duration-200 active:scale-[0.98] ${
-                    selected ? 'border-brand-from bg-[#FBF5FF]' : 'border-line-strong bg-white hover:bg-soft/60'
+                    selected ? 'border-brand-from bg-brand-soft' : 'border-line-strong bg-surface hover:bg-soft/60'
                   }`}
                 >
                   <span className="flex flex-col gap-0.5">
@@ -158,7 +158,7 @@ export function PrivacySheet({
             type="button"
             onClick={download}
             disabled={downloading}
-            className="flex h-12 cursor-pointer items-center justify-center gap-2 rounded-2xl border border-line-strong bg-white text-sm font-bold text-ink transition hover:bg-soft active:scale-[0.98] disabled:opacity-60"
+            className="flex h-12 cursor-pointer items-center justify-center gap-2 rounded-2xl border border-line-strong bg-surface text-sm font-bold text-ink transition hover:bg-soft active:scale-[0.98] disabled:opacity-60"
           >
             {downloading ? <Loader2 className="size-4 animate-spin" /> : <Download className="size-4" />}
             Download my data (JSON)
@@ -180,7 +180,7 @@ export function PrivacySheet({
             autoCapitalize="characters"
             autoComplete="off"
             aria-label={`Type ${DELETE_WORD} to confirm`}
-            className="h-12 rounded-[14px] border border-field px-4 text-[16px] font-semibold text-ink outline-none transition placeholder:text-placeholder focus:border-[#C0264B] sm:text-[14px]"
+            className="h-12 rounded-[14px] border border-field px-4 text-[16px] font-semibold text-ink outline-none transition placeholder:text-placeholder focus:border-danger-ink sm:text-[14px]"
           />
           <button
             type="button"

@@ -35,7 +35,7 @@ function FilterChip({
       className={`${CHIP} ${
         active
           ? 'border-transparent text-white shadow-[0_6px_16px_rgba(173,70,255,0.3)]'
-          : 'border-line-strong bg-white text-ink hover:border-field'
+          : 'border-line-strong bg-surface text-ink hover:border-field'
       }`}
     >
       {/* Gradient fill that fades in when a value is chosen */}

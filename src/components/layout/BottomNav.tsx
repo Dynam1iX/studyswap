@@ -47,7 +47,7 @@ function NavTabItem({ config, active, pings = 0 }: { config: TabConfig; active: 
         key={pings}
         src={active ? config.activeIcon : config.icon}
         alt={config.label}
-        className={`size-[22px] ${bounce ? 'animate-nav-bounce motion-reduce:animate-none' : ''}`}
+        className={`size-[22px] ${active ? '' : 'theme-icon'} ${bounce ? 'animate-nav-bounce motion-reduce:animate-none' : ''}`}
       />
       <span
         className={`text-[11px] font-semibold ${
@@ -86,7 +86,7 @@ function NavTabItem({ config, active, pings = 0 }: { config: TabConfig; active: 
 export function BottomNav({ active }: { active: NavTab }) {
   const favoritePings = useFavoritePings();
   return (
-    <nav className="flex h-[76px] w-full items-center justify-around border-t border-line bg-white px-3">
+    <nav className="flex h-[76px] w-full items-center justify-around border-t border-line bg-surface px-3">
       {LEFT_TABS.map((config) => (
         <NavTabItem key={config.tab} config={config} active={config.tab === active} />
       ))}
@@ -95,7 +95,7 @@ export function BottomNav({ active }: { active: NavTab }) {
         <Link
           href="/create"
           aria-label="Create barter card"
-          className="halo group absolute -top-5 flex size-[58px] cursor-pointer items-center justify-center rounded-full border-4 border-white bg-linear-135 from-[#A23BF5] to-[#E5237F] text-white shadow-[0_8px_20px_rgba(200,40,140,0.35)] transition hover:scale-105 active:scale-95"
+          className="halo group absolute -top-5 flex size-[58px] cursor-pointer items-center justify-center rounded-full border-4 border-surface bg-linear-135 from-[#A23BF5] to-[#E5237F] text-white shadow-[0_8px_20px_rgba(200,40,140,0.35)] transition hover:scale-105 active:scale-95"
         >
           <Plus
             className="size-7 transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:rotate-90 group-active:rotate-90"
