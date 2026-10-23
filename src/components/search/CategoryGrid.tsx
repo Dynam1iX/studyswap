@@ -60,7 +60,7 @@ function CategoryCard({
       {/* Soft light that sweeps across on hover */}
       <span
         aria-hidden
-        className="pointer-events-none absolute -top-10 -right-10 size-32 rounded-full bg-white/40 opacity-0 blur-2xl transition-opacity duration-500 group-hover:opacity-100"
+        className="pointer-events-none absolute -top-10 -right-10 size-32 rounded-full bg-white/40 opacity-0 blur-2xl dark:bg-white/[0.06] transition-opacity duration-500 group-hover:opacity-100"
       />
 
       <span className="relative flex size-10 items-center justify-center rounded-[20px] bg-surface shadow-[0_2px_6px_rgba(60,30,110,0.06)] transition-transform duration-300 group-hover:scale-105">
@@ -80,7 +80,7 @@ function CategoryCard({
         {count === null ? (
           <span
             aria-hidden
-            className="h-3.5 w-16 animate-shimmer rounded-full bg-[linear-gradient(90deg,rgba(255,255,255,0.35),rgba(255,255,255,0.8),rgba(255,255,255,0.35))] bg-[length:200%_100%]"
+            className="h-3.5 w-16 animate-shimmer rounded-full bg-[linear-gradient(90deg,rgba(255,255,255,0.35),rgba(255,255,255,0.8),rgba(255,255,255,0.35))] dark:bg-[linear-gradient(90deg,rgba(255,255,255,0.04),rgba(255,255,255,0.14),rgba(255,255,255,0.04))] bg-[length:200%_100%]"
           />
         ) : (
           <span style={{ color: palette.label }} className="text-xs font-semibold">

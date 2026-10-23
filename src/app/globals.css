@@ -31,7 +31,8 @@
   /* Dimmed page behind sheets. */
   --color-scrim: rgb(27 21 48 / 0.55);
 
-  --font-bricolage: "Bricolage Grotesque", sans-serif;
+  /* Bricolage has no Cyrillic: Russian and Kazakh letters in headings use bold Montserrat. */
+  --font-bricolage: "Bricolage Grotesque", "Montserrat", sans-serif;
   --font-montserrat: "Montserrat", sans-serif;
 
   --animate-shake: shake 0.35s ease-in-out;
