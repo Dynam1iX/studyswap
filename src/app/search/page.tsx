@@ -30,6 +30,7 @@ import {
   type SearchFilters,
 } from '@/lib/search';
 import type { Category, StudyYear } from '@/types/database';
+import { useT } from '@/i18n';
 
 /** Filters live in the URL (?q=&category=&year=&program=) so Back and links work. */
 function filtersFromParams(params: URLSearchParams): SearchFilters {
@@ -60,6 +61,7 @@ function logError(action: string) {
 }
 
 function SearchView() {
+  const t = useT();
   const searchParams = useSearchParams();
   const filters = useMemo(() => filtersFromParams(new URLSearchParams(searchParams.toString())), [searchParams]);
   const showResults = hasActiveFilters(filters);
@@ -145,7 +147,7 @@ function SearchView() {
       {/* 16px sides, 8px top and bottom, 16px between blocks. */}
       <div className="flex flex-col gap-4 px-4 py-2">
         <h1 className="animate-rise font-bricolage text-3xl font-extrabold text-ink motion-reduce:animate-none">
-          Search
+          {t.search.title}
         </h1>
 
         <div style={{ animationDelay: '60ms' }} className="animate-rise motion-reduce:animate-none">
@@ -174,7 +176,7 @@ function SearchView() {
                 style={{ animationDelay: '180ms' }}
                 className="animate-rise font-bricolage text-xl font-extrabold text-ink motion-reduce:animate-none"
               >
-                Browse categories
+                {t.search.browse}
               </h2>
               <CategoryGrid
                 counts={counts}

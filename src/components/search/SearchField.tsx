@@ -2,6 +2,7 @@
 
 import type { FormEvent, RefObject } from 'react';
 import { Search, X } from 'lucide-react';
+import { useT } from '@/i18n';
 
 interface SearchFieldProps {
   value: string;
@@ -13,6 +14,7 @@ interface SearchFieldProps {
 
 /** Search box: a gradient ring and a brand-coloured icon fade in on focus. */
 export function SearchField({ value, onChange, onSubmit, inputRef }: SearchFieldProps) {
+  const t = useT();
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     onSubmit(value.trim());
@@ -46,8 +48,8 @@ export function SearchField({ value, onChange, onSubmit, inputRef }: SearchField
           maxLength={100}
           value={value}
           onChange={(event) => onChange(event.target.value)}
-          placeholder="Search subjects, e.g. Calculus"
-          aria-label="Search subjects"
+          placeholder={t.search.placeholder}
+          aria-label={t.search.fieldLabel}
           className="min-w-0 flex-1 bg-transparent text-base font-semibold text-ink outline-none placeholder:text-placeholder"
         />
         {value && (
@@ -57,7 +59,7 @@ export function SearchField({ value, onChange, onSubmit, inputRef }: SearchField
               onChange('');
               inputRef?.current?.focus();
             }}
-            aria-label="Clear the search text"
+            aria-label={t.search.clearText}
             className="flex size-8 shrink-0 animate-pop cursor-pointer items-center justify-center rounded-full bg-soft text-muted transition hover:bg-line hover:text-ink active:scale-90 motion-reduce:animate-none"
           >
             <X className="size-4" strokeWidth={2.4} />

@@ -6,6 +6,7 @@ import { BottomSheet } from '@/components/ui/BottomSheet';
 import { PROGRAM_GROUPS, STUDY_YEARS } from '@/lib/search';
 import type { StudyYear } from '@/types/database';
 import type { FilterKind } from './FilterBar';
+import { useT } from '@/i18n';
 
 interface FilterSheetProps {
   /** Which filter to pick, or null when the sheet is closed. */
@@ -16,8 +17,6 @@ interface FilterSheetProps {
   onProgramChange: (program: string | null) => void;
   onClose: () => void;
 }
-
-const TITLES: Record<FilterKind, string> = { year: 'Year of study', faculty: 'Faculty' };
 
 function Option({
   label,
@@ -58,6 +57,7 @@ function Option({
 
 /** Bottom sheet with the options of one filter. Picking an option applies it and closes the sheet. */
 export function FilterSheet({ kind, year, program, onYearChange, onProgramChange, onClose }: FilterSheetProps) {
+  const t = useT();
   const titleId = useId();
   // Keep the last filter on screen while the sheet animates out.
   const [lastKind, setLastKind] = useState(kind);
@@ -83,12 +83,12 @@ export function FilterSheet({ kind, year, program, onYearChange, onProgramChange
       header={
         <div className="flex items-center justify-between px-6 py-2">
           <h2 id={titleId} className="font-bricolage text-[22px] font-extrabold text-ink">
-            {shown ? TITLES[shown] : ''}
+            {shown === 'year' ? t.search.yearTitle : shown === 'faculty' ? t.search.facultyFilter : ''}
           </h2>
           <button
             type="button"
             onClick={onClose}
-            aria-label="Close"
+            aria-label={t.common.close}
             className="flex size-11 cursor-pointer items-center justify-center rounded-full bg-soft text-ink transition hover:bg-line focus-visible:outline-2 focus-visible:outline-brand-from"
           >
             <X className="size-5" strokeWidth={2.4} />
@@ -100,11 +100,11 @@ export function FilterSheet({ kind, year, program, onYearChange, onProgramChange
       <div key={`${shown}-${kind !== null}`} role="radiogroup" aria-labelledby={titleId} className="flex flex-col gap-1 px-4 pt-2 pb-10">
         {shown === 'year' && (
           <>
-            <Option label="Any year" selected={year === null} index={index++} onSelect={() => pickYear(null)} />
+            <Option label={t.search.anyYear} selected={year === null} index={index++} onSelect={() => pickYear(null)} />
             {STUDY_YEARS.map((value) => (
               <Option
                 key={value}
-                label={`Year ${value}`}
+                label={t.common.year(value)}
                 selected={year === value}
                 index={index++}
                 onSelect={() => pickYear(value)}
@@ -115,7 +115,7 @@ export function FilterSheet({ kind, year, program, onYearChange, onProgramChange
 
         {shown === 'faculty' && (
           <>
-            <Option label="All programs" selected={program === null} index={index++} onSelect={() => pickProgram(null)} />
+            <Option label={t.search.allPrograms} selected={program === null} index={index++} onSelect={() => pickProgram(null)} />
             {PROGRAM_GROUPS.map((group, groupIndex) => (
               <div key={groupIndex} className="flex flex-col gap-1 border-t border-line pt-1">
                 {group.map((option) => (

@@ -655,3 +655,26 @@ html.theme-fade * {
     border-color 0.4s ease,
     color 0.4s ease !important;
 }
+
+/* Language switch: the page blurs out, the texts change, then the blocks rise back in
+   one after another from the top (classes set by I18nProvider). */
+html.lang-out #app-scroll {
+  opacity: 0;
+  filter: blur(4px);
+  transition:
+    opacity 0.18s ease-in,
+    filter 0.18s ease-in;
+}
+html.lang-in #app-scroll > div > * {
+  animation: rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+html.lang-in #app-scroll > div > :nth-child(2) { animation-delay: 50ms; }
+html.lang-in #app-scroll > div > :nth-child(3) { animation-delay: 100ms; }
+html.lang-in #app-scroll > div > :nth-child(4) { animation-delay: 150ms; }
+html.lang-in #app-scroll > div > :nth-child(5) { animation-delay: 200ms; }
+html.lang-in #app-scroll > div > :nth-child(6) { animation-delay: 250ms; }
+html.lang-in #app-scroll > div > :nth-child(7) { animation-delay: 300ms; }
+html.lang-in #app-scroll > div > :nth-child(n + 8) { animation-delay: 350ms; }
+html.lang-in nav span {
+  animation: rise 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Undo2 } from 'lucide-react';
+import { useT } from '@/i18n';
 
 /** How long the toast stays before the removal becomes final (ms). */
 export const UNDO_MS = 4000;
@@ -17,6 +18,7 @@ interface UndoToastProps {
 
 /** "Removed from favorites · Undo" bar above the nav, with a shrinking time bar. */
 export function UndoToast({ toastKey, message, onUndo, onExpire }: UndoToastProps) {
+  const t = useT();
   // Keep the last text while the toast fades out.
   const [shownKey, setShownKey] = useState(toastKey);
   const [shownMessage, setShownMessage] = useState(message);
@@ -55,7 +57,7 @@ export function UndoToast({ toastKey, message, onUndo, onExpire }: UndoToastProp
           className="flex h-9 shrink-0 cursor-pointer items-center gap-1.5 rounded-xl px-3 text-sm font-bold transition hover:bg-white/10 active:scale-95"
         >
           <Undo2 aria-hidden className="size-4" strokeWidth={2.4} />
-          <span className="bg-linear-to-r from-[#D59BFF] to-[#FF8FC6] bg-clip-text text-transparent">Undo</span>
+          <span className="bg-linear-to-r from-[#D59BFF] to-[#FF8FC6] bg-clip-text text-transparent">{t.favorites.undo}</span>
         </button>
         {/* Time left to undo */}
         {visible && (

@@ -16,6 +16,7 @@ import { createBarterPost, fetchCreateFormData } from '@/lib/create';
 import { formatStudyInfo, getInitials, getShortName } from '@/lib/format';
 import { useReplay } from '@/lib/useReplay';
 import type { ContactMethod, Subject } from '@/types/database';
+import { useT } from '@/i18n';
 
 interface FormErrors {
   needed?: boolean;
@@ -26,15 +27,16 @@ interface FormErrors {
 }
 
 /** One half of the live preview: the chosen subject, or a neutral placeholder. */
-function previewHalf(subject: Subject | undefined, details: string, emptyTopic: string): CardHalf {
+function previewHalf(subject: Subject | undefined, details: string, emptyTitle: string, emptyTopic: string): CardHalf {
   return {
     palette: paletteFor(subject?.category),
-    title: subject?.name || 'Select subject...',
+    title: subject?.name || emptyTitle,
     topic: details.trim() ? details : subject ? subject.code : emptyTopic,
   };
 }
 
 export default function CreateBarterPage() {
+  const t = useT();
   const router = useRouter();
 
   const [subjects, setSubjects] = useState<Subject[]>([]);
@@ -59,7 +61,7 @@ export default function CreateBarterPage() {
   const [hasTelegram, setHasTelegram] = useState(false);
   const [authorAvatar, setAuthorAvatar] = useState<string | null>(null);
   const [authorName, setAuthorName] = useState('Alzhan Y.');
-  const [authorSubtitle, setAuthorSubtitle] = useState('Software Engineering, Year 1');
+  const [authorStudy, setAuthorStudy] = useState<{ major: string | null; year: number | null }>({ major: null, year: null });
 
   useEffect(() => {
     let cancelled = false;
@@ -72,7 +74,7 @@ export default function CreateBarterPage() {
           setHasTelegram(Boolean(author.telegram_handle));
           setAuthorAvatar(avatarUrl(author.avatar_path));
           setAuthorName(getShortName(author.full_name));
-          setAuthorSubtitle(formatStudyInfo(author.major, author.study_year));
+          setAuthorStudy({ major: author.major, year: author.study_year });
         }
       })
       .catch((err: unknown) => console.error('Initial data load error:', err))
@@ -146,20 +148,12 @@ export default function CreateBarterPage() {
       window.setTimeout(() => router.push('/'), 900);
     } catch (err: unknown) {
       setSubmitting(false);
-      failValidation(err instanceof Error ? err.message : 'Unknown network error');
+      failValidation(err instanceof Error ? err.message : t.create.networkError);
     }
   };
 
-  const neededError = errors.needed
-    ? errors.sameSubject
-      ? 'Subjects cannot be identical'
-      : 'Please select a subject you need help with'
-    : null;
-  const offeredError = errors.offered
-    ? errors.sameSubject
-      ? 'Subjects cannot be identical'
-      : 'Please select a subject you can teach'
-    : null;
+  const neededError = errors.needed ? (errors.sameSubject ? t.create.sameSubject : t.create.neededMissing) : null;
+  const offeredError = errors.offered ? (errors.sameSubject ? t.create.sameSubject : t.create.offeredMissing) : null;
 
   return (
     <MobileShell>
@@ -168,14 +162,14 @@ export default function CreateBarterPage() {
 
       <div className="animate-rise px-4 py-2 motion-reduce:animate-none">
         <p className="text-[14px] leading-[21px] font-semibold text-muted">
-          Exchange your academic strengths to get help with challenging subjects.
+          {t.create.intro}
         </p>
       </div>
 
       {serverError && (
         <div
           key={`err-${shakeTrigger}`}
-          className="mx-4 mb-2 animate-shake rounded-xl border border-red-300 bg-red-50 p-3 text-xs font-semibold text-red-700"
+          className="mx-4 mb-2 animate-shake rounded-xl border border-danger-line bg-danger-soft p-3 text-xs font-semibold text-danger-ink"
         >
           {serverError}
         </div>
@@ -185,7 +179,7 @@ export default function CreateBarterPage() {
       <div style={{ animationDelay: '70ms' }} className="animate-rise px-4 py-2 motion-reduce:animate-none">
         <div className="space-y-4 rounded-[24px] border border-line bg-surface p-4 shadow-sm">
           <SubjectSelect
-            label="Subject you need help with"
+            label={t.create.neededSubject}
             subjects={subjects}
             value={neededSubjectId}
             onChange={(id) => {
@@ -198,20 +192,20 @@ export default function CreateBarterPage() {
           />
 
           <TopicsField
-            label="Topics you need help with"
-            placeholder="e.g., Struggling with RREF, limits, calculus exam questions..."
+            label={t.create.neededTopics}
+            placeholder={t.create.neededPlaceholder}
             value={neededDetails}
             onChange={(text) => {
               setNeededDetails(text);
               if (errors.neededDetails && text.trim()) setErrors((prev) => ({ ...prev, neededDetails: false }));
               setServerError(null);
             }}
-            error={errors.neededDetails ? 'Please describe what topics you need assistance with' : null}
+            error={errors.neededDetails ? t.create.neededTopicsMissing : null}
             shakeKey={shakeTrigger}
           />
 
           <SubjectSelect
-            label="Subject you can teach"
+            label={t.create.offeredSubject}
             subjects={subjects}
             value={offeredSubjectId}
             onChange={(id) => {
@@ -225,15 +219,15 @@ export default function CreateBarterPage() {
           />
 
           <TopicsField
-            label="Topics you can teach / explain"
-            placeholder="e.g., Can explain pointers, OOP principles, binary trees and labs..."
+            label={t.create.offeredTopics}
+            placeholder={t.create.offeredPlaceholder}
             value={offeredDetails}
             onChange={(text) => {
               setOfferedDetails(text);
               if (errors.offeredDetails && text.trim()) setErrors((prev) => ({ ...prev, offeredDetails: false }));
               setServerError(null);
             }}
-            error={errors.offeredDetails ? 'Please describe what topics you can explain in return' : null}
+            error={errors.offeredDetails ? t.create.offeredTopicsMissing : null}
             shakeKey={shakeTrigger}
           />
 
@@ -243,11 +237,11 @@ export default function CreateBarterPage() {
 
       {/* Live preview */}
       <div style={{ animationDelay: '140ms' }} className="animate-rise px-4 pt-4 pb-2 motion-reduce:animate-none">
-        <h2 className="mb-2.5 text-[11px] font-bold tracking-[0.88px] text-muted uppercase">Preview in feed</h2>
+        <h2 className="mb-2.5 text-[11px] font-bold tracking-[0.88px] text-muted uppercase">{t.create.preview}</h2>
         <BarterCard
-          author={{ initials: getInitials(authorName), avatarUrl: authorAvatar, name: authorName, subtitle: authorSubtitle }}
-          needs={previewHalf(neededSubject, neededDetails, 'Topics you need help with...')}
-          teaches={previewHalf(offeredSubject, offeredDetails, 'Topics you can teach...')}
+          author={{ initials: getInitials(authorName), avatarUrl: authorAvatar, name: authorName, subtitle: formatStudyInfo(t, authorStudy.major, authorStudy.year) }}
+          needs={previewHalf(neededSubject, neededDetails, t.create.previewSubject, t.create.previewNeeded)}
+          teaches={previewHalf(offeredSubject, offeredDetails, t.create.previewSubject, t.create.previewOffered)}
           contactMethod={contactMethod}
         />
       </div>
@@ -258,7 +252,7 @@ export default function CreateBarterPage() {
             <ShieldCheck aria-hidden className="size-5" strokeWidth={2.2} />
           </span>
           <p className="text-[13px] leading-[19px] font-semibold text-ink">
-            Contact details are only shared with verified university students.
+            {t.create.privacyNote}
           </p>
         </div>
       </div>
@@ -276,12 +270,12 @@ export default function CreateBarterPage() {
           {published ? (
             <span className="flex animate-pop items-center gap-2 motion-reduce:animate-none">
               <Check className="size-5" strokeWidth={3} />
-              Published!
+              {t.create.published}
             </span>
           ) : submitting ? (
-            'Publishing offer...'
+            t.create.publishing
           ) : (
-            'Publish Barter Offer'
+            t.create.publish
           )}
         </button>
       </div>

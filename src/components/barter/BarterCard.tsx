@@ -6,6 +6,7 @@ import { useReplay } from '@/lib/useReplay';
 import type { CategoryPalette } from '@/lib/categoryPalette';
 import type { ContactMethod } from '@/types/database';
 import { ExchangeIcon } from '@/components/ui/ExchangeIcon';
+import { useT } from '@/i18n';
 
 export interface CardAuthor {
   initials: string;
@@ -77,10 +78,10 @@ function SubjectHalf({ label, half }: { label: string; half: CardHalf }) {
   );
 }
 
-const CONTACT = {
-  telegram: { icon: '/telegram.svg', alt: 'Telegram', label: 'Message on Telegram' },
-  email: { icon: '/email.svg', alt: 'Email', label: 'Send an Email' },
-} as const satisfies Record<ContactMethod, { icon: string; alt: string; label: string }>;
+const CONTACT_ICON = {
+  telegram: { icon: '/telegram.svg', alt: 'Telegram' },
+  email: { icon: '/email.svg', alt: 'Email' },
+} as const satisfies Record<ContactMethod, { icon: string; alt: string }>;
 
 const contactClasses =
   'flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-brand-from to-brand-to text-[15px] font-semibold text-white no-underline';
@@ -95,8 +96,9 @@ export function BarterCard({
   liked = false,
   onToggleLike,
   onOpen,
-  openLabel = 'Show swap details',
+  openLabel,
 }: BarterCardProps) {
+  const t = useT();
   // With onOpen, a full-size button sits under the content. Content ignores clicks
   // so they reach that button; the heart and the contact link stay clickable on top.
   const layer = onOpen ? 'pointer-events-none relative' : '';
@@ -104,7 +106,7 @@ export function BarterCard({
   const [pops, setPops] = useState(0);
   const interactive = onOpen ? 'pointer-events-auto relative z-10' : '';
 
-  const contact = CONTACT[contactMethod];
+  const contact = { ...CONTACT_ICON[contactMethod], label: t.card.contact[contactMethod] };
   const contactContent = (
     <>
       <img src={contact.icon} alt={contact.alt} className="size-[22px]" />
@@ -122,7 +124,7 @@ export function BarterCard({
         <button
           type="button"
           onClick={onOpen}
-          aria-label={openLabel}
+          aria-label={openLabel ?? t.card.openDetails}
           aria-haspopup="dialog"
           className="absolute inset-0 cursor-pointer rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-from"
         />
@@ -147,7 +149,7 @@ export function BarterCard({
               setPops((n) => n + 1);
               onToggleLike();
             }}
-            aria-label="Wishlist toggle"
+            aria-label={t.card.like}
             aria-pressed={liked}
             className={`bubbly-ring relative shrink-0 cursor-pointer p-1 transition hover:scale-110 active:scale-90 ${
               bursting ? 'bubbly-animate' : ''
@@ -156,23 +158,23 @@ export function BarterCard({
             <img
               key={pops}
               src={liked ? '/liked.svg' : '/like.svg'}
-              alt="Like"
+              alt=""
               className={`relative size-[22px] ${liked ? '' : 'theme-icon'} ${pops > 0 && liked ? 'animate-heart-pop motion-reduce:animate-none' : ''}`}
             />
           </button>
         ) : (
           <span className="shrink-0 p-1">
-            <img src="/like.svg" alt="Like" className="theme-icon size-[22px]" />
+            <img src="/like.svg" alt="" className="theme-icon size-[22px]" />
           </span>
         )}
       </div>
 
       {/* Subjects, with the exchange icon over the seam */}
       <div className={`relative flex w-full flex-col gap-2 ${onOpen ? 'pointer-events-none' : ''}`}>
-        <SubjectHalf label="Needs help" half={needs} />
-        <SubjectHalf label="Can teach" half={teaches} />
+        <SubjectHalf label={t.card.needsHelp} half={needs} />
+        <SubjectHalf label={t.card.canTeach} half={teaches} />
         <ExchangeIcon
-          label="Exchange"
+          label={t.card.exchange}
           className="pointer-events-none absolute top-1/2 right-[18px] z-10 block size-10 -translate-y-1/2 drop-shadow-[0_2px_8px_rgba(0,0,0,0.12)] transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:rotate-180 group-active:rotate-180"
         />
       </div>

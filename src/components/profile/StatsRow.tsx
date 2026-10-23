@@ -1,7 +1,10 @@
+'use client';
+
 import { Star } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { CountUp } from '@/components/ui/CountUp';
 import type { ProfileStats } from '@/lib/profile';
+import { useT } from '@/i18n';
 
 interface StatTileProps {
   value: ReactNode;
@@ -20,11 +23,12 @@ export function StatTile({ value, label }: StatTileProps) {
 }
 
 export function StatsRow({ stats }: { stats: ProfileStats }) {
+  const t = useT();
   const { rating } = stats;
 
   return (
     <div className="grid grid-cols-3 gap-2.5">
-      <StatTile value={<CountUp value={stats.swapsDone} />} label="Swaps done" />
+      <StatTile value={<CountUp value={stats.swapsDone} />} label={t.profile.swapsDone} />
       <StatTile
         value={
           rating ? (
@@ -36,9 +40,9 @@ export function StatsRow({ stats }: { stats: ProfileStats }) {
             '—'
           )
         }
-        label={rating ? `${rating.count} ratings` : 'No ratings yet'}
+        label={rating ? t.profile.ratings(rating.count) : t.details.noRatings}
       />
-      <StatTile value={<CountUp value={stats.activeCards} />} label="Active cards" />
+      <StatTile value={<CountUp value={stats.activeCards} />} label={t.profile.activeCards} />
     </div>
   );
 }

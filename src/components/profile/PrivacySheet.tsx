@@ -4,6 +4,7 @@ import { useId, useState } from 'react';
 import { Check, Download, Loader2, Trash2, X } from 'lucide-react';
 import { BottomSheet } from '@/components/ui/BottomSheet';
 import type { TelegramVisibility } from '@/types/database';
+import { useT } from '@/i18n';
 
 interface PrivacySheetProps {
   open: boolean;
@@ -15,14 +16,7 @@ interface PrivacySheetProps {
   onDeleteAccount: () => Promise<void>;
 }
 
-const VISIBILITY_OPTIONS: { value: TelegramVisibility; title: string; hint: string }[] = [
-  { value: 'everyone', title: 'All students', hint: 'Your cards show a "Message on Telegram" button.' },
-  {
-    value: 'accepted',
-    title: 'Only after I accept a request',
-    hint: 'Until then, students contact you by university e-mail.',
-  },
-];
+const VISIBILITY_OPTIONS: TelegramVisibility[] = ['everyone', 'accepted'];
 
 /** The word typed to confirm account deletion. */
 const DELETE_WORD = 'DELETE';
@@ -40,6 +34,7 @@ export function PrivacySheet({
   onDownload,
   onDeleteAccount,
 }: PrivacySheetProps) {
+  const t = useT();
   const titleId = useId();
   const [saving, setSaving] = useState<TelegramVisibility | null>(null);
   const [downloading, setDownloading] = useState(false);
@@ -55,7 +50,7 @@ export function PrivacySheet({
     try {
       await onTelegramVisibilityChange(value);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Could not save the setting');
+      setError(err instanceof Error ? err.message : t.privacy.saveError);
     } finally {
       setSaving(null);
     }
@@ -67,7 +62,7 @@ export function PrivacySheet({
     try {
       await onDownload();
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Could not prepare your data');
+      setError(err instanceof Error ? err.message : t.privacy.downloadError);
     } finally {
       setDownloading(false);
     }
@@ -80,7 +75,7 @@ export function PrivacySheet({
     try {
       await onDeleteAccount();
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Could not delete the account');
+      setError(err instanceof Error ? err.message : t.privacy.deleteError);
       setDeleting(false);
     }
   };
@@ -93,12 +88,12 @@ export function PrivacySheet({
       header={
         <div className="flex items-center justify-between px-6 py-2">
           <h2 id={titleId} className="font-bricolage text-[22px] font-extrabold text-ink">
-            Privacy and security
+            {t.settings.privacy}
           </h2>
           <button
             type="button"
             onClick={onClose}
-            aria-label="Close"
+            aria-label={t.common.close}
             className="flex size-11 cursor-pointer items-center justify-center rounded-full bg-soft text-ink transition hover:bg-line focus-visible:outline-2 focus-visible:outline-brand-from"
           >
             <X className="size-5" strokeWidth={2.4} />
@@ -109,9 +104,10 @@ export function PrivacySheet({
       <div className="flex flex-col gap-6 px-6 pt-2 pb-10">
         {/* Who sees my Telegram */}
         <section className="flex flex-col gap-3">
-          <SectionTitle>Who can see my Telegram</SectionTitle>
-          <div role="radiogroup" aria-label="Who can see my Telegram" className="flex flex-col gap-2">
-            {VISIBILITY_OPTIONS.map((option) => {
+          <SectionTitle>{t.privacy.whoSees}</SectionTitle>
+          <div role="radiogroup" aria-label={t.privacy.whoSees} className="flex flex-col gap-2">
+            {VISIBILITY_OPTIONS.map((value) => {
+              const option = { value, ...t.privacy.visibility[value] };
               const selected = option.value === telegramVisibility;
               return (
                 <button
@@ -150,9 +146,9 @@ export function PrivacySheet({
 
         {/* Download my data */}
         <section className="flex flex-col gap-3">
-          <SectionTitle>Your data</SectionTitle>
+          <SectionTitle>{t.privacy.yourData}</SectionTitle>
           <p className="text-sm font-medium text-muted">
-            Download everything StudySwap stores about you: profile, cards, swap requests, likes and recent searches.
+            {t.privacy.yourDataHint}
           </p>
           <button
             type="button"
@@ -161,16 +157,17 @@ export function PrivacySheet({
             className="flex h-12 cursor-pointer items-center justify-center gap-2 rounded-2xl border border-line-strong bg-surface text-sm font-bold text-ink transition hover:bg-soft active:scale-[0.98] disabled:opacity-60"
           >
             {downloading ? <Loader2 className="size-4 animate-spin" /> : <Download className="size-4" />}
-            Download my data (JSON)
+            {t.privacy.download}
           </button>
         </section>
 
         {/* Delete account: the button unlocks once DELETE is typed */}
         <section className="flex flex-col gap-3">
-          <SectionTitle>Delete account</SectionTitle>
+          <SectionTitle>{t.privacy.deleteTitle}</SectionTitle>
           <p className="text-sm font-medium text-muted">
-            Deletes your profile, all your cards, likes and searches. This cannot be undone. Type{' '}
-            <span className="font-bold text-ink">{DELETE_WORD}</span> to confirm.
+            {t.privacy.deleteHintBefore}
+            <span className="font-bold text-ink">{DELETE_WORD}</span>
+            {t.privacy.deleteHintAfter}
           </p>
           <input
             type="text"
@@ -179,7 +176,7 @@ export function PrivacySheet({
             placeholder={DELETE_WORD}
             autoCapitalize="characters"
             autoComplete="off"
-            aria-label={`Type ${DELETE_WORD} to confirm`}
+            aria-label={t.privacy.typeToConfirm(DELETE_WORD)}
             className="h-12 rounded-[14px] border border-field px-4 text-[16px] font-semibold text-ink outline-none transition placeholder:text-placeholder focus:border-danger-ink sm:text-[14px]"
           />
           <button
@@ -189,12 +186,12 @@ export function PrivacySheet({
             className="flex h-12 cursor-pointer items-center justify-center gap-2 rounded-2xl bg-[#C0264B] text-sm font-bold text-white transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
           >
             {deleting ? <Loader2 className="size-4 animate-spin" /> : <Trash2 className="size-4" />}
-            Delete my account
+            {t.privacy.deleteButton}
           </button>
         </section>
 
         {error && (
-          <p className="animate-shake rounded-xl border border-red-300 bg-red-50 p-3 text-xs font-semibold text-red-700">
+          <p className="animate-shake rounded-xl border border-danger-line bg-danger-soft p-3 text-xs font-semibold text-danger-ink">
             {error}
           </p>
         )}

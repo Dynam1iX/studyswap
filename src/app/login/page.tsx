@@ -16,8 +16,7 @@ import {
   verifyCode,
 } from '@/lib/auth';
 import { useReplay } from '@/lib/useReplay';
-
-const HEADLINE = 'Trade what you know for what you need.';
+import { useT } from '@/i18n';
 
 /** Error from a failed Microsoft sign-in, read from the address once per page load. */
 let redirectError: string | null | undefined;
@@ -30,9 +29,10 @@ function initialRedirectError(): string | null {
 
 /** The headline, word by word. */
 function Headline() {
+  const t = useT();
   return (
     <h1 className="font-bricolage text-[36px] leading-[1.1] font-bold text-ink">
-      {HEADLINE.split(' ').map((word, index) => (
+      {t.login.headline.split(' ').map((word, index) => (
         <span
           key={index}
           style={{ animationDelay: `${index * 70}ms` }}
@@ -46,6 +46,7 @@ function Headline() {
 }
 
 export default function LoginPage() {
+  const t = useT();
   const [step, setStep] = useState<'email' | 'code'>('email');
   const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
@@ -77,7 +78,7 @@ export default function LoginPage() {
       await signInWithMicrosoft();
       // The browser is now leaving for Microsoft; the button keeps animating until then.
     } catch (err: unknown) {
-      setMsError(err instanceof Error ? err.message : 'Could not open Microsoft sign-in');
+      setMsError(err instanceof Error ? err.message : t.login.microsoftError);
       setMsBusy(false);
     }
   };
@@ -102,7 +103,7 @@ export default function LoginPage() {
       setStep('code');
       setResendIn(RESEND_SECONDS);
     } catch (err: unknown) {
-      fail(err instanceof Error ? err.message : 'Could not send the code');
+      fail(err instanceof Error ? err.message : t.login.sendError);
     } finally {
       setBusy(false);
     }
@@ -111,7 +112,7 @@ export default function LoginPage() {
   const submitEmail = (event: FormEvent) => {
     event.preventDefault();
     if (!STUDENT_EMAIL_RE.test(email.trim())) {
-      fail('Enter your student e-mail: 6 digits @astanait.edu.kz');
+      fail(t.login.emailInvalid);
       return;
     }
     bubble();
@@ -126,7 +127,7 @@ export default function LoginPage() {
       // Signed in: the AuthGate takes the student to the app or to "Complete your profile".
     } catch (err: unknown) {
       setCode('');
-      fail(err instanceof Error ? err.message : 'Could not check the code');
+      fail(err instanceof Error ? err.message : t.login.checkError);
       setBusy(false);
     }
   };
@@ -141,7 +142,7 @@ export default function LoginPage() {
           <>
             <Headline />
             <p style={{ animationDelay: '500ms' }} className="animate-rise text-base font-semibold text-muted motion-reduce:animate-none">
-              Find study partners on your campus. No money, just a fair swap.
+              {t.login.subtitle}
             </p>
 
             <div style={{ animationDelay: '600ms' }} className="animate-rise motion-reduce:animate-none">
@@ -155,7 +156,7 @@ export default function LoginPage() {
               className="flex animate-rise flex-col gap-4 motion-reduce:animate-none"
             >
               <label key={shake} className={`flex flex-col gap-2 ${error ? 'animate-shake motion-reduce:animate-none' : ''}`}>
-                <span className="text-sm font-semibold text-ink">University email</span>
+                <span className="text-sm font-semibold text-ink">{t.login.emailLabel}</span>
                 <input
                   type="email"
                   inputMode="email"
@@ -176,7 +177,7 @@ export default function LoginPage() {
                   }`}
                 />
                 <span className={`text-xs font-semibold ${error ? 'text-danger' : 'text-muted'}`}>
-                  {error ?? 'Only university emails are accepted. This keeps StudySwap student-only.'}
+                  {error ?? t.login.emailHint}
                 </span>
               </label>
 
@@ -188,7 +189,7 @@ export default function LoginPage() {
                 }`}
               >
                 {busy && <Loader2 className="size-5 animate-spin" />}
-                Continue
+                {t.login.continue}
               </button>
             </form>
 
@@ -204,13 +205,13 @@ export default function LoginPage() {
                 }`}
               >
                 <MicrosoftLogo loading={msBusy} />
-                {msBusy ? 'Opening Microsoft…' : 'Login with Microsoft'}
+                {msBusy ? t.login.openingMicrosoft : t.login.microsoft}
               </button>
               {msError && (
                 <p
                   key={msError}
                   role="alert"
-                  className="animate-shake rounded-xl border border-red-300 bg-red-50 p-3 text-sm font-semibold text-red-700 motion-reduce:animate-none"
+                  className="animate-shake rounded-xl border border-danger-line bg-danger-soft p-3 text-sm font-semibold text-danger-ink motion-reduce:animate-none"
                 >
                   {msError}
                 </p>
@@ -228,7 +229,7 @@ export default function LoginPage() {
               className="-ml-1 flex w-fit cursor-pointer items-center gap-1.5 rounded-lg px-1 py-1 text-sm font-semibold text-muted transition hover:text-ink"
             >
               <ArrowLeft className="size-4" />
-              Change email
+              {t.login.changeEmail}
             </button>
 
             <span className="flex size-16 animate-pop items-center justify-center rounded-2xl bg-linear-to-br from-brand-from to-brand-to text-white shadow-[0_8px_20px_rgba(173,70,255,0.3)] motion-reduce:animate-none">
@@ -236,10 +237,11 @@ export default function LoginPage() {
             </span>
 
             <div className="flex flex-col gap-2">
-              <h1 className="font-bricolage text-3xl font-bold text-ink">Check your email</h1>
+              <h1 className="font-bricolage text-3xl font-bold text-ink">{t.login.checkEmail}</h1>
               <p className="text-base font-semibold text-muted">
-                We sent a 6-digit code to <span className="text-ink">{email.trim().toLowerCase()}</span>. It may take a
-                minute; check Spam too.
+                {t.login.sentBefore}
+                <span className="text-ink">{email.trim().toLowerCase()}</span>
+                {t.login.sentAfter}
               </p>
             </div>
 
@@ -259,10 +261,10 @@ export default function LoginPage() {
               {busy ? (
                 <span className="flex items-center gap-2">
                   <Loader2 className="size-4 animate-spin text-brand-from" />
-                  Checking the code...
+                  {t.login.checking}
                 </span>
               ) : (
-                (error ?? 'The code works for 10 minutes.')
+                (error ?? t.login.codeValid)
               )}
             </p>
 
@@ -272,7 +274,7 @@ export default function LoginPage() {
               disabled={busy || resendIn > 0}
               className="h-12 cursor-pointer rounded-xl border border-line-strong bg-surface text-sm font-bold text-ink transition hover:bg-soft active:scale-[0.98] disabled:cursor-default disabled:text-muted disabled:hover:bg-surface"
             >
-              {resendIn > 0 ? `Resend code in ${resendIn}s` : 'Resend code'}
+              {resendIn > 0 ? t.login.resendIn(resendIn) : t.login.resend}
             </button>
           </div>
         )}

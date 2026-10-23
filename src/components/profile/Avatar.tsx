@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Pencil } from 'lucide-react';
+import { useT } from '@/i18n';
 
 interface AvatarProps {
   initials: string;
@@ -14,6 +15,7 @@ interface AvatarProps {
 
 /** Gradient ring avatar. The edit badge shares the same grid cell instead of absolute positioning. */
 export function Avatar({ initials, url = null, onEdit, busy = false }: AvatarProps) {
+  const t = useT();
   // Initials if the photo cannot be loaded (deleted file, offline).
   const [failedUrl, setFailedUrl] = useState<string | null>(null);
   const showPhoto = url !== null && url !== failedUrl;
@@ -49,7 +51,7 @@ export function Avatar({ initials, url = null, onEdit, busy = false }: AvatarPro
       <button
         type="button"
         onClick={onEdit}
-        aria-label="Change photo"
+        aria-label={t.avatar.change}
         aria-haspopup="dialog"
         className="relative z-10 col-start-1 row-start-1 flex size-8 cursor-pointer items-center justify-center self-end justify-self-end rounded-full border-[3px] border-surface bg-ink text-page transition-transform hover:-rotate-12 hover:scale-110 active:scale-90"
       >

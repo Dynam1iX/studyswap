@@ -10,6 +10,8 @@ import { getAuthorName, getContactHref, getContactMethod, type FeedPost } from '
 import { formatPostedAt, formatStudyInfo, getInitials } from '@/lib/format';
 import type { Subject } from '@/types/database';
 import { ExchangeIcon } from '@/components/ui/ExchangeIcon';
+import { useT } from '@/i18n';
+import { useI18n } from '@/i18n';
 
 interface SwapDetailModalProps {
   /** The card to show, or null when the modal is closed. */
@@ -19,6 +21,7 @@ interface SwapDetailModalProps {
 
 /** "More info" for a barter card: full texts, subjects, author and contact. */
 export function SwapDetailModal({ post, onClose }: SwapDetailModalProps) {
+  const t = useT();
   const titleId = useId();
   // Keep the last post on screen while the sheet animates out.
   const [lastPost, setLastPost] = useState(post);
@@ -33,12 +36,12 @@ export function SwapDetailModal({ post, onClose }: SwapDetailModalProps) {
       header={
         <div className="flex items-center justify-between px-6 py-2">
           <h2 id={titleId} className="font-bricolage text-[22px] font-extrabold text-ink">
-            Swap details
+            {t.details.title}
           </h2>
           <button
             type="button"
             onClick={onClose}
-            aria-label="Close"
+            aria-label={t.common.close}
             className="flex size-11 cursor-pointer items-center justify-center rounded-full bg-soft text-ink transition hover:bg-line focus-visible:outline-2 focus-visible:outline-brand-from"
           >
             <X className="size-5" strokeWidth={2.4} />
@@ -53,6 +56,7 @@ export function SwapDetailModal({ post, onClose }: SwapDetailModalProps) {
 }
 
 function SwapDetailBody({ post }: { post: FeedPost }) {
+  const { t, locale } = useI18n();
   const authorName = getAuthorName(post);
   const subjects = [post.offered, post.needed].filter((s): s is Subject => s !== null);
   const departments = [...new Set(subjects.map((s) => s.department).filter(Boolean))];
@@ -69,32 +73,32 @@ function SwapDetailBody({ post }: { post: FeedPost }) {
         <div className="flex min-w-0 flex-1 flex-col gap-0.5">
           <span className="truncate text-[17px] font-bold text-ink">{authorName}</span>
           <span className="text-[13px] font-medium break-words text-muted">
-            {formatStudyInfo(post.author?.major, post.author?.study_year)}
+            {formatStudyInfo(t, post.author?.major, post.author?.study_year)}
           </span>
         </div>
         {/* There is no ratings table yet. */}
         <span className="flex shrink-0 items-center gap-1.5 rounded-full bg-soft px-3 py-[7px] text-xs font-semibold text-muted">
           <Star aria-hidden className="size-4" />
-          No ratings yet
+          {t.details.noRatings}
         </span>
       </div>
 
       {/* Can teach ⇄ Needs help */}
       <div className="relative grid grid-cols-2 gap-6">
-        <SwapHalf label="Can teach" subject={post.offered} />
-        <SwapHalf label="Needs help" subject={post.needed} />
+        <SwapHalf label={t.card.canTeach} subject={post.offered} />
+        <SwapHalf label={t.card.needsHelp} subject={post.needed} />
         {/* Card-coloured disc behind the icon so no subject colour shows at its edge */}
         <span className="pointer-events-none absolute top-1/2 left-1/2 flex size-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-surface">
           <ExchangeIcon className="size-10" />
         </span>
       </div>
 
-      <TextBlock title="What they can teach" text={post.offered_description} />
-      <TextBlock title="What they need help with" text={post.description} />
+      <TextBlock title={t.details.whatTheyTeach} text={post.offered_description} />
+      <TextBlock title={t.details.whatTheyNeed} text={post.description} />
 
       {/* Subjects */}
       <section className="flex flex-col gap-2">
-        <h3 className="font-bricolage text-[17px] font-bold text-ink">Subjects</h3>
+        <h3 className="font-bricolage text-[17px] font-bold text-ink">{t.details.subjects}</h3>
         <ul className="flex flex-wrap gap-2">
           {subjects.map((subject) => {
             const palette = paletteFor(subject.category);
@@ -107,7 +111,7 @@ function SwapDetailBody({ post }: { post: FeedPost }) {
               <li key={`${subject.id}-category`}>
                 <Chip className="bg-soft text-ink">
                   <span aria-hidden style={{ backgroundColor: palette.dot }} className="size-2 rounded-full" />
-                  {subject.category}
+                  {t.categories[subject.category]}
                 </Chip>
               </li>,
             ];
@@ -122,17 +126,17 @@ function SwapDetailBody({ post }: { post: FeedPost }) {
 
       {/* Details */}
       <dl className="flex flex-col gap-3 rounded-2xl bg-soft px-4 py-3.5">
-        <DetailRow icon={<CalendarDays className="size-5" />} label="Posted">
-          {formatPostedAt(post.created_at)}
+        <DetailRow icon={<CalendarDays className="size-5" />} label={t.details.posted}>
+          {formatPostedAt(post.created_at, locale)}
         </DetailRow>
         <DetailRow
           icon={getContactMethod(post) === 'telegram' ? <Send className="size-5" /> : <Mail className="size-5" />}
-          label="Contact via"
+          label={t.details.contactVia}
         >
-          {getContactMethod(post) === 'telegram' ? `Telegram · @${post.author?.telegram_handle}` : 'University email'}
+          {getContactMethod(post) === 'telegram' ? `Telegram · @${post.author?.telegram_handle}` : t.details.universityEmail}
         </DetailRow>
-        <DetailRow icon={<Tag className="size-5" />} label="Status" valueClassName="text-success">
-          Active · open for swaps
+        <DetailRow icon={<Tag className="size-5" />} label={t.details.status} valueClassName="text-success">
+          {t.details.statusOpen}
         </DetailRow>
       </dl>
     </div>
@@ -140,6 +144,7 @@ function SwapDetailBody({ post }: { post: FeedPost }) {
 }
 
 function SwapHalf({ label, subject }: { label: string; subject: Subject | null }) {
+  const t = useT();
   const palette = paletteFor(subject?.category);
   return (
     <div style={{ backgroundColor: palette.bg }} className="flex min-w-0 flex-col items-start gap-2 rounded-2xl p-4">
@@ -147,7 +152,7 @@ function SwapHalf({ label, subject }: { label: string; subject: Subject | null }
         {label}
       </span>
       <span style={{ color: palette.title }} className="w-full text-[18px] leading-[22px] font-bold break-words">
-        {subject?.name ?? 'Not specified'}
+        {subject?.name ?? t.details.notSpecified}
       </span>
       {subject && (
         <Chip style={{ color: palette.title }} className="bg-surface/70">
@@ -159,6 +164,7 @@ function SwapHalf({ label, subject }: { label: string; subject: Subject | null }
 }
 
 function TextBlock({ title, text }: { title: string; text: string }) {
+  const t = useT();
   return (
     <section className="flex flex-col gap-2">
       <h3 className="font-bricolage text-[17px] font-bold text-ink">{title}</h3>
@@ -167,7 +173,7 @@ function TextBlock({ title, text }: { title: string; text: string }) {
           text.trim() ? 'text-ink' : 'text-muted'
         }`}
       >
-        {text.trim() || 'No details yet.'}
+        {text.trim() || t.details.noDetails}
       </p>
     </section>
   );
@@ -204,6 +210,7 @@ function DetailRow({
 }
 
 function SwapDetailActions({ post, onClose }: { post: FeedPost; onClose: () => void }) {
+  const t = useT();
   const isTelegram = getContactMethod(post) === 'telegram';
   return (
     <div className="grid shrink-0 grid-cols-4 gap-6 border-t border-line bg-surface px-6 pt-4 pb-[max(24px,env(safe-area-inset-bottom))]">
@@ -212,7 +219,7 @@ function SwapDetailActions({ post, onClose }: { post: FeedPost; onClose: () => v
         onClick={onClose}
         className="col-span-1 h-14 cursor-pointer rounded-2xl border-[1.5px] border-line-strong bg-surface text-base font-bold text-ink transition hover:bg-soft"
       >
-        Close
+        {t.common.close}
       </button>
       <a
         href={getContactHref(post)}
@@ -221,7 +228,7 @@ function SwapDetailActions({ post, onClose }: { post: FeedPost; onClose: () => v
         className="col-span-3 flex h-14 items-center justify-center gap-2.5 rounded-2xl bg-linear-to-r from-brand-from to-brand-to text-base font-bold text-white no-underline shadow-[0_8px_20px_rgba(200,40,140,0.28)] transition hover:opacity-95 active:scale-[0.99]"
       >
         <img src={isTelegram ? '/telegram.svg' : '/email.svg'} alt="" className={isTelegram ? 'size-6' : 'size-[22px]'} />
-        {isTelegram ? 'Message on Telegram' : 'Send an Email'}
+        {t.card.contact[isTelegram ? 'telegram' : 'email']}
       </a>
     </div>
   );

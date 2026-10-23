@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Clock, History, X } from 'lucide-react';
 import type { RecentSearch } from '@/lib/search';
+import { useT } from '@/i18n';
 
 /** Must match duration-300 on the rows. */
 const EXIT_MS = 300;
@@ -27,6 +28,7 @@ function SectionTitle({ children }: { children: string }) {
 
 /** Recent searches: tap to reuse, × to remove one, "Clear all" to remove every one. */
 export function RecentSearches({ items, onPick, onRemove, onClearAll, delay = 0 }: RecentSearchesProps) {
+  const t = useT();
   const [leaving, setLeaving] = useState<Set<string>>(new Set());
   const timers = useRef<number[]>([]);
 
@@ -71,14 +73,14 @@ export function RecentSearches({ items, onPick, onRemove, onClearAll, delay = 0 
       className="flex animate-rise flex-col gap-2 motion-reduce:animate-none"
     >
       <div className="flex items-center justify-between">
-        <SectionTitle>Recent searches</SectionTitle>
+        <SectionTitle>{t.search.recent}</SectionTitle>
         {hasItems && (
           <button
             type="button"
             onClick={clearAll}
             className="h-11 animate-pop cursor-pointer px-1 text-xs font-bold transition active:scale-95 motion-reduce:animate-none"
           >
-            <span className="bg-linear-to-r from-brand-from to-brand-to bg-clip-text text-transparent">Clear all</span>
+            <span className="bg-linear-to-r from-brand-from to-brand-to bg-clip-text text-transparent">{t.search.clearAll}</span>
           </button>
         )}
       </div>
@@ -129,7 +131,7 @@ export function RecentSearches({ items, onPick, onRemove, onClearAll, delay = 0 
                     <button
                       type="button"
                       onClick={() => remove(item.id)}
-                      aria-label={`Remove "${item.query}" from recent searches`}
+                      aria-label={t.search.removeRecent(item.query)}
                       className="-mr-3 flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full text-muted transition hover:bg-soft hover:text-ink active:scale-90"
                     >
                       <X className="size-4" strokeWidth={2.4} />
@@ -145,8 +147,8 @@ export function RecentSearches({ items, onPick, onRemove, onClearAll, delay = 0 
           <span className="flex size-14 animate-float items-center justify-center rounded-full bg-soft motion-reduce:animate-none">
             <History aria-hidden className="size-6 text-brand-from" strokeWidth={2} />
           </span>
-          <p className="text-sm font-bold text-ink">No recent searches</p>
-          <p className="text-xs font-medium text-muted">Your searches will show up here.</p>
+          <p className="text-sm font-bold text-ink">{t.search.noRecent}</p>
+          <p className="text-xs font-medium text-muted">{t.search.noRecentHint}</p>
         </div>
       )}
     </section>

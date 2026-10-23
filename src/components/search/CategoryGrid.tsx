@@ -5,19 +5,19 @@ import { BookOpen, Calculator, Code2, Globe, type LucideIcon } from 'lucide-reac
 import { CATEGORY_PALETTE } from '@/lib/categoryPalette';
 import { SEARCH_CATEGORIES } from '@/lib/search';
 import type { Category } from '@/types/database';
+import { useT } from '@/i18n';
 
 interface SearchCategory {
   id: Category;
-  title: string;
   icon: LucideIcon;
 }
 
 /** Card texts and icons; colours come from CATEGORY_PALETTE like the barter cards. */
 const CATEGORY_CARDS: Record<Category, SearchCategory> = {
-  'CS & Dev': { id: 'CS & Dev', title: 'Computer Science & Dev', icon: Code2 },
-  Languages: { id: 'Languages', title: 'Languages', icon: Globe },
-  Humanities: { id: 'Humanities', title: 'Humanities and Social', icon: BookOpen },
-  Mathematics: { id: 'Mathematics', title: 'Mathematics', icon: Calculator },
+  'CS & Dev': { id: 'CS & Dev', icon: Code2 },
+  Languages: { id: 'Languages', icon: Globe },
+  Humanities: { id: 'Humanities', icon: BookOpen },
+  Mathematics: { id: 'Mathematics', icon: Calculator },
 };
 
 interface CategoryGridProps {
@@ -26,10 +26,6 @@ interface CategoryGridProps {
   onSelect: (category: Category) => void;
   /** Delay (ms) before the first card appears, to follow the blocks above. */
   delay?: number;
-}
-
-function formatCount(count: number) {
-  return `${count} ${count === 1 ? 'card' : 'cards'}`;
 }
 
 function CategoryCard({
@@ -45,6 +41,7 @@ function CategoryCard({
   delay: number;
   onSelect: () => void;
 }) {
+  const t = useT();
   const palette = CATEGORY_PALETTE[category.id];
   const Icon = category.icon;
   const [wiggle, setWiggle] = useState(0);
@@ -78,7 +75,7 @@ function CategoryCard({
 
       <span className="relative flex flex-col gap-1">
         <span style={{ color: palette.title }} className="font-bricolage text-base leading-5 font-extrabold">
-          {category.title}
+          {t.search.categoryTitles[category.id]}
         </span>
         {count === null ? (
           <span
@@ -87,7 +84,7 @@ function CategoryCard({
           />
         ) : (
           <span style={{ color: palette.label }} className="text-xs font-semibold">
-            {formatCount(count)}
+            {t.common.cards(count)}
           </span>
         )}
       </span>
@@ -113,6 +110,3 @@ export function CategoryGrid({ counts, onSelect, delay = 0 }: CategoryGridProps)
   );
 }
 
-export function categoryTitle(category: Category): string {
-  return CATEGORY_CARDS[category].title;
-}

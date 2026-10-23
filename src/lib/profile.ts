@@ -4,9 +4,7 @@ import { currentEmail } from '@/lib/auth';
 import { getInitials, getShortName } from '@/lib/format';
 import { supabase } from '@/lib/supabase';
 import type { DegreeLevel, PostStatus, StudyYear, Subject, TelegramVisibility, User } from '@/types/database';
-
-/** Interface languages. English is the default. */
-export type Language = 'en' | 'ru' | 'kz';
+import type { Messages } from '@/i18n';
 
 export type ProfileSubject = Pick<Subject, 'id' | 'code' | 'name' | 'category'>;
 
@@ -184,11 +182,9 @@ export async function fetchProfile(emailOverride?: string): Promise<ProfileData 
 // Changes (Supabase functions that act only on the current student)
 // ---------------------------------------------------------------------------
 
-/** "Bachelor's" / "Master's" / "PhD" for the degree_level values. */
-export function degreeLabel(degree: DegreeLevel): string {
-  if (degree === "Master's Degree") return "Master's";
-  if (degree === 'PhD') return 'PhD';
-  return "Bachelor's";
+/** "Bachelor's" / "Master's" / "PhD" for the degree_level values, in the interface language. */
+export function degreeLabel(t: Messages, degree: DegreeLevel): string {
+  return t.degree[degree] ?? t.degree.Undergraduate;
 }
 
 export async function updateMyCard(id: string, neededTopic: string, offeredTopic: string): Promise<void> {

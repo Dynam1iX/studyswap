@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import { AuthGate } from '@/components/auth/AuthGate';
 import { THEME_COLORS, THEME_INIT_SCRIPT } from '@/lib/theme';
 import './globals.css';
+import { I18nProvider } from '@/i18n';
 
 export const metadata: Metadata = {
   title: 'StudySwap — Academic Barter Platform',
@@ -35,7 +36,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         />
       </head>
       <body className="bg-page text-ink antialiased">
-        <AuthGate>{children}</AuthGate>
+        <I18nProvider>
+          <AuthGate>{children}</AuthGate>
+        </I18nProvider>
       </body>
     </html>
   );

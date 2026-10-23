@@ -4,6 +4,7 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { hasProfile } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
+import { useT } from '@/i18n';
 
 /** Pages for students who are not signed in. */
 const LOGIN_PATH = '/login';
@@ -21,17 +22,18 @@ function targetFor(status: Status, path: string): string | null {
 }
 
 function CheckFailed() {
+  const t = useT();
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center gap-4 bg-page px-6 text-center">
       <img src="/StudySwapLogo.svg" alt="StudySwap" className="size-14 rounded-2xl" />
-      <p className="font-bricolage text-xl font-extrabold text-ink">Could not check your account</p>
-      <p className="text-sm font-medium text-muted">Check the internet connection and try again.</p>
+      <p className="font-bricolage text-xl font-extrabold text-ink">{t.authGate.title}</p>
+      <p className="text-sm font-medium text-muted">{t.authGate.body}</p>
       <button
         type="button"
         onClick={() => window.location.reload()}
         className="h-12 cursor-pointer rounded-xl bg-linear-to-r from-brand-from to-brand-to px-6 text-sm font-bold text-white active:scale-95"
       >
-        Try again
+        {t.common.tryAgain}
       </button>
     </div>
   );
