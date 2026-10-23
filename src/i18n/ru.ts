@@ -63,7 +63,6 @@ export const ru: Messages = {
 
   details: {
     title: 'Детали обмена',
-    noRatings: 'Пока без оценок',
     whatTheyTeach: 'Что может объяснить',
     whatTheyNeed: 'С чем нужна помощь',
     subjects: 'Предметы',
@@ -160,9 +159,6 @@ export const ru: Messages = {
     loading: 'Загружаем профиль...',
     loadError: 'Не удалось загрузить профиль',
     notFound: 'Профиль не найден',
-    swapsDone: 'Обменов',
-    ratings: (count) => `${count} ${plural(count, 'оценка', 'оценки', 'оценок')}`,
-    activeCards: 'Активных карточек',
     needHelpWith: 'Нужна помощь с',
     canTeach: 'Могу объяснить',
     nothingYet: 'Пока ничего',
@@ -205,14 +201,8 @@ export const ru: Messages = {
   },
 
   privacy: {
-    whoSees: 'Кто видит мой Telegram',
-    visibility: {
-      everyone: { title: 'Все студенты', hint: 'На ваших карточках есть кнопка «Написать в Telegram».' },
-      accepted: { title: 'Только после того, как я приму заявку', hint: 'До этого студенты пишут вам на университетскую почту.' },
-    },
-    saveError: 'Не удалось сохранить настройку',
     yourData: 'Ваши данные',
-    yourDataHint: 'Скачайте всё, что StudySwap хранит о вас: профиль, карточки, заявки на обмен, лайки и недавние запросы.',
+    yourDataHint: 'Скачайте всё, что StudySwap хранит о вас: профиль, карточки, лайки и недавние запросы.',
     download: 'Скачать мои данные (JSON)',
     downloadError: 'Не удалось подготовить данные',
     deleteTitle: 'Удалить аккаунт',

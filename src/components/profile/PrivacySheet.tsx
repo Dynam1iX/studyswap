@@ -1,22 +1,17 @@
 'use client';
 
 import { useId, useState } from 'react';
-import { Check, Download, Loader2, Trash2, X } from 'lucide-react';
+import { Download, Loader2, Trash2, X } from 'lucide-react';
 import { BottomSheet } from '@/components/ui/BottomSheet';
-import type { TelegramVisibility } from '@/types/database';
 import { useT } from '@/i18n';
 
 interface PrivacySheetProps {
   open: boolean;
   onClose: () => void;
-  telegramVisibility: TelegramVisibility;
-  onTelegramVisibilityChange: (visibility: TelegramVisibility) => Promise<void>;
   onDownload: () => Promise<void>;
   /** Deletes the account; the page signs out and leaves afterwards. */
   onDeleteAccount: () => Promise<void>;
 }
-
-const VISIBILITY_OPTIONS: TelegramVisibility[] = ['everyone', 'accepted'];
 
 /** The word typed to confirm account deletion. */
 const DELETE_WORD = 'DELETE';
@@ -25,36 +20,20 @@ function SectionTitle({ children }: { children: string }) {
   return <h3 className="font-bricolage text-lg font-extrabold text-ink">{children}</h3>;
 }
 
-/** Privacy and security: Telegram visibility, download my data, delete account. */
+/** Privacy and security: download my data, delete account. */
 export function PrivacySheet({
   open,
   onClose,
-  telegramVisibility,
-  onTelegramVisibilityChange,
   onDownload,
   onDeleteAccount,
 }: PrivacySheetProps) {
   const t = useT();
   const titleId = useId();
-  const [saving, setSaving] = useState<TelegramVisibility | null>(null);
   const [downloading, setDownloading] = useState(false);
   const [deleteWord, setDeleteWord] = useState('');
   const [deleting, setDeleting] = useState(false);
   const canDelete = deleteWord.trim().toUpperCase() === DELETE_WORD;
   const [error, setError] = useState<string | null>(null);
-
-  const chooseVisibility = async (value: TelegramVisibility) => {
-    if (value === telegramVisibility || saving) return;
-    setSaving(value);
-    setError(null);
-    try {
-      await onTelegramVisibilityChange(value);
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : t.privacy.saveError);
-    } finally {
-      setSaving(null);
-    }
-  };
 
   const download = async () => {
     setDownloading(true);
@@ -102,48 +81,6 @@ export function PrivacySheet({
       }
     >
       <div className="flex flex-col gap-6 px-6 pt-2 pb-10">
-        {/* Who sees my Telegram */}
-        <section className="flex flex-col gap-3">
-          <SectionTitle>{t.privacy.whoSees}</SectionTitle>
-          <div role="radiogroup" aria-label={t.privacy.whoSees} className="flex flex-col gap-2">
-            {VISIBILITY_OPTIONS.map((value) => {
-              const option = { value, ...t.privacy.visibility[value] };
-              const selected = option.value === telegramVisibility;
-              return (
-                <button
-                  key={option.value}
-                  type="button"
-                  role="radio"
-                  aria-checked={selected}
-                  onClick={() => chooseVisibility(option.value)}
-                  className={`flex cursor-pointer items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-left transition-[border-color,background-color,transform] duration-200 active:scale-[0.98] ${
-                    selected ? 'border-brand-from bg-brand-soft' : 'border-line-strong bg-surface hover:bg-soft/60'
-                  }`}
-                >
-                  <span className="flex flex-col gap-0.5">
-                    <span className="text-[15px] font-bold text-ink">{option.title}</span>
-                    <span className="text-xs font-medium text-muted">{option.hint}</span>
-                  </span>
-                  <span
-                    aria-hidden
-                    className={`flex size-6 shrink-0 items-center justify-center rounded-full transition-all duration-300 ${
-                      selected
-                        ? 'scale-100 bg-linear-to-r from-brand-from to-brand-to text-white'
-                        : 'scale-90 border-2 border-line-strong text-transparent'
-                    }`}
-                  >
-                    {saving === option.value ? (
-                      <Loader2 className="size-3.5 animate-spin text-brand-from" />
-                    ) : (
-                      <Check className="size-3.5" strokeWidth={3} />
-                    )}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        </section>
-
         {/* Download my data */}
         <section className="flex flex-col gap-3">
           <SectionTitle>{t.privacy.yourData}</SectionTitle>

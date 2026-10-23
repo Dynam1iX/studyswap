@@ -1,4 +1,4 @@
-import type { Category, ContactMethod, DegreeLevel, PostStatus, TelegramVisibility } from '@/types/database';
+import type { Category, ContactMethod, DegreeLevel, PostStatus } from '@/types/database';
 
 /** English texts. Russian and Kazakh (ru.ts, kz.ts) follow the same shape. */
 export const en = {
@@ -55,7 +55,6 @@ export const en = {
 
   details: {
     title: 'Swap details',
-    noRatings: 'No ratings yet',
     whatTheyTeach: 'What they can teach',
     whatTheyNeed: 'What they need help with',
     subjects: 'Subjects',
@@ -152,9 +151,6 @@ export const en = {
     loading: 'Loading profile...',
     loadError: 'Could not load the profile',
     notFound: 'Profile not found',
-    swapsDone: 'Swaps done',
-    ratings: (count: number) => `${count} ${count === 1 ? 'rating' : 'ratings'}`,
-    activeCards: 'Active cards',
     needHelpWith: 'I need help with',
     canTeach: 'I can teach',
     nothingYet: 'Nothing yet',
@@ -197,17 +193,8 @@ export const en = {
   },
 
   privacy: {
-    whoSees: 'Who can see my Telegram',
-    visibility: {
-      everyone: { title: 'All students', hint: 'Your cards show a "Message on Telegram" button.' },
-      accepted: { title: 'Only after I accept a request', hint: 'Until then, students contact you by university e-mail.' },
-    } satisfies Record<TelegramVisibility, { title: string; hint: string }> as Record<
-      TelegramVisibility,
-      { title: string; hint: string }
-    >,
-    saveError: 'Could not save the setting',
     yourData: 'Your data',
-    yourDataHint: 'Download everything StudySwap stores about you: profile, cards, swap requests, likes and recent searches.',
+    yourDataHint: 'Download everything StudySwap stores about you: profile, cards, likes and recent searches.',
     download: 'Download my data (JSON)',
     downloadError: 'Could not prepare your data',
     deleteTitle: 'Delete account',

@@ -1,7 +1,7 @@
 'use client';
 
 import { useId, useState, type CSSProperties, type ReactNode } from 'react';
-import { CalendarDays, Mail, Send, Star, Tag, X } from 'lucide-react';
+import { CalendarDays, Mail, Send, Tag, X } from 'lucide-react';
 import { BottomSheet } from '@/components/ui/BottomSheet';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { paletteFor } from '@/lib/categoryPalette';
@@ -75,11 +75,6 @@ function SwapDetailBody({ post }: { post: FeedPost }) {
             {formatStudyInfo(t, post.author?.major, post.author?.study_year)}
           </span>
         </div>
-        {/* There is no ratings table yet. */}
-        <span className="flex shrink-0 items-center gap-1.5 rounded-full bg-soft px-3 py-[7px] text-xs font-semibold text-muted">
-          <Star aria-hidden className="size-4" />
-          {t.details.noRatings}
-        </span>
       </div>
 
       {/* Can teach ⇄ Needs help */}
