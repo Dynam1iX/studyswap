@@ -43,7 +43,7 @@ export function UndoToast({ toastKey, message, onUndo, onExpire }: UndoToastProp
     >
       <div
         key={shownKey ?? 'none'}
-        className={`relative flex items-center justify-between gap-3 overflow-hidden rounded-2xl bg-ink py-3 pr-2 pl-4 text-white shadow-[0_10px_28px_rgba(27,21,48,0.3)] ${
+        className={`relative flex items-center justify-between gap-3 overflow-hidden rounded-2xl bg-toast py-3 pr-2 pl-4 text-white shadow-[0_10px_28px_rgba(27,21,48,0.3)] ${
           visible ? 'pointer-events-auto animate-pop motion-reduce:animate-none' : ''
         }`}
       >

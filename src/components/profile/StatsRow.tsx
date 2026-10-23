@@ -10,7 +10,7 @@ interface StatTileProps {
 
 export function StatTile({ value, label }: StatTileProps) {
   return (
-    <div className="flex flex-col items-center gap-1.5 rounded-2xl border border-line bg-white px-2 py-3.5 text-center">
+    <div className="flex flex-col items-center gap-1.5 rounded-2xl border border-line bg-surface px-2 py-3.5 text-center">
       <span className="flex items-center gap-1 font-bricolage text-3xl leading-7 font-extrabold text-ink">
         {value}
       </span>

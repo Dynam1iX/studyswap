@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import { AuthGate } from '@/components/auth/AuthGate';
+import { THEME_COLORS, THEME_INIT_SCRIPT } from '@/lib/theme';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -17,6 +18,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <meta name="theme-color" content={THEME_COLORS.light} />
+        {/* Saved dark theme: applied before the first paint, so there is no white flash. */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         {/* Chrome on iPhone ("CriOS"): use the fixed-height layout (see MobileShell). Runs before paint. */}
         <script
           dangerouslySetInnerHTML={{

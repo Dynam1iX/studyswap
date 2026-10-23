@@ -19,7 +19,7 @@ export function SubjectSelect({ label, subjects, value, onChange, error, shakeKe
   const fieldState = error
     ? 'border-danger ring-2 ring-red-100 text-ink'
     : value
-      ? 'border-[#0E9F6E] text-ink'
+      ? 'border-success text-ink'
       : 'border-field text-placeholder';
 
   return (
@@ -32,7 +32,7 @@ export function SubjectSelect({ label, subjects, value, onChange, error, shakeKe
         <select
           value={value ?? ''}
           onChange={(event) => onChange(event.target.value ? Number(event.target.value) : null)}
-          className={`h-[44px] w-full cursor-pointer appearance-none rounded-[14px] border bg-white pr-12 pl-8 text-[16px] font-semibold sm:text-[15px] outline-none transition ${fieldState}`}
+          className={`h-[44px] w-full cursor-pointer appearance-none rounded-[14px] border bg-surface pr-12 pl-8 text-[16px] font-semibold sm:text-[15px] outline-none transition ${fieldState}`}
         >
           <option value="" disabled>
             Select a subject...
@@ -51,7 +51,7 @@ export function SubjectSelect({ label, subjects, value, onChange, error, shakeKe
 
         <div className="pointer-events-none absolute top-1/2 right-3 flex -translate-y-1/2 items-center gap-1.5">
           {value && !error && (
-            <div className="flex size-5 items-center justify-center rounded-full bg-[#DDF4E8] text-xs font-bold text-success">
+            <div className="flex size-5 items-center justify-center rounded-full bg-success-soft text-xs font-bold text-success">
               ✓
             </div>
           )}

@@ -113,7 +113,7 @@ export function BarterCard({
 
   return (
     <div
-      className={`group relative w-full space-y-2.5 rounded-2xl border border-line bg-white p-4 shadow-sm transition-[transform,box-shadow] duration-300 ease-out ${
+      className={`group relative w-full space-y-2.5 rounded-2xl border border-line bg-surface p-4 shadow-sm transition-[transform,box-shadow] duration-300 ease-out ${
         onOpen ? 'hover:-translate-y-0.5 hover:shadow-[0_10px_24px_rgba(60,30,110,0.10)] active:scale-[0.98]' : ''
       }`}
     >
@@ -156,12 +156,12 @@ export function BarterCard({
               key={pops}
               src={liked ? '/liked.svg' : '/like.svg'}
               alt="Like"
-              className={`relative size-[22px] ${pops > 0 && liked ? 'animate-heart-pop motion-reduce:animate-none' : ''}`}
+              className={`relative size-[22px] ${liked ? '' : 'theme-icon'} ${pops > 0 && liked ? 'animate-heart-pop motion-reduce:animate-none' : ''}`}
             />
           </button>
         ) : (
           <span className="shrink-0 p-1">
-            <img src="/like.svg" alt="Like" className="size-[22px]" />
+            <img src="/like.svg" alt="Like" className="theme-icon size-[22px]" />
           </span>
         )}
       </div>

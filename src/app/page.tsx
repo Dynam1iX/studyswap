@@ -51,7 +51,7 @@ export default function FeedPage() {
       </div>
 
       <div style={{ animationDelay: '80ms' }} className="animate-rise px-4 pt-3 pb-1 motion-reduce:animate-none">
-        <h1 className="font-bricolage text-[22px] leading-[26px] font-bold text-black">Matches for you</h1>
+        <h1 className="font-bricolage text-[22px] leading-[26px] font-bold text-ink">Matches for you</h1>
       </div>
 
       {/* key: the list fades in again whenever the subject filter changes */}
@@ -59,7 +59,7 @@ export default function FeedPage() {
         {loading ? (
           <FeedSkeleton />
         ) : visiblePosts.length === 0 ? (
-          <div className="animate-pop rounded-2xl border border-line bg-white p-6 py-16 text-center text-xs font-medium text-muted motion-reduce:animate-none">
+          <div className="animate-pop rounded-2xl border border-line bg-surface p-6 py-16 text-center text-xs font-medium text-muted motion-reduce:animate-none">
             No barter offers found for this subject
           </div>
         ) : (

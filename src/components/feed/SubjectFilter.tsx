@@ -18,7 +18,7 @@ function chipClasses(active: boolean) {
   return `relative flex shrink-0 cursor-pointer items-center gap-1.5 overflow-hidden rounded-[25px] border px-4 py-[9px] text-[14px] leading-[17px] font-bold shadow-sm outline-none transition-[color,border-color,box-shadow,transform] duration-300 active:scale-95 ${
     active
       ? 'border-transparent text-white shadow-[0_6px_16px_rgba(173,70,255,0.3)]'
-      : 'border-line-strong bg-white text-ink'
+      : 'border-line-strong bg-surface text-ink'
   }`;
 }
 
@@ -89,7 +89,7 @@ export function SubjectFilter({ subjects, value, onChange }: SubjectFilterProps)
         <div
           ref={trackRef}
           onClick={handleTrackClick}
-          className="relative h-[5px] w-full cursor-pointer rounded-full bg-[#DFDFDF]"
+          className="relative h-[5px] w-full cursor-pointer rounded-full bg-line-strong"
         >
           <div
             style={{ width: THUMB_WIDTH, left: `calc(${progress * 100}% - ${progress * THUMB_WIDTH}px)` }}

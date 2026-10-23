@@ -31,12 +31,12 @@ export function ContactMethodToggle({ value, onChange, telegramAvailable }: Cont
               disabled={disabled}
               onClick={() => onChange(option.value)}
               className={`flex h-[48px] flex-1 cursor-pointer items-center gap-2 rounded-[12px] px-3 transition disabled:cursor-not-allowed disabled:opacity-45 ${
-                selected ? 'bg-white shadow-[0_2px_6px_rgba(0,0,0,0.06)]' : 'bg-transparent'
+                selected ? 'bg-surface shadow-[0_2px_6px_rgba(0,0,0,0.06)]' : 'bg-transparent'
               }`}
             >
               <div
                 className={`flex size-[18px] items-center justify-center rounded-full border ${
-                  selected ? 'border-brand-from' : 'border-[#8F88A8]'
+                  selected ? 'border-brand-from' : 'border-placeholder'
                 }`}
               >
                 {selected && <div className="size-2 rounded-full bg-linear-to-r from-brand-from to-brand-to" />}

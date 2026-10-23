@@ -169,7 +169,7 @@ export default function LoginPage() {
                   }}
                   placeholder="barcode@astanait.edu.kz"
                   aria-invalid={error ? true : undefined}
-                  className={`h-12 rounded-xl border bg-white px-4 text-base font-medium text-ink outline-none transition-[border-color,box-shadow] placeholder:text-placeholder ${
+                  className={`h-12 rounded-xl border bg-surface px-4 text-base font-medium text-ink outline-none transition-[border-color,box-shadow] placeholder:text-placeholder ${
                     error
                       ? 'border-danger ring-2 ring-red-100'
                       : 'border-field focus:border-brand-from focus:shadow-[0_0_0_3px_rgba(173,70,255,0.15)]'
@@ -199,7 +199,7 @@ export default function LoginPage() {
                 onClick={() => void continueWithMicrosoft()}
                 disabled={msBusy}
                 aria-busy={msBusy}
-                className={`flex h-12 cursor-pointer items-center justify-center gap-2.5 rounded-xl border bg-white text-base font-semibold text-ink transition-[background-color,border-color,transform] hover:bg-soft active:scale-[0.98] disabled:cursor-default ${
+                className={`flex h-12 cursor-pointer items-center justify-center gap-2.5 rounded-xl border bg-surface text-base font-semibold text-ink transition-[background-color,border-color,transform] hover:bg-soft active:scale-[0.98] disabled:cursor-default ${
                   msBusy ? 'scale-[0.98] border-brand-from' : 'border-line-strong'
                 }`}
               >
@@ -270,7 +270,7 @@ export default function LoginPage() {
               type="button"
               onClick={() => void requestCode()}
               disabled={busy || resendIn > 0}
-              className="h-12 cursor-pointer rounded-xl border border-line-strong bg-white text-sm font-bold text-ink transition hover:bg-soft active:scale-[0.98] disabled:cursor-default disabled:text-muted disabled:hover:bg-white"
+              className="h-12 cursor-pointer rounded-xl border border-line-strong bg-surface text-sm font-bold text-ink transition hover:bg-soft active:scale-[0.98] disabled:cursor-default disabled:text-muted disabled:hover:bg-surface"
             >
               {resendIn > 0 ? `Resend code in ${resendIn}s` : 'Resend code'}
             </button>

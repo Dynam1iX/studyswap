@@ -27,7 +27,7 @@ export function SubjectChipList({ title, subjects, emptyText }: SubjectChipListP
         <li>
           <Link
             href="/create"
-            className="inline-flex h-10 items-center rounded-full border border-dashed border-field px-4 text-sm font-semibold text-muted transition hover:border-brand-from hover:bg-white hover:text-brand-from active:scale-95"
+            className="inline-flex h-10 items-center rounded-full border border-dashed border-field px-4 text-sm font-semibold text-muted transition hover:border-brand-from hover:bg-surface hover:text-brand-from active:scale-95"
           >
             + Add
           </Link>

@@ -13,7 +13,7 @@ interface ProfileHeaderCardProps {
 
 export function ProfileHeaderCard({ user, onEditAvatar, avatarBusy, onLinkTelegram }: ProfileHeaderCardProps) {
   return (
-    <div className="flex flex-col gap-4 rounded-3xl border border-line bg-white p-4">
+    <div className="flex flex-col gap-4 rounded-3xl border border-line bg-surface p-4">
       <div className="flex items-center gap-4">
         <Avatar initials={user.initials} url={user.avatarUrl} onEdit={onEditAvatar} busy={avatarBusy} />
         <div className="flex min-w-0 flex-col gap-0.5">

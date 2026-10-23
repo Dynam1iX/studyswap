@@ -150,7 +150,7 @@ export default function ProfilePage() {
           <h1 className="animate-rise font-bricolage text-2xl font-extrabold text-ink motion-reduce:animate-none">Profile</h1>
           <Link
             href="/profile/edit"
-            className="flex h-11 items-center gap-2 rounded-full border border-line-strong bg-white px-4 text-sm font-semibold text-ink transition hover:bg-soft active:scale-95"
+            className="flex h-11 items-center gap-2 rounded-full border border-line-strong bg-surface px-4 text-sm font-semibold text-ink transition hover:bg-soft active:scale-95"
           >
             <Pencil className="size-4" />
             Edit
@@ -165,13 +165,13 @@ export default function ProfilePage() {
         )}
 
         {state.status === 'error' && (
-          <p className="rounded-2xl border border-[#F2C6D4] bg-white p-6 text-center text-sm font-medium text-[#C0264B]">
+          <p className="rounded-2xl border border-danger-line bg-surface p-6 text-center text-sm font-medium text-danger-ink">
             {state.message}
           </p>
         )}
 
         {state.status === 'not-found' && (
-          <p className="rounded-2xl border border-line bg-white p-6 text-center text-sm font-medium text-muted">
+          <p className="rounded-2xl border border-line bg-surface p-6 text-center text-sm font-medium text-muted">
             Profile not found
           </p>
         )}
@@ -221,7 +221,7 @@ export default function ProfilePage() {
               onClick={logOut}
               disabled={loggingOut}
               style={{ animationDelay: '420ms' }}
-              className="flex h-14 animate-rise cursor-pointer items-center justify-center gap-2 rounded-2xl border border-[#F2C6D4] bg-white text-base font-extrabold text-[#C0264B] transition hover:bg-[#FFF5F8] active:scale-[0.98] motion-reduce:animate-none"
+              className="flex h-14 animate-rise cursor-pointer items-center justify-center gap-2 rounded-2xl border border-danger-line bg-surface text-base font-extrabold text-danger-ink transition hover:bg-danger-soft active:scale-[0.98] motion-reduce:animate-none"
             >
               {loggingOut ? <Loader2 className="size-4 animate-spin" /> : <LogOut className="size-4" />}
               Log out

@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* dark: utilities follow the theme switch (html.dark), not the phone setting. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* Design tokens: use them as Tailwind classes, e.g. bg-page, text-ink, border-line, font-bricolage. */
 @theme {
   --color-page: #fbf9ff;
@@ -14,6 +17,17 @@
   --color-brand-to: #f6339a;
   --color-success: #0b6b48;
   --color-danger: #e02424;
+  /* Cards, sheets, fields: white in the light theme. */
+  --color-surface: #ffffff;
+  /* Dark pill for toasts (dark in both themes). */
+  --color-toast: #1b1530;
+  --color-brand-soft: #f3e8ff;
+  --color-brand-ink: #6d1fc4;
+  --color-danger-ink: #c0264b;
+  --color-danger-line: #f2c6d4;
+  --color-danger-soft: #fff5f8;
+  --color-success-soft: #ddf4e8;
+  --color-warning: #b45309;
 
   --font-bricolage: "Bricolage Grotesque", sans-serif;
   --font-montserrat: "Montserrat", sans-serif;
@@ -523,4 +537,118 @@ nextjs-portal,
   .burst {
     display: none;
   }
+}
+
+/* ---------------------------------------------------------------------------
+   Dark theme ("night violet"): html.dark is set before the first paint from the
+   saved choice (script in app/layout.tsx) and by the theme switch.
+   --------------------------------------------------------------------------- */
+html.dark {
+  color-scheme: dark;
+  --color-page: #120e1f;
+  --color-surface: #1c1630;
+  --color-ink: #f1edfb;
+  --color-muted: #b3abc9;
+  --color-placeholder: #8c84a6;
+  --color-line: #2a2340;
+  --color-line-strong: #342c4d;
+  --color-field: #463c63;
+  --color-soft: #241d39;
+  --color-toast: #2e2648;
+  --color-brand-soft: #2a1f45;
+  --color-brand-ink: #d3a8ff;
+  --color-success: #34d399;
+  --color-danger: #f87171;
+  --color-danger-ink: #ff8aa6;
+  --color-danger-line: #5a2337;
+  --color-danger-soft: #2a1520;
+  --color-success-soft: #133b2c;
+  --color-warning: #fbbf24;
+
+  /* Subject colours: deep, muted versions of the light palette. */
+  --cat-cs-bg: #1d2a4a;
+  --cat-cs-label: #8fb0ff;
+  --cat-cs-title: #dbe6ff;
+  --cat-cs-topic: #a9c0ff;
+  --cat-cs-dot: #7a9cf5;
+  --cat-lang-bg: #3d1a26;
+  --cat-lang-label: #ff8fae;
+  --cat-lang-title: #ffe0e8;
+  --cat-lang-topic: #ff9fbb;
+  --cat-lang-dot: #ff7aa0;
+  --cat-hum-bg: #3a2418;
+  --cat-hum-label: #ffb07a;
+  --cat-hum-title: #ffe8d8;
+  --cat-hum-topic: #ffbf94;
+  --cat-hum-dot: #f0a06a;
+  --cat-math-bg: #2c2357;
+  --cat-math-label: #b8a2ff;
+  --cat-math-title: #ece6ff;
+  --cat-math-topic: #c4b2ff;
+  --cat-math-dot: #a68cff;
+  --cat-empty-bg: #241d39;
+  --cat-empty-label: #9a92b5;
+  --cat-empty-title: #e6e1f5;
+  --cat-empty-topic: #b3abc9;
+  --cat-empty-dot: #6f6888;
+}
+
+/* Subject colours, light theme (see lib/categoryPalette.ts). */
+:root {
+  --cat-cs-bg: #d9e1f1;
+  --cat-cs-label: #274cb1;
+  --cat-cs-title: #1e3a8a;
+  --cat-cs-topic: #4065bb;
+  --cat-cs-dot: #4065bb;
+  --cat-lang-bg: #fdd5da;
+  --cat-lang-label: #9e1842;
+  --cat-lang-title: #881337;
+  --cat-lang-topic: #be1f52;
+  --cat-lang-dot: #9e1842;
+  --cat-hum-bg: #fdeae2;
+  --cat-hum-label: #994716;
+  --cat-hum-title: #78350f;
+  --cat-hum-topic: #c35f20;
+  --cat-hum-dot: #994716;
+  --cat-math-bg: #cbc2f7;
+  --cat-math-label: #5b24b1;
+  --cat-math-title: #4c1d95;
+  --cat-math-topic: #6d2ed6;
+  --cat-math-dot: #6d2ed6;
+  --cat-empty-bg: #f3effc;
+  --cat-empty-label: #736a8e;
+  --cat-empty-title: #2f274b;
+  --cat-empty-topic: #5a5472;
+  --cat-empty-dot: #a09bb5;
+}
+
+/* Grey and ink line icons (nav, like) are SVG files with fixed colours: lighten them at night. */
+html.dark .theme-icon {
+  filter: invert(1) hue-rotate(180deg) brightness(1.1);
+}
+
+/* Theme switch: the new theme spreads in a circle from the switch (View Transitions). */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+::view-transition-new(root) {
+  animation: theme-reveal 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+}
+@keyframes theme-reveal {
+  from {
+    clip-path: circle(0 at var(--theme-x, 50%) var(--theme-y, 50%));
+  }
+  to {
+    clip-path: circle(var(--theme-r, 150vmax) at var(--theme-x, 50%) var(--theme-y, 50%));
+  }
+}
+/* Without View Transitions: colours cross-fade instead. */
+html.theme-fade,
+html.theme-fade * {
+  transition:
+    background-color 0.4s ease,
+    border-color 0.4s ease,
+    color 0.4s ease !important;
 }

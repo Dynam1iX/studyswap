@@ -99,7 +99,7 @@ export function AvatarSheet({ open, onClose, initials, currentUrl, onSave, onRem
       <div className="flex flex-col items-center gap-5 px-6 pt-2 pb-10">
         {/* Preview */}
         <div className="relative size-40 rounded-full bg-linear-to-br from-brand-from to-brand-to p-1 shadow-[0_10px_30px_rgba(173,70,255,0.25)]">
-          <div className="flex size-full items-center justify-center overflow-hidden rounded-full border-4 border-white bg-[#F1E9FF]">
+          <div className="flex size-full items-center justify-center overflow-hidden rounded-full border-4 border-surface bg-brand-soft">
             {previewUrl ? (
               <img
                 key={previewUrl}
@@ -109,11 +109,11 @@ export function AvatarSheet({ open, onClose, initials, currentUrl, onSave, onRem
                 className="size-full animate-pop rounded-full object-cover pointer-events-none select-none [-webkit-touch-callout:none] motion-reduce:animate-none"
               />
             ) : (
-              <span className="font-bricolage text-5xl font-extrabold text-[#6D1FC4]">{initials}</span>
+              <span className="font-bricolage text-5xl font-extrabold text-brand-ink">{initials}</span>
             )}
           </div>
           {busy === 'prepare' && (
-            <span className="absolute inset-1 flex items-center justify-center rounded-full bg-white/70">
+            <span className="absolute inset-1 flex items-center justify-center rounded-full bg-surface/70">
               <Loader2 className="size-7 animate-spin text-brand-from" />
             </span>
           )}
@@ -130,7 +130,7 @@ export function AvatarSheet({ open, onClose, initials, currentUrl, onSave, onRem
               type="button"
               onClick={() => inputRef.current?.click()}
               disabled={busy !== null}
-              className="h-12 cursor-pointer rounded-2xl border border-line-strong bg-white text-sm font-bold text-ink transition hover:bg-soft active:scale-[0.98] disabled:opacity-60"
+              className="h-12 cursor-pointer rounded-2xl border border-line-strong bg-surface text-sm font-bold text-ink transition hover:bg-soft active:scale-[0.98] disabled:opacity-60"
             >
               Choose another
             </button>
@@ -161,7 +161,7 @@ export function AvatarSheet({ open, onClose, initials, currentUrl, onSave, onRem
             type="button"
             onClick={() => run('remove')}
             disabled={busy !== null}
-            className="flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-2xl border border-[#F2C6D4] bg-white text-sm font-bold text-[#C0264B] transition hover:bg-[#FFF5F8] active:scale-[0.98] disabled:opacity-60"
+            className="flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-2xl border border-danger-line bg-surface text-sm font-bold text-danger-ink transition hover:bg-danger-soft active:scale-[0.98] disabled:opacity-60"
           >
             {busy === 'remove' ? <Loader2 className="size-4 animate-spin" /> : <Trash2 className="size-4" />}
             Remove photo

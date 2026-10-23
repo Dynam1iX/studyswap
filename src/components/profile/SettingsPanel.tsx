@@ -11,7 +11,7 @@ interface SettingsPanelProps {
 
 export function SettingsPanel({ language, onLanguageChange, onOpenPrivacy }: SettingsPanelProps) {
   return (
-    <div className="flex flex-col rounded-3xl border border-line bg-white px-4 py-1.5">
+    <div className="flex flex-col rounded-3xl border border-line bg-surface px-4 py-1.5">
       <div className="flex h-16 items-center justify-between border-b border-line">
         <span className="text-base font-bold text-ink">Language</span>
         <LanguageSwitcher value={language} onChange={onLanguageChange} />
