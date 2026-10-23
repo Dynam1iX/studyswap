@@ -1,12 +1,15 @@
+'use client';
+
 import { paletteFor } from '@/lib/categoryPalette';
 import type { ProfileCard, ProfileSubject } from '@/lib/profile';
 import type { PostStatus } from '@/types/database';
 import { ExchangeIcon } from '@/components/ui/ExchangeIcon';
+import { useT } from '@/i18n';
 
-const STATUS_VIEW: Record<PostStatus, { label: string; dot: string; text: string }> = {
-  active: { label: 'Active', dot: 'var(--color-success)', text: 'var(--color-success)' },
-  completed: { label: 'Completed', dot: 'var(--color-brand-ink)', text: 'var(--color-brand-ink)' },
-  archived: { label: 'Inactive', dot: 'var(--color-placeholder)', text: 'var(--color-muted)' },
+const STATUS_VIEW: Record<PostStatus, { dot: string; text: string }> = {
+  active: { dot: 'var(--color-success)', text: 'var(--color-success)' },
+  completed: { dot: 'var(--color-brand-ink)', text: 'var(--color-brand-ink)' },
+  archived: { dot: 'var(--color-placeholder)', text: 'var(--color-muted)' },
 };
 
 interface CardHalfProps {
@@ -43,6 +46,7 @@ interface MyCardItemProps {
 
 /** A barter card in Profile → My cards: needs ⇄ teaches with both topics, status and Manage. */
 export function MyCardItem({ card, onManage }: MyCardItemProps) {
+  const t = useT();
   const status = STATUS_VIEW[card.status];
 
   return (
@@ -52,8 +56,8 @@ export function MyCardItem({ card, onManage }: MyCardItemProps) {
           card.status === 'active' ? '' : 'opacity-60 grayscale-[35%]'
         }`}
       >
-        <CardHalf label="Needs" subject={card.needed} topic={card.neededTopic} />
-        <CardHalf label="Teaches" subject={card.offered} topic={card.offeredTopic} />
+        <CardHalf label={t.profile.needs} subject={card.needed} topic={card.neededTopic} />
+        <CardHalf label={t.profile.teaches} subject={card.offered} topic={card.offeredTopic} />
         <span className="pointer-events-none absolute top-1/2 left-1/2 flex size-[42px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-surface">
           <ExchangeIcon className="size-9" />
         </span>
@@ -62,7 +66,7 @@ export function MyCardItem({ card, onManage }: MyCardItemProps) {
       <div className="flex items-center justify-between">
         <span style={{ color: status.text }} className="flex items-center gap-1.5 text-xs font-semibold">
           <span aria-hidden style={{ backgroundColor: status.dot }} className="size-2 rounded-sm" />
-          {status.label}
+          {t.profile.status[card.status]}
         </span>
         <button
           type="button"
@@ -70,7 +74,7 @@ export function MyCardItem({ card, onManage }: MyCardItemProps) {
           aria-haspopup="dialog"
           className="h-10 w-[88px] cursor-pointer rounded-xl border border-line-strong bg-surface text-xs font-semibold text-ink transition hover:bg-page active:scale-95"
         >
-          Manage
+          {t.profile.manage}
         </button>
       </div>
     </div>

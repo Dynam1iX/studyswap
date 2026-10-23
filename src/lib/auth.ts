@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import type { DegreeLevel, StudyYear } from '@/types/database';
+import { messages } from '@/i18n';
 
 /** AITU student e-mail: the six-digit student id @astanait.edu.kz. */
 export const STUDENT_EMAIL_RE = /^\d{6}@astanait\.edu\.kz$/i;
@@ -13,15 +14,16 @@ export const RESEND_SECONDS = 60;
 /** Turns Supabase Auth errors into short messages for students. */
 function friendly(error: { message?: string; status?: number } | null): Error {
   const message = error?.message ?? '';
+  const t = messages().authErrors;
   if (/rate limit|only request this after|too many/i.test(message)) {
-    return new Error('Too many attempts. Wait a minute and try again.');
+    return new Error(t.tooMany);
   }
-  if (/expired|invalid/i.test(message)) return new Error('This code is wrong or has expired. Check it or ask for a new one.');
+  if (/expired|invalid/i.test(message)) return new Error(t.badCode);
   if (/student e-mails|Database error saving new user/i.test(message)) {
-    return new Error('Only AITU student e-mails (6 digits @astanait.edu.kz) can sign up.');
+    return new Error(t.studentOnly);
   }
-  if (/fetch|network/i.test(message)) return new Error('No connection. Check the internet and try again.');
-  return new Error(message || 'Something went wrong. Try again.');
+  if (/fetch|network/i.test(message)) return new Error(t.offline);
+  return new Error(message || t.generic);
 }
 
 /** E-mails a one-time code; creates the account on the first sign-in. */
@@ -66,9 +68,9 @@ export function takeRedirectError(): string | null {
   const description = params.get('error_description') ?? hash.get('error_description') ?? '';
   window.history.replaceState(null, '', window.location.pathname);
 
-  if (code === 'access_denied') return 'Microsoft sign-in was cancelled.';
+  if (code === 'access_denied') return messages().authErrors.microsoftCancelled;
   if (/student e-mails|Database error saving new user|email/i.test(description)) {
-    return 'Only student accounts can sign in: 6 digits @astanait.edu.kz.';
+    return messages().authErrors.studentAccountsOnly;
   }
   return friendly({ message: description }).message;
 }

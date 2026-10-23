@@ -12,6 +12,7 @@ import { BottomNav } from '@/components/layout/BottomNav';
 import { MobileShell } from '@/components/layout/MobileShell';
 import { addFavorite, fetchFavoritePosts, removeFavorite } from '@/lib/favorites';
 import type { FeedPost } from '@/lib/feed';
+import { messages, useT } from '@/i18n';
 
 /** Must match duration-300 on the card wrapper. */
 const EXIT_MS = 300;
@@ -30,6 +31,7 @@ interface Removed {
 }
 
 function SavedBadge({ count }: { count: number }) {
+  const t = useT();
   return (
     <span
       // A new key pops the badge every time the number changes.
@@ -37,13 +39,14 @@ function SavedBadge({ count }: { count: number }) {
       className="flex h-8 shrink-0 animate-pop items-center rounded-2xl bg-brand-soft px-3.5 text-xs font-bold motion-reduce:animate-none"
     >
       <span className="bg-linear-to-r from-brand-from to-brand-to bg-clip-text text-transparent">
-        {count} saved
+        {t.favorites.saved(count)}
       </span>
     </span>
   );
 }
 
 function EmptyState() {
+  const t = useT();
   return (
     <div className="flex animate-pop flex-col items-center gap-3 rounded-3xl border border-dashed border-line-strong bg-surface/60 px-6 py-12 text-center motion-reduce:animate-none">
       <span className="flex size-16 items-center justify-center rounded-full bg-brand-soft">
@@ -54,20 +57,21 @@ function EmptyState() {
         />
       </span>
       <div className="flex flex-col gap-1">
-        <p className="font-bricolage text-lg font-extrabold text-ink">No favorites yet</p>
-        <p className="text-sm font-medium text-muted">Tap the heart on a card in the Feed to save it here.</p>
+        <p className="font-bricolage text-lg font-extrabold text-ink">{t.favorites.empty}</p>
+        <p className="text-sm font-medium text-muted">{t.favorites.emptyHint}</p>
       </div>
       <Link
         href="/"
         className="shine mt-1 flex h-11 items-center rounded-xl bg-linear-to-r from-brand-from to-brand-to px-5 text-sm font-bold text-white shadow-[0_6px_16px_rgba(173,70,255,0.3)] transition active:scale-95"
       >
-        Go to Feed
+        {t.favorites.goToFeed}
       </Link>
     </div>
   );
 }
 
 export default function FavoritesPage() {
+  const t = useT();
   const [state, setState] = useState<LoadState>({ status: 'loading' });
   /** Cards playing their exit animation. */
   const [leaving, setLeaving] = useState<Set<string>>(new Set());
@@ -86,7 +90,7 @@ export default function FavoritesPage() {
       .catch((err: unknown) => {
         console.error('Error loading favorites:', err);
         if (!cancelled) {
-          setState({ status: 'error', message: err instanceof Error ? err.message : 'Could not load favorites' });
+          setState({ status: 'error', message: err instanceof Error ? err.message : messages().favorites.loadError });
         }
       });
     const pending = timers.current;
@@ -150,7 +154,7 @@ export default function FavoritesPage() {
     <div className="relative">
       <UndoToast
         toastKey={removed?.key ?? null}
-        message="Removed from favorites"
+        message={t.favorites.removed}
         onUndo={undo}
         onExpire={expire}
       />
@@ -166,8 +170,8 @@ export default function FavoritesPage() {
       <div className="flex flex-col gap-4 px-4 py-2">
         <div className="flex animate-rise items-end justify-between gap-3 motion-reduce:animate-none">
           <div className="flex flex-col gap-1">
-            <h1 className="font-bricolage text-3xl leading-8 font-extrabold text-ink">Favorite</h1>
-            <p className="text-sm font-semibold text-muted">Cards you liked in the feed</p>
+            <h1 className="font-bricolage text-3xl leading-8 font-extrabold text-ink">{t.favorites.title}</h1>
+            <p className="text-sm font-semibold text-muted">{t.favorites.subtitle}</p>
           </div>
           {state.status === 'ready' && savedCount > 0 && <SavedBadge count={savedCount} />}
         </div>

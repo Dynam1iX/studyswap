@@ -1,5 +1,8 @@
+'use client';
+
 import { paletteFor } from '@/lib/categoryPalette';
 import type { Subject } from '@/types/database';
+import { useT } from '@/i18n';
 
 interface SubjectSelectProps {
   label: string;
@@ -15,6 +18,7 @@ interface SubjectSelectProps {
 }
 
 export function SubjectSelect({ label, subjects, value, onChange, error, shakeKey, spaced = false }: SubjectSelectProps) {
+  const t = useT();
   const selected = subjects.find((subject) => subject.id === value);
   const fieldState = error
     ? 'border-danger ring-2 ring-red-100 text-ink'
@@ -35,7 +39,7 @@ export function SubjectSelect({ label, subjects, value, onChange, error, shakeKe
           className={`h-[44px] w-full cursor-pointer appearance-none rounded-[14px] border bg-surface pr-12 pl-8 text-[16px] font-semibold sm:text-[15px] outline-none transition ${fieldState}`}
         >
           <option value="" disabled>
-            Select a subject...
+            {t.create.selectSubject}
           </option>
           {subjects.map((subject) => (
             <option key={subject.id} value={subject.id} className="text-ink">
@@ -60,7 +64,7 @@ export function SubjectSelect({ label, subjects, value, onChange, error, shakeKe
       </div>
 
       {error && <p className="text-[12px] font-semibold text-danger">{error}</p>}
-      {!error && value && <p className="text-[13px] font-semibold text-success">Subject selected</p>}
+      {!error && value && <p className="text-[13px] font-semibold text-success">{t.create.subjectSelected}</p>}
     </div>
   );
 }

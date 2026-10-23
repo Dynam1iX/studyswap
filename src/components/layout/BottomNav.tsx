@@ -4,13 +4,13 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Plus } from 'lucide-react';
 import { FAVORITE_ADDED_EVENT } from '@/lib/favorites';
+import { useT } from '@/i18n';
 
 export type NavTab = 'feed' | 'search' | 'favorite' | 'profile';
 
 interface TabConfig {
   tab: NavTab;
   href: string;
-  label: string;
   icon: string;
   activeIcon: string;
   /** Pages that do not exist yet are shown dimmed and cannot be tapped. */
@@ -18,13 +18,13 @@ interface TabConfig {
 }
 
 const LEFT_TABS: TabConfig[] = [
-  { tab: 'feed', href: '/', label: 'Feed', icon: '/home.svg', activeIcon: '/feedselected.svg', ready: true },
-  { tab: 'search', href: '/search', label: 'Search', icon: '/search.svg', activeIcon: '/searchselected.svg', ready: true },
+  { tab: 'feed', href: '/', icon: '/home.svg', activeIcon: '/feedselected.svg', ready: true },
+  { tab: 'search', href: '/search', icon: '/search.svg', activeIcon: '/searchselected.svg', ready: true },
 ];
 
 const RIGHT_TABS: TabConfig[] = [
-  { tab: 'favorite', href: '/favorites', label: 'Favorite', icon: '/like.svg', activeIcon: '/likeselected.svg', ready: true },
-  { tab: 'profile', href: '/profile', label: 'Profile', icon: '/profile.svg', activeIcon: '/profileselected.svg', ready: true },
+  { tab: 'favorite', href: '/favorites', icon: '/like.svg', activeIcon: '/likeselected.svg', ready: true },
+  { tab: 'profile', href: '/profile', icon: '/profile.svg', activeIcon: '/profileselected.svg', ready: true },
 ];
 
 /** Counts likes made on this page, so the Favorite icon can bounce once per like. */
@@ -39,6 +39,8 @@ function useFavoritePings(): number {
 }
 
 function NavTabItem({ config, active, pings = 0 }: { config: TabConfig; active: boolean; pings?: number }) {
+  const t = useT();
+  const label = t.nav[config.tab];
   const bounce = active || pings > 0;
   const content = (
     <>
@@ -46,7 +48,7 @@ function NavTabItem({ config, active, pings = 0 }: { config: TabConfig; active: 
         // A new key replays the bounce on every like.
         key={pings}
         src={active ? config.activeIcon : config.icon}
-        alt={config.label}
+        alt={label}
         className={`size-[22px] ${active ? '' : 'theme-icon'} ${bounce ? 'animate-nav-bounce motion-reduce:animate-none' : ''}`}
       />
       <span
@@ -54,7 +56,7 @@ function NavTabItem({ config, active, pings = 0 }: { config: TabConfig; active: 
           active ? 'bg-linear-to-r from-brand-from to-brand-to bg-clip-text text-transparent' : 'text-muted'
         }`}
       >
-        {config.label}
+        {label}
       </span>
     </>
   );
@@ -84,6 +86,7 @@ function NavTabItem({ config, active, pings = 0 }: { config: TabConfig; active: 
 
 /** Bottom bar shared by every page (rendered as MobileShell's footer). */
 export function BottomNav({ active }: { active: NavTab }) {
+  const t = useT();
   const favoritePings = useFavoritePings();
   return (
     <nav className="flex h-[76px] w-full items-center justify-around border-t border-line bg-surface px-3">
@@ -94,7 +97,7 @@ export function BottomNav({ active }: { active: NavTab }) {
       <div className="relative flex h-[50px] w-[58px] justify-center">
         <Link
           href="/create"
-          aria-label="Create barter card"
+          aria-label={t.nav.create}
           className="halo group absolute -top-5 flex size-[58px] cursor-pointer items-center justify-center rounded-full border-4 border-surface bg-linear-135 from-[#A23BF5] to-[#E5237F] text-white shadow-[0_8px_20px_rgba(200,40,140,0.35)] transition hover:scale-105 active:scale-95"
         >
           <Plus

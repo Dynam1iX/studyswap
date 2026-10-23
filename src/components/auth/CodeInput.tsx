@@ -2,6 +2,7 @@
 
 import { useRef, useState } from 'react';
 import { CODE_LENGTH } from '@/lib/auth';
+import { useT } from '@/i18n';
 
 interface CodeInputProps {
   value: string;
@@ -17,6 +18,7 @@ interface CodeInputProps {
  * suggestion (autocomplete="one-time-code") both work.
  */
 export function CodeInput({ value, onChange, onComplete, disabled, error }: CodeInputProps) {
+  const t = useT();
   const inputRef = useRef<HTMLInputElement>(null);
   const [focused, setFocused] = useState(false);
 
@@ -36,7 +38,7 @@ export function CodeInput({ value, onChange, onComplete, disabled, error }: Code
         autoFocus
         inputMode="numeric"
         autoComplete="one-time-code"
-        aria-label="6-digit code"
+        aria-label={t.login.codeLabel}
         maxLength={CODE_LENGTH}
         // Invisible but focusable; 16px so iOS does not zoom.
         className="absolute inset-0 z-10 w-full cursor-text text-[16px] opacity-0"

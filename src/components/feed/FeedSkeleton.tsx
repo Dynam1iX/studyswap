@@ -1,3 +1,7 @@
+'use client';
+
+import { useT } from '@/i18n';
+
 const SHIMMER =
   'animate-shimmer bg-[linear-gradient(90deg,var(--color-soft),var(--color-line-strong),var(--color-soft))] bg-[length:200%_100%] motion-reduce:animate-none';
 
@@ -23,8 +27,9 @@ function SkeletonCard({ index }: { index: number }) {
 
 /** Placeholder cards with a shimmer while the Feed loads. */
 export function FeedSkeleton({ count = 3 }: { count?: number }) {
+  const t = useT();
   return (
-    <div aria-busy aria-label="Loading barter offers" className="space-y-4">
+    <div aria-busy aria-label={t.feed.loading} className="space-y-4">
       {Array.from({ length: count }, (_, index) => (
         <SkeletonCard key={index} index={index} />
       ))}

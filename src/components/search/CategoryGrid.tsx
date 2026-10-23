@@ -5,19 +5,19 @@ import { BookOpen, Calculator, Code2, Globe, type LucideIcon } from 'lucide-reac
 import { CATEGORY_PALETTE } from '@/lib/categoryPalette';
 import { SEARCH_CATEGORIES } from '@/lib/search';
 import type { Category } from '@/types/database';
+import { useT } from '@/i18n';
 
 interface SearchCategory {
   id: Category;
-  title: string;
   icon: LucideIcon;
 }
 
 /** Card texts and icons; colours come from CATEGORY_PALETTE like the barter cards. */
 const CATEGORY_CARDS: Record<Category, SearchCategory> = {
-  'CS & Dev': { id: 'CS & Dev', title: 'Computer Science & Dev', icon: Code2 },
-  Languages: { id: 'Languages', title: 'Languages', icon: Globe },
-  Humanities: { id: 'Humanities', title: 'Humanities and Social', icon: BookOpen },
-  Mathematics: { id: 'Mathematics', title: 'Mathematics', icon: Calculator },
+  'CS & Dev': { id: 'CS & Dev', icon: Code2 },
+  Languages: { id: 'Languages', icon: Globe },
+  Humanities: { id: 'Humanities', icon: BookOpen },
+  Mathematics: { id: 'Mathematics', icon: Calculator },
 };
 
 interface CategoryGridProps {
@@ -26,10 +26,6 @@ interface CategoryGridProps {
   onSelect: (category: Category) => void;
   /** Delay (ms) before the first card appears, to follow the blocks above. */
   delay?: number;
-}
-
-function formatCount(count: number) {
-  return `${count} ${count === 1 ? 'card' : 'cards'}`;
 }
 
 function CategoryCard({
@@ -45,6 +41,7 @@ function CategoryCard({
   delay: number;
   onSelect: () => void;
 }) {
+  const t = useT();
   const palette = CATEGORY_PALETTE[category.id];
   const Icon = category.icon;
   const [wiggle, setWiggle] = useState(0);
@@ -63,7 +60,7 @@ function CategoryCard({
       {/* Soft light that sweeps across on hover */}
       <span
         aria-hidden
-        className="pointer-events-none absolute -top-10 -right-10 size-32 rounded-full bg-white/40 opacity-0 blur-2xl transition-opacity duration-500 group-hover:opacity-100"
+        className="pointer-events-none absolute -top-10 -right-10 size-32 rounded-full bg-white/40 opacity-0 blur-2xl dark:bg-white/[0.06] transition-opacity duration-500 group-hover:opacity-100"
       />
 
       <span className="relative flex size-10 items-center justify-center rounded-[20px] bg-surface shadow-[0_2px_6px_rgba(60,30,110,0.06)] transition-transform duration-300 group-hover:scale-105">
@@ -78,16 +75,16 @@ function CategoryCard({
 
       <span className="relative flex flex-col gap-1">
         <span style={{ color: palette.title }} className="font-bricolage text-base leading-5 font-extrabold">
-          {category.title}
+          {t.search.categoryTitles[category.id]}
         </span>
         {count === null ? (
           <span
             aria-hidden
-            className="h-3.5 w-16 animate-shimmer rounded-full bg-[linear-gradient(90deg,rgba(255,255,255,0.35),rgba(255,255,255,0.8),rgba(255,255,255,0.35))] bg-[length:200%_100%]"
+            className="h-3.5 w-16 animate-shimmer rounded-full bg-[linear-gradient(90deg,rgba(255,255,255,0.35),rgba(255,255,255,0.8),rgba(255,255,255,0.35))] dark:bg-[linear-gradient(90deg,rgba(255,255,255,0.04),rgba(255,255,255,0.14),rgba(255,255,255,0.04))] bg-[length:200%_100%]"
           />
         ) : (
           <span style={{ color: palette.label }} className="text-xs font-semibold">
-            {formatCount(count)}
+            {t.common.cards(count)}
           </span>
         )}
       </span>
@@ -113,6 +110,3 @@ export function CategoryGrid({ counts, onSelect, delay = 0 }: CategoryGridProps)
   );
 }
 
-export function categoryTitle(category: Category): string {
-  return CATEGORY_CARDS[category].title;
-}

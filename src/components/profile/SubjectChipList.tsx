@@ -1,6 +1,9 @@
+'use client';
+
 import Link from 'next/link';
 import type { ProfileSubject } from '@/lib/profile';
 import { SubjectChip } from './SubjectChip';
+import { useT } from '@/i18n';
 
 interface SubjectChipListProps {
   title: string;
@@ -10,6 +13,7 @@ interface SubjectChipListProps {
 
 /** "+ Add" leads to the Create page: subjects come from the student's cards for now. */
 export function SubjectChipList({ title, subjects, emptyText }: SubjectChipListProps) {
+  const t = useT();
   return (
     <section className="flex flex-col gap-2">
       <h2 className="font-bricolage text-lg font-extrabold text-ink">{title}</h2>
@@ -29,7 +33,7 @@ export function SubjectChipList({ title, subjects, emptyText }: SubjectChipListP
             href="/create"
             className="inline-flex h-10 items-center rounded-full border border-dashed border-field px-4 text-sm font-semibold text-muted transition hover:border-brand-from hover:bg-surface hover:text-brand-from active:scale-95"
           >
-            + Add
+            {t.profile.add}
           </Link>
         </li>
       </ul>

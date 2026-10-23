@@ -12,6 +12,7 @@ import {
   type TelegramLinkStatus,
 } from '@/lib/telegram';
 import { useReplay } from '@/lib/useReplay';
+import { messages, useT } from '@/i18n';
 
 /** How often the site asks whether the bot finished the link. */
 const POLL_MS = 2000;
@@ -45,6 +46,7 @@ interface TelegramLinkSheetProps {
 
 /** Link (or change) Telegram: open the bot, the site notices the link by itself. */
 export function TelegramLinkSheet({ open, onClose, onLinked, currentHandle = null }: TelegramLinkSheetProps) {
+  const t = useT();
   const titleId = useId();
   /** Counts openings, so every opening starts with a fresh link. */
   const [session, setSession] = useState(0);
@@ -62,12 +64,12 @@ export function TelegramLinkSheet({ open, onClose, onLinked, currentHandle = nul
       header={
         <div className="flex items-center justify-between px-6 py-2">
           <h2 id={titleId} className="font-bricolage text-[22px] font-extrabold text-ink">
-            {currentHandle ? 'Change Telegram' : 'Link Telegram'}
+            {currentHandle ? t.telegram.changeTitle : t.telegram.link}
           </h2>
           <button
             type="button"
             onClick={onClose}
-            aria-label="Close"
+            aria-label={t.common.close}
             className="flex size-11 cursor-pointer items-center justify-center rounded-full bg-soft text-ink transition hover:bg-line focus-visible:outline-2 focus-visible:outline-brand-from"
           >
             <X className="size-5" strokeWidth={2.4} />
@@ -93,6 +95,7 @@ function LinkFlow({
   onClose: () => void;
   onLinked: (handle: string) => void;
 }) {
+  const t = useT();
   const [state, setState] = useState<FlowState>({ step: 'creating' });
   const [launching, launch] = useReplay(900);
   const finished = useRef(false);
@@ -103,7 +106,7 @@ function LinkFlow({
       const token = await createTelegramLink();
       setState({ step: 'open', token, status: 'pending' });
     } catch (err: unknown) {
-      setState({ step: 'error', message: err instanceof Error ? err.message : 'Could not create a link' });
+      setState({ step: 'error', message: err instanceof Error ? err.message : messages().telegram.createError });
     }
   }, []);
 
@@ -212,7 +215,7 @@ function LinkFlow({
           className="shine flex h-12 w-full items-center justify-center gap-2.5 rounded-2xl bg-linear-to-r from-[#2AABEE] to-[#229ED9] text-base font-bold text-white shadow-[0_6px_16px_rgba(34,158,217,0.3)] transition active:scale-[0.98]"
         >
           <img src="/telegram.svg" alt="" className="size-6 shrink-0" />
-          {state.status === 'no_username' ? 'Open Telegram again' : 'Open Telegram'}
+          {state.status === 'no_username' ? t.telegram.openAgain : t.telegram.open}
         </a>
       )}
 
@@ -223,7 +226,7 @@ function LinkFlow({
           className="flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-2xl border border-line-strong bg-surface text-sm font-bold text-ink transition hover:bg-soft active:scale-[0.98]"
         >
           <RefreshCw className="size-4" />
-          Get a new link
+          {t.telegram.newLink}
         </button>
       )}
     </div>
@@ -231,37 +234,36 @@ function LinkFlow({
 }
 
 function StatusText({ state, currentHandle }: { state: FlowState; currentHandle: string | null }) {
+  const t = useT();
   let title: string;
   let body: string;
   let tone = 'text-muted';
 
   if (state.step === 'creating') {
-    title = 'Preparing your link…';
-    body = 'One moment.';
+    title = t.telegram.preparing;
+    body = t.telegram.oneMoment;
   } else if (state.step === 'error') {
-    title = 'Could not create a link';
+    title = t.telegram.createError;
     body = state.message;
     tone = 'text-danger';
   } else if (state.step === 'linked') {
-    title = state.handle ? `@${state.handle} is linked!` : 'Telegram is linked!';
-    body = 'Students can now message you on Telegram.';
+    title = t.telegram.linkedTitle(state.handle);
+    body = t.telegram.linkedBody;
   } else if (state.status === 'no_username') {
-    title = 'Add a Telegram username';
-    body = 'Your Telegram has no username yet. Set one in Telegram → Settings → Username, then open the bot again.';
+    title = t.telegram.noUsernameTitle;
+    body = t.telegram.noUsernameBody;
     tone = 'text-warning';
   } else if (state.status === 'taken') {
-    title = 'Already linked elsewhere';
-    body = 'This Telegram account is linked to another StudySwap student. Unlink it there first.';
+    title = t.telegram.takenTitle;
+    body = t.telegram.takenBody;
     tone = 'text-danger';
   } else if (state.status === 'expired') {
-    title = 'The link has expired';
-    body = 'Links work for 10 minutes. Get a new one and open the bot again.';
+    title = t.telegram.expiredTitle;
+    body = t.telegram.expiredBody;
     tone = 'text-danger';
   } else {
-    title = 'Waiting for Telegram…';
-    body = `Open @${TELEGRAM_BOT} and tap Start. This page updates by itself.${
-      currentHandle ? ` @${currentHandle} will be replaced.` : ''
-    }`;
+    title = t.telegram.waitingTitle;
+    body = t.telegram.waitingBody(TELEGRAM_BOT, currentHandle);
   }
 
   return (

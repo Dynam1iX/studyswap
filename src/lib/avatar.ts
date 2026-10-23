@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase';
+import { messages } from '@/i18n';
 
 /** Storage bucket for profile photos (see supabase/migrations/20261022180000_avatars.sql). */
 const BUCKET = 'avatars';
@@ -32,7 +33,7 @@ function loadImage(file: File): Promise<HTMLImageElement> {
     };
     image.onerror = () => {
       URL.revokeObjectURL(url);
-      reject(new Error('This file is not an image the browser can open. Try a JPEG or PNG photo.'));
+      reject(new Error(messages().avatar.notImage));
     };
     image.src = url;
   });
@@ -48,7 +49,7 @@ function toBlob(canvas: HTMLCanvasElement, type: string): Promise<Blob | null> {
  * for that request, so those get JPEG instead.
  */
 export async function prepareAvatar(file: File): Promise<PreparedAvatar> {
-  if (!file.type.startsWith('image/')) throw new Error('Please choose a photo.');
+  if (!file.type.startsWith('image/')) throw new Error(messages().avatar.choosePhoto);
   const image = await loadImage(file);
   const side = Math.min(image.naturalWidth, image.naturalHeight);
   const sx = (image.naturalWidth - side) / 2;
@@ -58,7 +59,7 @@ export async function prepareAvatar(file: File): Promise<PreparedAvatar> {
   canvas.width = AVATAR_SIZE;
   canvas.height = AVATAR_SIZE;
   const context = canvas.getContext('2d');
-  if (!context) throw new Error('Could not process the photo on this device.');
+  if (!context) throw new Error(messages().avatar.processError);
   context.imageSmoothingQuality = 'high';
   context.drawImage(image, sx, sy, side, side, 0, 0, AVATAR_SIZE, AVATAR_SIZE);
 
@@ -68,7 +69,7 @@ export async function prepareAvatar(file: File): Promise<PreparedAvatar> {
     blob = await toBlob(canvas, 'image/jpeg');
     extension = 'jpg';
   }
-  if (!blob) throw new Error('Could not process the photo on this device.');
+  if (!blob) throw new Error(messages().avatar.processError);
 
   return { blob, previewUrl: URL.createObjectURL(blob), extension };
 }

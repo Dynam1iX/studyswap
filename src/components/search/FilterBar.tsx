@@ -1,5 +1,8 @@
+'use client';
+
 import { ChevronDown } from 'lucide-react';
 import type { StudyYear } from '@/types/database';
+import { useT } from '@/i18n';
 
 export type FilterKind = 'year' | 'faculty';
 
@@ -59,16 +62,17 @@ function FilterChip({
 
 /** Year / Faculty chips; scrolls sideways on narrow screens. */
 export function FilterBar({ year, program, openFilter, onOpen }: FilterBarProps) {
+  const t = useT();
   return (
     <div className="no-scrollbar -mx-4 -my-3 flex items-center gap-2 overflow-x-auto px-4 py-3">
       <FilterChip
-        label="Year"
-        value={year ? `Year ${year}` : null}
+        label={t.search.yearFilter}
+        value={year ? t.common.year(year) : null}
         open={openFilter === 'year'}
         onClick={() => onOpen('year')}
       />
       <FilterChip
-        label="Faculty"
+        label={t.search.facultyFilter}
         value={program}
         open={openFilter === 'faculty'}
         onClick={() => onOpen('faculty')}

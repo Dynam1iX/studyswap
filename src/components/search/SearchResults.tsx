@@ -4,7 +4,7 @@ import { Loader2, SearchX, X } from 'lucide-react';
 import { FeedPostCard } from '@/components/feed/FeedPostCard';
 import type { FeedPost } from '@/lib/feed';
 import type { SearchFilters } from '@/lib/search';
-import { categoryTitle } from './CategoryGrid';
+import { useT, type Messages } from '@/i18n';
 
 type FilterKey = keyof SearchFilters;
 
@@ -19,11 +19,11 @@ interface SearchResultsProps {
   onClearAll: () => void;
 }
 
-function activeChips(filters: SearchFilters): { key: FilterKey; label: string }[] {
+function activeChips(t: Messages, filters: SearchFilters): { key: FilterKey; label: string }[] {
   const chips: { key: FilterKey; label: string }[] = [];
   if (filters.query) chips.push({ key: 'query', label: `“${filters.query}”` });
-  if (filters.category) chips.push({ key: 'category', label: categoryTitle(filters.category) });
-  if (filters.year) chips.push({ key: 'year', label: `Year ${filters.year}` });
+  if (filters.category) chips.push({ key: 'category', label: t.search.categoryTitles[filters.category] });
+  if (filters.year) chips.push({ key: 'year', label: t.common.year(filters.year) });
   if (filters.program) chips.push({ key: 'program', label: filters.program });
   return chips;
 }
@@ -38,20 +38,21 @@ export function SearchResults({
   onClearFilter,
   onClearAll,
 }: SearchResultsProps) {
-  const chips = activeChips(filters);
+  const t = useT();
+  const chips = activeChips(t, filters);
 
   return (
     <section aria-live="polite" className="flex animate-rise flex-col gap-4 motion-reduce:animate-none">
       <div className="flex items-center justify-between gap-3">
         <h2 className="font-bricolage text-xl font-extrabold text-ink">
-          {posts === null ? 'Results' : `${posts.length} ${posts.length === 1 ? 'result' : 'results'}`}
+          {posts === null ? t.search.results : t.search.resultsCount(posts.length)}
         </h2>
         <button
           type="button"
           onClick={onClearAll}
           className="h-11 cursor-pointer px-1 text-xs font-bold transition active:scale-95"
         >
-          <span className="bg-linear-to-r from-brand-from to-brand-to bg-clip-text text-transparent">Reset</span>
+          <span className="bg-linear-to-r from-brand-from to-brand-to bg-clip-text text-transparent">{t.search.reset}</span>
         </button>
       </div>
 
@@ -62,7 +63,7 @@ export function SearchResults({
               key={chip.key}
               type="button"
               onClick={() => onClearFilter(chip.key)}
-              aria-label={`Remove filter ${chip.label}`}
+              aria-label={t.search.removeFilter(chip.label)}
               style={{ animationDelay: `${index * 50}ms` }}
               className="flex h-9 shrink-0 animate-pop cursor-pointer items-center gap-1.5 rounded-full bg-ink py-0 pr-2.5 pl-3.5 text-[13px] font-semibold text-page transition active:scale-95 motion-reduce:animate-none"
             >
@@ -76,15 +77,15 @@ export function SearchResults({
       {posts === null ? (
         <div className="flex flex-col items-center justify-center gap-2 py-16 text-muted">
           <Loader2 className="size-6 animate-spin text-brand-from" />
-          <span className="text-xs font-medium">Searching barter offers...</span>
+          <span className="text-xs font-medium">{t.search.searching}</span>
         </div>
       ) : posts.length === 0 ? (
         <div className="flex animate-pop flex-col items-center gap-2 rounded-3xl border border-dashed border-line-strong bg-surface/60 px-6 py-10 text-center motion-reduce:animate-none">
           <span className="flex size-14 animate-float items-center justify-center rounded-full bg-soft motion-reduce:animate-none">
             <SearchX aria-hidden className="size-6 text-brand-from" strokeWidth={2} />
           </span>
-          <p className="text-sm font-bold text-ink">Nothing found</p>
-          <p className="text-xs font-medium text-muted">Try another subject or remove a filter.</p>
+          <p className="text-sm font-bold text-ink">{t.search.nothingFound}</p>
+          <p className="text-xs font-medium text-muted">{t.search.nothingFoundHint}</p>
         </div>
       ) : (
         <ul className="flex flex-col gap-4">

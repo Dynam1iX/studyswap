@@ -1,7 +1,8 @@
 'use client';
 
 import { useLayoutEffect, useRef, useState } from 'react';
-import type { Language } from '@/lib/profile';
+import type { Language } from '@/i18n';
+import { useT } from '@/i18n';
 
 const LANGUAGES: { value: Language; label: string }[] = [
   { value: 'en', label: 'EN' },
@@ -66,7 +67,20 @@ interface LanguageSwitcherProps {
 
 /** EN / RU / KZ segmented switch with a gradient pill that flows like jelly. */
 export function LanguageSwitcher({ value, onChange }: LanguageSwitcherProps) {
-  const index = Math.max(0, LANGUAGES.findIndex((lang) => lang.value === value));
+  const t = useT();
+  // The pill moves at once; the page changes language once the jelly has mostly settled.
+  const [picked, setPicked] = useState(value);
+  const [lastValue, setLastValue] = useState(value);
+  if (value !== lastValue) {
+    setLastValue(value);
+    setPicked(value);
+  }
+  const pick = (next: Language) => {
+    if (next === picked) return;
+    setPicked(next);
+    window.setTimeout(() => onChange(next), DURATION_MS * 0.55);
+  };
+  const index = Math.max(0, LANGUAGES.findIndex((lang) => lang.value === picked));
   const pillRef = useRef<HTMLSpanElement>(null);
   const previousIndex = useRef(index);
   /** Which label is drawn white; follows the pill instead of jumping instantly. */
@@ -102,7 +116,7 @@ export function LanguageSwitcher({ value, onChange }: LanguageSwitcherProps) {
   }, [index]);
 
   return (
-    <div role="radiogroup" aria-label="Interface language" className="relative flex gap-1 rounded-2xl bg-soft p-[3px]">
+    <div role="radiogroup" aria-label={t.settings.language} className="relative flex gap-1 rounded-2xl bg-soft p-[3px]">
       <span
         ref={pillRef}
         aria-hidden
@@ -110,7 +124,7 @@ export function LanguageSwitcher({ value, onChange }: LanguageSwitcherProps) {
         className="pointer-events-none absolute top-[3px] h-11 w-12 rounded-xl bg-linear-to-r from-brand-from to-brand-to shadow-[0_4px_10px_rgba(173,70,255,0.3)]"
       />
       {LANGUAGES.map((lang, i) => {
-        const selected = lang.value === value;
+        const selected = lang.value === picked;
         const lit = i === litIndex;
         return (
           <button
@@ -118,7 +132,7 @@ export function LanguageSwitcher({ value, onChange }: LanguageSwitcherProps) {
             type="button"
             role="radio"
             aria-checked={selected}
-            onClick={() => onChange(lang.value)}
+            onClick={() => pick(lang.value)}
             className={`relative h-11 w-12 cursor-pointer rounded-xl text-xs transition-colors duration-150 ${
               lit ? 'font-extrabold text-white' : 'font-bold text-ink'
             } ${selected ? '' : 'hover:bg-line/60'}`}

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { avatarUrl, removeAvatar, uploadAvatar, type PreparedAvatar } from '@/lib/avatar';
+import { messages } from '@/i18n';
 
 interface AvatarOwner {
   id: string;
@@ -41,10 +42,10 @@ export function useAvatarEditor(user: AvatarOwner | null, { onChange, notify }: 
     try {
       const path = await uploadAvatar(user.id, avatar, user.avatarPath);
       onChange(path);
-      notify('Photo updated');
+      notify(messages().avatar.updated);
     } catch (err: unknown) {
       console.error('Error uploading the photo:', err);
-      notify('Could not upload the photo. Try again.');
+      notify(messages().avatar.uploadError);
     } finally {
       setPendingUrl(null);
       setBusy(false);
@@ -56,7 +57,7 @@ export function useAvatarEditor(user: AvatarOwner | null, { onChange, notify }: 
     await removeAvatar(user.avatarPath);
     onChange(null);
     setOpen(false);
-    notify('Photo removed');
+    notify(messages().avatar.removed);
   };
 
   /** What the avatar shows right now: the uploading preview, else the saved photo. */

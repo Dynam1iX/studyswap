@@ -1,10 +1,10 @@
+'use client';
+
 import Link from 'next/link';
 import type { ContactMethod } from '@/types/database';
+import { useT } from '@/i18n';
 
-const OPTIONS: { value: ContactMethod; label: string }[] = [
-  { value: 'telegram', label: 'Telegram' },
-  { value: 'email', label: 'University Email' },
-];
+const OPTIONS: ContactMethod[] = ['telegram', 'email'];
 
 interface ContactMethodToggleProps {
   value: ContactMethod;
@@ -14,12 +14,14 @@ interface ContactMethodToggleProps {
 }
 
 export function ContactMethodToggle({ value, onChange, telegramAvailable }: ContactMethodToggleProps) {
+  const t = useT();
   return (
     <div className="space-y-2 pt-1">
-      <span className="block text-[14px] font-bold text-ink">Preferred Contact Method</span>
+      <span className="block text-[14px] font-bold text-ink">{t.create.contactMethod}</span>
 
       <div role="radiogroup" className="flex items-center gap-1 rounded-[16px] bg-soft p-1">
-        {OPTIONS.map((option) => {
+        {OPTIONS.map((method) => {
+          const option = { value: method, label: t.create.contactOptions[method] };
           const selected = option.value === value;
           const disabled = option.value === 'telegram' && !telegramAvailable;
           return (
@@ -51,11 +53,11 @@ export function ContactMethodToggle({ value, onChange, telegramAvailable }: Cont
 
       {!telegramAvailable && (
         <p className="text-[12px] font-semibold text-muted">
-          To use Telegram,{' '}
+          {t.create.telegramHintBefore}
           <Link href="/profile/edit" className="text-brand-from underline-offset-2 hover:underline">
-            link it in your profile
+            {t.create.telegramHintLink}
           </Link>
-          .
+          {t.create.telegramHintAfter}
         </p>
       )}
     </div>

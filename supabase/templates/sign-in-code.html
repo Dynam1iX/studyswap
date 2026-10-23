@@ -1,0 +1,29 @@
+<!--
+  StudySwap sign-in code e-mail (Supabase → Authentication → Emails).
+  Paste into both "Magic link" and "Confirm signup": signInWithOtp sends one of them.
+  Subject: StudySwap: код входа · кіру коды · sign-in code
+-->
+<div style="margin:0;padding:24px 12px;background:#fbf9ff;font-family:Arial,Helvetica,sans-serif;color:#1b1530">
+  <div style="max-width:440px;margin:0 auto;background:#ffffff;border:1px solid #ece6f7;border-radius:20px;padding:28px 24px">
+    <div style="font-size:22px;font-weight:800;margin-bottom:20px">
+      <span style="color:#ad46ff">Study</span><span style="color:#f6339a">Swap</span>
+    </div>
+
+    <p style="margin:0 0 6px;font-size:15px;font-weight:700">Ваш код входа · Кіру кодыңыз · Your sign-in code</p>
+
+    <div style="margin:16px 0 20px;padding:18px 0;text-align:center;background:#f4f0fb;border-radius:14px;font-size:34px;font-weight:800;letter-spacing:10px;color:#1b1530">
+      {{ .Token }}
+    </div>
+
+    <p style="margin:0 0 12px;font-size:14px;line-height:21px;color:#5a5472">
+      <b style="color:#1b1530">RU.</b> Введите этот код на сайте StudySwap. Он действует 10 минут. Если вы не входили, просто проигнорируйте письмо.
+    </p>
+    <p style="margin:0 0 12px;font-size:14px;line-height:21px;color:#5a5472">
+      <b style="color:#1b1530">KZ.</b> Осы кодты StudySwap сайтына енгізіңіз. Код 10 минут жарамды. Егер сіз кірмеген болсаңыз, бұл хатқа мән бермеңіз.
+    </p>
+    <p style="margin:0;font-size:14px;line-height:21px;color:#5a5472">
+      <b style="color:#1b1530">EN.</b> Enter this code on StudySwap. It works for 10 minutes. If you did not try to sign in, ignore this e-mail.
+    </p>
+  </div>
+  <p style="max-width:440px;margin:14px auto 0;text-align:center;font-size:12px;color:#8c84a6">StudySwap · AITU</p>
+</div>

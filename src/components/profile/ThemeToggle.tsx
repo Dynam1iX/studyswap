@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type MouseEvent } from 'react';
 import { applyTheme, currentTheme, type ThemeChoice } from '@/lib/theme';
+import { useT } from '@/i18n';
 
 /** Stars that light up on the night sky, left side of the track. */
 const STARS = [
@@ -17,6 +18,7 @@ const STARS = [
  * Switching spreads the new theme over the screen in a circle from the switch.
  */
 export function ThemeToggle() {
+  const t = useT();
   const [theme, setTheme] = useState<ThemeChoice>('light');
   const night = theme === 'dark';
 
@@ -38,7 +40,7 @@ export function ThemeToggle() {
       type="button"
       role="switch"
       aria-checked={night}
-      aria-label="Interface theme: dark"
+      aria-label={t.settings.darkTheme}
       onClick={toggle}
       className="relative h-9 w-[68px] shrink-0 cursor-pointer overflow-hidden rounded-full shadow-[inset_0_1px_4px_rgba(27,21,48,0.18)] transition-transform active:scale-95"
     >

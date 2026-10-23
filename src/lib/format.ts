@@ -1,3 +1,5 @@
+import type { Messages } from '@/i18n';
+
 /** "Alzhan Yerzhanuly" -> "AY", "Alzhan" -> "AL", empty -> "ST". */
 export function getInitials(name?: string | null): string {
   if (!name) return 'ST';
@@ -12,22 +14,21 @@ export function getShortName(name: string): string {
   return first && second ? `${first} ${second[0]}.` : name;
 }
 
-/** "Software Engineering, Year 1" */
-export function formatStudyInfo(major?: string | null, year?: number | null): string {
-  return `${major || 'Software Engineering'}, Year ${year || 1}`;
+/** "Software Engineering, Year 1" (the year in the interface language). */
+export function formatStudyInfo(t: Messages, major?: string | null, year?: number | null): string {
+  return `${major || 'Software Engineering'}, ${t.common.year(year || 1)}`;
 }
 
-const postedFormat = new Intl.DateTimeFormat('en-GB', {
-  day: 'numeric',
-  month: 'short',
-  year: 'numeric',
-  hour: '2-digit',
-  minute: '2-digit',
-  hourCycle: 'h23',
-});
-
-/** "2026-10-14T01:45:37Z" -> "14 Oct 2026, 06:45" in the viewer's time zone. */
-export function formatPostedAt(iso: string): string {
+/** "2026-10-14T01:45:37Z" -> "14 Oct 2026, 06:45" in the viewer's time zone and language. */
+export function formatPostedAt(iso: string, locale: string): string {
   const date = new Date(iso);
-  return Number.isNaN(date.getTime()) ? '' : postedFormat.format(date);
+  if (Number.isNaN(date.getTime())) return '';
+  return new Intl.DateTimeFormat(locale, {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+  }).format(date);
 }

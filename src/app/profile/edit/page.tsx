@@ -13,6 +13,7 @@ import { useAvatarEditor } from '@/components/profile/useAvatarEditor';
 import { Toast, useToast } from '@/components/ui/Toast';
 import { avatarUrl } from '@/lib/avatar';
 import { degreeLabel, fetchProfile, type ProfileUser } from '@/lib/profile';
+import { messages, useT } from '@/i18n';
 
 type LoadState =
   | { status: 'loading' }
@@ -45,11 +46,12 @@ function TelegramSection({
   onLink: () => void;
   onUnlink: () => void;
 }) {
+  const t = useT();
   if (!handle) {
     return (
       <div className="flex animate-pop flex-col gap-3 rounded-3xl border border-line bg-surface p-4 motion-reduce:animate-none">
         <p className="text-sm font-medium text-muted">
-          Link Telegram so other students can message you there. Until then they contact you by university e-mail.
+          {t.telegram.linkHint}
         </p>
         <button
           type="button"
@@ -58,7 +60,7 @@ function TelegramSection({
           className="shine flex h-12 cursor-pointer items-center justify-center gap-2.5 rounded-2xl bg-linear-to-r from-[#2AABEE] to-[#229ED9] text-base font-bold text-white shadow-[0_6px_16px_rgba(34,158,217,0.3)] transition active:scale-[0.98]"
         >
           <img src="/telegram.svg" alt="" className="size-6 shrink-0" />
-          Link Telegram
+          {t.telegram.link}
         </button>
       </div>
     );
@@ -80,7 +82,7 @@ function TelegramSection({
           className="flex h-12 cursor-pointer items-center justify-center gap-2 rounded-2xl border border-line-strong bg-surface text-sm font-bold text-ink transition hover:bg-soft active:scale-[0.98]"
         >
           <RefreshCw className="size-4" />
-          Change
+          {t.telegram.change}
         </button>
         <button
           type="button"
@@ -89,7 +91,7 @@ function TelegramSection({
           className="flex h-12 cursor-pointer items-center justify-center gap-2 rounded-2xl border border-danger-line bg-surface text-sm font-bold text-danger-ink transition hover:bg-danger-soft active:scale-[0.98]"
         >
           <Unlink className="size-4" />
-          Unlink
+          {t.telegram.unlink}
         </button>
       </div>
     </div>
@@ -98,6 +100,7 @@ function TelegramSection({
 
 /** Profile settings: Telegram link and the student's details (read-only, from Microsoft). */
 export default function EditProfilePage() {
+  const t = useT();
   const [state, setState] = useState<LoadState>({ status: 'loading' });
   const { toast, show: showToast, hide: hideToast } = useToast();
 
@@ -106,10 +109,10 @@ export default function EditProfilePage() {
     fetchProfile()
       .then((data) => {
         if (cancelled) return;
-        setState(data ? { status: 'ready', user: data.user } : { status: 'error', message: 'Profile not found' });
+        setState(data ? { status: 'ready', user: data.user } : { status: 'error', message: messages().profile.notFound });
       })
       .catch((err: unknown) => {
-        if (!cancelled) setState({ status: 'error', message: err instanceof Error ? err.message : 'Could not load the profile' });
+        if (!cancelled) setState({ status: 'error', message: err instanceof Error ? err.message : messages().profile.loadError });
       });
     return () => {
       cancelled = true;
@@ -142,18 +145,18 @@ export default function EditProfilePage() {
         <div className="flex animate-rise items-center gap-2 motion-reduce:animate-none">
           <Link
             href="/profile"
-            aria-label="Back to profile"
+            aria-label={t.edit.back}
             className="-ml-2 flex size-11 items-center justify-center rounded-full text-ink transition hover:bg-soft active:scale-90"
           >
             <ChevronLeft className="size-6" strokeWidth={2.4} />
           </Link>
-          <h1 className="font-bricolage text-2xl font-extrabold text-ink">Edit profile</h1>
+          <h1 className="font-bricolage text-2xl font-extrabold text-ink">{t.edit.title}</h1>
         </div>
 
         {state.status === 'loading' && (
           <div className="flex flex-col items-center justify-center gap-2 py-20 text-muted">
             <Loader2 className="size-6 animate-spin text-brand-from" />
-            <span className="text-xs font-medium">Loading profile...</span>
+            <span className="text-xs font-medium">{t.profile.loading}</span>
           </div>
         )}
 
@@ -184,18 +187,18 @@ export default function EditProfilePage() {
             </section>
 
             <section style={{ animationDelay: '180ms' }} className="flex animate-rise flex-col gap-3 motion-reduce:animate-none">
-              <SectionTitle>Student details</SectionTitle>
+              <SectionTitle>{t.edit.details}</SectionTitle>
               <div className="flex flex-col rounded-3xl border border-line bg-surface px-4 py-1">
-                <ReadOnlyField label="First name" value={state.user.firstName} />
-                <ReadOnlyField label="Last name" value={state.user.lastName} />
-                <ReadOnlyField label="Major" value={state.user.major} />
-                <ReadOnlyField label="Year of study" value={`Year ${state.user.studyYear}`} />
-                <ReadOnlyField label="Degree" value={degreeLabel(state.user.degree)} />
-                <ReadOnlyField label="University e-mail" value={state.user.email} />
+                <ReadOnlyField label={t.edit.firstName} value={state.user.firstName} />
+                <ReadOnlyField label={t.edit.lastName} value={state.user.lastName} />
+                <ReadOnlyField label={t.edit.major} value={state.user.major} />
+                <ReadOnlyField label={t.edit.yearOfStudy} value={t.common.year(state.user.studyYear)} />
+                <ReadOnlyField label={t.edit.degree} value={degreeLabel(t, state.user.degree)} />
+                <ReadOnlyField label={t.edit.email} value={state.user.email} />
               </div>
               <p className="flex items-start gap-2 text-xs font-medium text-muted">
                 <Lock aria-hidden className="mt-px size-3.5 shrink-0" strokeWidth={2.4} />
-                These come from your university Microsoft account and cannot be changed here.
+                {t.edit.readOnlyNote}
               </p>
             </section>
           </>
@@ -210,7 +213,7 @@ export default function EditProfilePage() {
             currentHandle={state.user.telegramHandle}
             onLinked={(handle) => {
               setHandle(handle || null);
-              showToast('Telegram linked');
+              showToast(t.telegram.linkedToast);
             }}
           />
           <TelegramUnlinkSheet
@@ -219,7 +222,7 @@ export default function EditProfilePage() {
             onClose={() => setTelegramSheet(null)}
             onUnlinked={() => {
               setHandle(null);
-              showToast('Telegram unlinked');
+              showToast(t.telegram.unlinkedToast);
             }}
           />
         </>

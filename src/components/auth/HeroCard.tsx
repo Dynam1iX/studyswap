@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { CATEGORY_PALETTE } from '@/lib/categoryPalette';
 import type { Category } from '@/types/database';
 import { ExchangeIcon } from '@/components/ui/ExchangeIcon';
+import { useT } from '@/i18n';
 
 interface Pair {
   needs: { title: string; category: Category };
@@ -44,6 +45,7 @@ function Half({ label, subject, turn }: { label: string; subject: Pair['needs'];
 
 /** The tilted example card on the login page: it floats, and the swap changes every few seconds. */
 export function HeroCard() {
+  const t = useT();
   const [turn, setTurn] = useState(0);
 
   useEffect(() => {
@@ -58,8 +60,8 @@ export function HeroCard() {
     <div aria-hidden className="flex justify-center py-2">
       <div className="animate-float motion-reduce:animate-none">
         <div className="relative flex w-72 -rotate-4 flex-col gap-2 rounded-2xl bg-surface p-2 shadow-[0_8px_24px_rgba(60,30,110,0.16)]">
-          <Half label="Needs help" subject={pair.needs} turn={turn} />
-          <Half label="Can teach" subject={pair.teaches} turn={turn} />
+          <Half label={t.card.needsHelp} subject={pair.needs} turn={turn} />
+          <Half label={t.card.canTeach} subject={pair.teaches} turn={turn} />
           <span className="absolute top-1/2 right-6 flex size-11 -translate-y-1/2 items-center justify-center rounded-full bg-surface">
             <ExchangeIcon
               style={{ transform: `rotate(${turn * 180}deg)` }}

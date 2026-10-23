@@ -1,23 +1,24 @@
+'use client';
+
 import { ChevronRight, ShieldCheck } from 'lucide-react';
-import type { Language } from '@/lib/profile';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { ThemeToggle } from './ThemeToggle';
+import { useI18n } from '@/i18n';
 
 interface SettingsPanelProps {
-  language: Language;
-  onLanguageChange: (language: Language) => void;
   onOpenPrivacy?: () => void;
 }
 
-export function SettingsPanel({ language, onLanguageChange, onOpenPrivacy }: SettingsPanelProps) {
+export function SettingsPanel({ onOpenPrivacy }: SettingsPanelProps) {
+  const { t, language, setLanguage } = useI18n();
   return (
     <div className="flex flex-col rounded-3xl border border-line bg-surface px-4 py-1.5">
       <div className="flex h-16 items-center justify-between border-b border-line">
-        <span className="text-base font-bold text-ink">Language</span>
-        <LanguageSwitcher value={language} onChange={onLanguageChange} />
+        <span className="text-base font-bold text-ink">{t.settings.language}</span>
+        <LanguageSwitcher value={language} onChange={setLanguage} />
       </div>
       <div className="flex h-16 items-center justify-between border-b border-line">
-        <span className="text-base font-bold text-ink">Interface theme</span>
+        <span className="text-base font-bold text-ink">{t.settings.theme}</span>
         <ThemeToggle />
       </div>
       <button
@@ -28,7 +29,7 @@ export function SettingsPanel({ language, onLanguageChange, onOpenPrivacy }: Set
       >
         <span className="flex items-center gap-2.5 text-base font-bold text-ink">
           <ShieldCheck aria-hidden className="size-5 text-brand-from" strokeWidth={2.2} />
-          Privacy and security
+          {t.settings.privacy}
         </span>
         <ChevronRight aria-hidden className="size-5 text-muted transition-transform group-hover:translate-x-0.5" />
       </button>

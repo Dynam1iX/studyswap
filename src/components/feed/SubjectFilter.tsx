@@ -3,6 +3,7 @@
 import { useRef, useState, type MouseEvent } from 'react';
 import { paletteFor } from '@/lib/categoryPalette';
 import type { Subject } from '@/types/database';
+import { useT } from '@/i18n';
 
 export type SubjectFilterValue = number | 'All';
 
@@ -36,6 +37,7 @@ function ChipFill({ active }: { active: boolean }) {
 
 /** Horizontally scrolling subject chips with a gradient slider underneath. */
 export function SubjectFilter({ subjects, value, onChange }: SubjectFilterProps) {
+  const t = useT();
   const chipsRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const [progress, setProgress] = useState(0);
@@ -66,7 +68,7 @@ export function SubjectFilter({ subjects, value, onChange }: SubjectFilterProps)
       >
         <button type="button" onClick={() => onChange('All')} className={chipClasses(value === 'All')}>
           <ChipFill active={value === 'All'} />
-          <span className="relative">All</span>
+          <span className="relative">{t.feed.all}</span>
         </button>
         {subjects.map((subject) => (
           <button

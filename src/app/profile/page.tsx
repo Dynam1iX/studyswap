@@ -25,13 +25,13 @@ import {
   setMyCardStatus,
   setTelegramVisibility,
   updateMyCard,
-  type Language,
   type ProfileCard,
   type ProfileData,
 } from '@/lib/profile';
 import { signOut } from '@/lib/auth';
 import { avatarUrl } from '@/lib/avatar';
 import type { TelegramVisibility } from '@/types/database';
+import { messages, useT } from '@/i18n';
 
 type LoadState =
   | { status: 'loading' }
@@ -53,8 +53,8 @@ function SectionTitle({ children }: { children: string }) {
 }
 
 export default function ProfilePage() {
+  const t = useT();
   const [state, setState] = useState<LoadState>({ status: 'loading' });
-  const [language, setLanguage] = useState<Language>('en');
   /** The card whose Manage sheet is open, or null. */
   const [managing, setManaging] = useState<ProfileCard | null>(null);
   const [privacyOpen, setPrivacyOpen] = useState(false);
@@ -65,7 +65,7 @@ export default function ProfilePage() {
       .then((data) => setState(data ? { status: 'ready', data } : { status: 'not-found' }))
       .catch((err: unknown) => {
         console.error('Error loading profile from Supabase:', err);
-        setState({ status: 'error', message: err instanceof Error ? err.message : 'Could not load the profile' });
+        setState({ status: 'error', message: err instanceof Error ? err.message : messages().profile.loadError });
       });
   }, []);
 
@@ -102,7 +102,7 @@ export default function ProfilePage() {
         ? { status: 'ready', data: { ...prev.data, user: { ...prev.data.user, telegramHandle: telegramHandle || null } } }
         : prev,
     );
-    showToast('Telegram linked');
+    showToast(t.telegram.linkedToast);
   };
 
   const saveCard = async (card: ProfileCard, changes: CardChanges) => {
@@ -114,14 +114,14 @@ export default function ProfilePage() {
     }
     await load();
     setManaging(null);
-    showToast('Card updated');
+    showToast(t.profile.cardUpdated);
   };
 
   const removeCard = async (card: ProfileCard) => {
     await deleteMyCard(card.id);
     await load();
     setManaging(null);
-    showToast('Card deleted');
+    showToast(t.profile.cardDeleted);
   };
 
   const changeVisibility = async (visibility: TelegramVisibility) => {
@@ -147,20 +147,20 @@ export default function ProfilePage() {
       {/* 16px sides, 8px top and bottom, 16px between blocks. */}
       <div className="flex flex-col gap-4 px-4 py-2">
         <div className="flex items-center justify-between">
-          <h1 className="animate-rise font-bricolage text-2xl font-extrabold text-ink motion-reduce:animate-none">Profile</h1>
+          <h1 className="animate-rise font-bricolage text-2xl font-extrabold text-ink motion-reduce:animate-none">{t.profile.title}</h1>
           <Link
             href="/profile/edit"
             className="flex h-11 items-center gap-2 rounded-full border border-line-strong bg-surface px-4 text-sm font-semibold text-ink transition hover:bg-soft active:scale-95"
           >
             <Pencil className="size-4" />
-            Edit
+            {t.profile.edit}
           </Link>
         </div>
 
         {state.status === 'loading' && (
           <div className="flex flex-col items-center justify-center gap-2 py-20 text-muted">
             <Loader2 className="size-6 animate-spin text-brand-from" />
-            <span className="text-xs font-medium">Loading profile...</span>
+            <span className="text-xs font-medium">{t.profile.loading}</span>
           </div>
         )}
 
@@ -172,7 +172,7 @@ export default function ProfilePage() {
 
         {state.status === 'not-found' && (
           <p className="rounded-2xl border border-line bg-surface p-6 text-center text-sm font-medium text-muted">
-            Profile not found
+            {t.profile.notFound}
           </p>
         )}
 
@@ -190,14 +190,14 @@ export default function ProfilePage() {
               <StatsRow stats={state.data.stats} />
             </Rise>
             <Rise index={2}>
-              <SubjectChipList title="I need help with" subjects={state.data.needsHelp} emptyText="Nothing yet" />
+              <SubjectChipList title={t.profile.needHelpWith} subjects={state.data.needsHelp} emptyText={t.profile.nothingYet} />
             </Rise>
             <Rise index={3}>
-              <SubjectChipList title="I can teach" subjects={state.data.canTeach} emptyText="Nothing yet" />
+              <SubjectChipList title={t.profile.canTeach} subjects={state.data.canTeach} emptyText={t.profile.nothingYet} />
             </Rise>
 
             <section style={{ animationDelay: '280ms' }} className="flex animate-rise flex-col gap-4 motion-reduce:animate-none">
-              <SectionTitle>My cards</SectionTitle>
+              <SectionTitle>{t.profile.myCards}</SectionTitle>
               {state.data.cards.length > 0 ? (
                 <ul className="flex flex-col gap-4">
                   {state.data.cards.map((card) => (
@@ -207,13 +207,13 @@ export default function ProfilePage() {
                   ))}
                 </ul>
               ) : (
-                <p className="text-sm font-medium text-muted">You have no cards yet. Tap + to create one.</p>
+                <p className="text-sm font-medium text-muted">{t.profile.noCards}</p>
               )}
             </section>
 
             <section style={{ animationDelay: '350ms' }} className="flex animate-rise flex-col gap-4 motion-reduce:animate-none">
-              <SectionTitle>Settings</SectionTitle>
-              <SettingsPanel language={language} onLanguageChange={setLanguage} onOpenPrivacy={() => setPrivacyOpen(true)} />
+              <SectionTitle>{t.profile.settings}</SectionTitle>
+              <SettingsPanel onOpenPrivacy={() => setPrivacyOpen(true)} />
             </section>
 
             <button
@@ -224,7 +224,7 @@ export default function ProfilePage() {
               className="flex h-14 animate-rise cursor-pointer items-center justify-center gap-2 rounded-2xl border border-danger-line bg-surface text-base font-extrabold text-danger-ink transition hover:bg-danger-soft active:scale-[0.98] motion-reduce:animate-none"
             >
               {loggingOut ? <Loader2 className="size-4 animate-spin" /> : <LogOut className="size-4" />}
-              Log out
+              {t.profile.logOut}
             </button>
           </>
         )}

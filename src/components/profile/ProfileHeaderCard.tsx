@@ -1,6 +1,10 @@
+'use client';
+
 import { Check } from 'lucide-react';
 import type { ProfileUser } from '@/lib/profile';
 import { Avatar } from './Avatar';
+import { useT } from '@/i18n';
+import { formatStudyInfo } from '@/lib/format';
 
 interface ProfileHeaderCardProps {
   user: ProfileUser;
@@ -12,6 +16,7 @@ interface ProfileHeaderCardProps {
 }
 
 export function ProfileHeaderCard({ user, onEditAvatar, avatarBusy, onLinkTelegram }: ProfileHeaderCardProps) {
+  const t = useT();
   return (
     <div className="flex flex-col gap-4 rounded-3xl border border-line bg-surface p-4">
       <div className="flex items-center gap-4">
@@ -19,7 +24,7 @@ export function ProfileHeaderCard({ user, onEditAvatar, avatarBusy, onLinkTelegr
         <div className="flex min-w-0 flex-col gap-0.5">
           <p className="truncate font-bricolage text-2xl font-extrabold text-ink">{user.displayName}</p>
           <p className="text-sm font-medium text-muted">
-            {user.major}, Year {user.studyYear}
+            {formatStudyInfo(t, user.major, user.studyYear)}
           </p>
         </div>
       </div>
@@ -36,7 +41,7 @@ export function ProfileHeaderCard({ user, onEditAvatar, avatarBusy, onLinkTelegr
           </span>
           <span className="flex items-center gap-1.5 text-xs font-semibold text-success">
             <Check className="size-3.5" strokeWidth={3} />
-            Linked
+            {t.telegram.linked}
           </span>
         </a>
       ) : (
@@ -46,7 +51,7 @@ export function ProfileHeaderCard({ user, onEditAvatar, avatarBusy, onLinkTelegr
           className="shine flex h-12 cursor-pointer items-center justify-center gap-2.5 rounded-2xl bg-linear-to-r from-[#2AABEE] to-[#229ED9] text-base font-bold text-white shadow-[0_6px_16px_rgba(34,158,217,0.3)] transition active:scale-[0.98]"
         >
           <img src="/telegram.svg" alt="" className="size-6 shrink-0" />
-          Link Telegram
+          {t.telegram.link}
         </button>
       )}
     </div>
