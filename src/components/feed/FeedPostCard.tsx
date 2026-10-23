@@ -5,6 +5,7 @@ import { CATEGORY_PALETTE } from '@/lib/categoryPalette';
 import { getAuthorName, getContactHref, getContactMethod, type FeedPost } from '@/lib/feed';
 import { formatStudyInfo, getInitials } from '@/lib/format';
 import { useT } from '@/i18n';
+import { useRequestAction } from '@/components/requests/useRequestAction';
 
 interface FeedPostCardProps {
   post: FeedPost;
@@ -12,11 +13,14 @@ interface FeedPostCardProps {
   onToggleLike: (postId: string) => void;
   /** Called when the card itself is clicked (opens the details modal). */
   onOpen: (post: FeedPost) => void;
+  /** Opens the "propose a swap" sheet; omit it to hide the button. */
+  onRequest?: (post: FeedPost) => void;
 }
 
 /** Maps a post from the database onto the shared BarterCard. */
-export function FeedPostCard({ post, liked, onToggleLike, onOpen }: FeedPostCardProps) {
+export function FeedPostCard({ post, liked, onToggleLike, onOpen, onRequest }: FeedPostCardProps) {
   const t = useT();
+  const request = useRequestAction(post, onRequest);
   const authorName = getAuthorName(post);
 
   return (
@@ -43,6 +47,7 @@ export function FeedPostCard({ post, liked, onToggleLike, onOpen }: FeedPostCard
       onToggleLike={() => onToggleLike(post.id)}
       onOpen={() => onOpen(post)}
       openLabel={t.card.openDetailsOf(authorName)}
+      request={request}
     />
   );
 }

@@ -15,6 +15,7 @@ interface SearchResultsProps {
   likedPosts: Set<string>;
   onToggleLike: (postId: string) => void;
   onOpen: (post: FeedPost) => void;
+  onRequest: (post: FeedPost) => void;
   onClearFilter: (key: FilterKey) => void;
   onClearAll: () => void;
 }
@@ -35,6 +36,7 @@ export function SearchResults({
   likedPosts,
   onToggleLike,
   onOpen,
+  onRequest,
   onClearFilter,
   onClearAll,
 }: SearchResultsProps) {
@@ -100,6 +102,7 @@ export function SearchResults({
                 liked={likedPosts.has(post.id)}
                 onToggleLike={onToggleLike}
                 onOpen={onOpen}
+                onRequest={onRequest}
               />
             </li>
           ))}

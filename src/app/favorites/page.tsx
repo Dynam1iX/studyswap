@@ -13,6 +13,7 @@ import { MobileShell } from '@/components/layout/MobileShell';
 import { addFavorite, fetchFavoritePosts, removeFavorite } from '@/lib/favorites';
 import type { FeedPost } from '@/lib/feed';
 import { messages, useT } from '@/i18n';
+import { RequestSheet } from '@/components/requests/RequestSheet';
 
 /** Must match duration-300 on the card wrapper. */
 const EXIT_MS = 300;
@@ -78,6 +79,8 @@ export default function FavoritesPage() {
   const [removed, setRemoved] = useState<Removed | null>(null);
   /** The card whose details modal is open, or null. */
   const [activeSwap, setActiveSwap] = useState<FeedPost | null>(null);
+  /** The card whose "propose a swap" sheet is open, or null. */
+  const [requesting, setRequesting] = useState<FeedPost | null>(null);
   const timers = useRef<number[]>([]);
   const removals = useRef(0);
 
@@ -210,6 +213,7 @@ export default function FavoritesPage() {
                         liked={!isLeaving}
                         onToggleLike={() => unlike(post)}
                         onOpen={setActiveSwap}
+                        onRequest={setRequesting}
                       />
                     </div>
                   </div>
@@ -220,7 +224,8 @@ export default function FavoritesPage() {
         )}
       </div>
 
-      <SwapDetailModal post={activeSwap} onClose={() => setActiveSwap(null)} />
+      <SwapDetailModal post={activeSwap} onClose={() => setActiveSwap(null)} onRequest={setRequesting} />
+      <RequestSheet post={requesting} onClose={() => setRequesting(null)} />
     </MobileShell>
   );
 }

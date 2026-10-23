@@ -123,7 +123,7 @@ export default function WelcomePage() {
 
   return (
     <MobileShell>
-      <AppHeader />
+      <AppHeader bell={false} />
 
       <form onSubmit={submit} noValidate className="flex flex-col gap-4 px-4 py-2">
         <div className="flex animate-rise flex-col gap-1 motion-reduce:animate-none">

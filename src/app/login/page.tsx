@@ -134,7 +134,7 @@ export default function LoginPage() {
 
   return (
     <MobileShell>
-      <AppHeader />
+      <AppHeader bell={false} />
 
       {/* 16px sides, 8px top and bottom, 16px between blocks. */}
       <div className="flex flex-col gap-4 px-4 py-2">

@@ -12,6 +12,7 @@ import { useFavoriteIds } from '@/lib/favorites';
 import { fetchFeed, type FeedPost } from '@/lib/feed';
 import type { Subject } from '@/types/database';
 import { useT } from '@/i18n';
+import { RequestSheet } from '@/components/requests/RequestSheet';
 
 export default function FeedPage() {
   const t = useT();
@@ -22,6 +23,8 @@ export default function FeedPage() {
   const { liked: likedPosts, toggle: toggleLike } = useFavoriteIds();
   /** The card whose details modal is open, or null. */
   const [activeSwap, setActiveSwap] = useState<FeedPost | null>(null);
+  /** The card whose "propose a swap" sheet is open, or null. */
+  const [requesting, setRequesting] = useState<FeedPost | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -76,13 +79,15 @@ export default function FeedPage() {
                 liked={likedPosts.has(post.id)}
                 onToggleLike={toggleLike}
                 onOpen={setActiveSwap}
+                onRequest={setRequesting}
               />
             </div>
           ))
         )}
       </main>
 
-      <SwapDetailModal post={activeSwap} onClose={() => setActiveSwap(null)} />
+      <SwapDetailModal post={activeSwap} onClose={() => setActiveSwap(null)} onRequest={setRequesting} />
+      <RequestSheet post={requesting} onClose={() => setRequesting(null)} />
 
     </MobileShell>
   );

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { ArrowLeftRight, CheckCheck, Clock3 } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { useReplay } from '@/lib/useReplay';
 import type { CategoryPalette } from '@/lib/categoryPalette';
@@ -37,7 +38,17 @@ interface BarterCardProps {
   onOpen?: () => void;
   /** Accessible name of the open action. */
   openLabel?: string;
+  /** Square "propose a swap" button next to the contact button (not on own cards or previews). */
+  request?: CardRequestAction;
 }
+
+/** State of my swap request for this card. */
+export interface CardRequestAction {
+  state: 'none' | 'sent' | 'accepted';
+  onClick: () => void;
+}
+
+const REQUEST_ICON = { none: ArrowLeftRight, sent: Clock3, accepted: CheckCheck } as const;
 
 function SubjectHalf({ label, half }: { label: string; half: CardHalf }) {
   // Count subject changes after the first render, so only a change "blinks" (Create preview).
@@ -84,7 +95,7 @@ const CONTACT_ICON = {
 } as const satisfies Record<ContactMethod, { icon: string; alt: string }>;
 
 const contactClasses =
-  'flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-brand-from to-brand-to text-[15px] font-semibold text-white no-underline';
+  'flex h-12 min-w-0 flex-1 items-center justify-center gap-2 rounded-xl bg-linear-to-r from-brand-from to-brand-to text-[15px] font-semibold text-white no-underline';
 
 /** The "Needs help / Can teach" card used in the Feed and in the Create preview. */
 export function BarterCard({
@@ -97,6 +108,7 @@ export function BarterCard({
   onToggleLike,
   onOpen,
   openLabel,
+  request,
 }: BarterCardProps) {
   const t = useT();
   // With onOpen, a full-size button sits under the content. Content ignores clicks
@@ -179,18 +191,46 @@ export function BarterCard({
         />
       </div>
 
-      {contactHref ? (
-        <a
-          href={contactHref}
-          target={contactMethod === 'telegram' ? '_blank' : undefined}
-          rel="noreferrer"
-          className={`${contactClasses} shine shadow-[0_3px_12px_rgba(173,70,255,0.25)] transition hover:opacity-95 active:scale-[0.99] ${interactive}`}
-        >
-          {contactContent}
-        </a>
-      ) : (
-        <div className={`${contactClasses} opacity-95 select-none`}>{contactContent}</div>
-      )}
+      <div className="flex gap-2">
+        {contactHref ? (
+          <a
+            href={contactHref}
+            target={contactMethod === 'telegram' ? '_blank' : undefined}
+            rel="noreferrer"
+            className={`${contactClasses} shine shadow-[0_3px_12px_rgba(173,70,255,0.25)] transition hover:opacity-95 active:scale-[0.99] ${interactive}`}
+          >
+            {contactContent}
+          </a>
+        ) : (
+          <div className={`${contactClasses} opacity-95 select-none`}>{contactContent}</div>
+        )}
+        {request && <RequestButton request={request} className={interactive} />}
+      </div>
     </div>
+  );
+}
+
+/** Square button: propose a swap, or show that my request is waiting / accepted. */
+function RequestButton({ request, className }: { request: CardRequestAction; className: string }) {
+  const t = useT();
+  const Icon = REQUEST_ICON[request.state];
+  const label =
+    request.state === 'none' ? t.requests.propose : request.state === 'sent' ? t.requests.sentShort : t.requests.acceptedShort;
+  return (
+    <button
+      type="button"
+      onClick={request.onClick}
+      aria-label={label}
+      title={label}
+      className={`flex size-12 shrink-0 cursor-pointer items-center justify-center rounded-xl border-[1.5px] transition-[transform,background-color] active:scale-90 ${
+        request.state === 'none'
+          ? 'border-brand-from/40 bg-brand-soft text-brand-ink hover:bg-brand-soft/70'
+          : request.state === 'sent'
+            ? 'border-line-strong bg-soft text-muted'
+            : 'border-success/40 bg-success-soft text-success'
+      } ${className}`}
+    >
+      <Icon key={request.state} className="size-5 animate-pop motion-reduce:animate-none" strokeWidth={2.4} />
+    </button>
   );
 }

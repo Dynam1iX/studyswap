@@ -49,6 +49,7 @@ src/
     auth.ts               Sign-in: e-mail codes, Microsoft, current student, complete profile
     telegram.ts           Telegram linking through the bot: link token, status, unlink
     theme.ts              Light / dark theme: saved choice, applied before paint, circle reveal
+    requests.ts           Swap requests: shared list (bell, Requests page, cards), send / answer / complete
   i18n/                   EN / RU / KZ texts (en.ts is the source; ru.ts, kz.ts follow its shape), useT(), I18nProvider
   types/
     database.ts           Row types of the Supabase tables

@@ -1,7 +1,7 @@
 'use client';
 
 import { useId, useState, type CSSProperties, type ReactNode } from 'react';
-import { CalendarDays, Mail, Send, Star, Tag, X } from 'lucide-react';
+import { ArrowLeftRight, CalendarDays, CheckCheck, Clock3, Mail, Send, Star, Tag, X } from 'lucide-react';
 import { BottomSheet } from '@/components/ui/BottomSheet';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { paletteFor } from '@/lib/categoryPalette';
@@ -11,15 +11,18 @@ import type { Subject } from '@/types/database';
 import { ExchangeIcon } from '@/components/ui/ExchangeIcon';
 import { useT } from '@/i18n';
 import { useI18n } from '@/i18n';
+import { useRequestAction } from '@/components/requests/useRequestAction';
 
 interface SwapDetailModalProps {
   /** The card to show, or null when the modal is closed. */
   post: FeedPost | null;
   onClose: () => void;
+  /** Opens the "propose a swap" sheet; omit it to hide the button. */
+  onRequest?: (post: FeedPost) => void;
 }
 
 /** "More info" for a barter card: full texts, subjects, author and contact. */
-export function SwapDetailModal({ post, onClose }: SwapDetailModalProps) {
+export function SwapDetailModal({ post, onClose, onRequest }: SwapDetailModalProps) {
   const t = useT();
   const titleId = useId();
   // Keep the last post on screen while the sheet animates out.
@@ -47,7 +50,7 @@ export function SwapDetailModal({ post, onClose }: SwapDetailModalProps) {
           </button>
         </div>
       }
-      footer={data && <SwapDetailActions post={data} onClose={onClose} />}
+      footer={data && <SwapDetailActions post={data} onClose={onClose} onRequest={onRequest} />}
     >
       {data && <SwapDetailBody post={data} />}
     </BottomSheet>
@@ -208,9 +211,56 @@ function DetailRow({
   );
 }
 
-function SwapDetailActions({ post, onClose }: { post: FeedPost; onClose: () => void }) {
+function SwapDetailActions({
+  post,
+  onClose,
+  onRequest,
+}: {
+  post: FeedPost;
+  onClose: () => void;
+  onRequest?: (post: FeedPost) => void;
+}) {
   const t = useT();
   const isTelegram = getContactMethod(post) === 'telegram';
+  const request = useRequestAction(post, onRequest && ((p) => {
+    onClose();
+    onRequest(p);
+  }));
+
+  if (request) {
+    const Icon = request.state === 'none' ? ArrowLeftRight : request.state === 'sent' ? Clock3 : CheckCheck;
+    return (
+      <div className="flex shrink-0 gap-3 border-t border-line bg-surface px-6 pt-4 pb-[max(24px,env(safe-area-inset-bottom))]">
+        <a
+          href={getContactHref(post)}
+          target={isTelegram ? '_blank' : undefined}
+          rel="noreferrer"
+          aria-label={t.card.contact[isTelegram ? 'telegram' : 'email']}
+          title={t.card.contact[isTelegram ? 'telegram' : 'email']}
+          className="flex size-14 shrink-0 items-center justify-center rounded-2xl border-[1.5px] border-line-strong bg-surface transition hover:bg-soft active:scale-95"
+        >
+          {isTelegram ? (
+            <img src="/telegram-circle.svg" alt="" className="size-7" />
+          ) : (
+            <Mail aria-hidden className="size-6 text-brand-ink" strokeWidth={2.2} />
+          )}
+        </a>
+        <button
+          type="button"
+          onClick={request.onClick}
+          className={`shine flex h-14 min-w-0 flex-1 cursor-pointer items-center justify-center gap-2.5 rounded-2xl text-base font-bold transition active:scale-[0.98] ${
+            request.state === 'none'
+              ? 'bg-linear-to-r from-brand-from to-brand-to text-white shadow-[0_8px_20px_rgba(200,40,140,0.28)]'
+              : 'border-[1.5px] border-line-strong bg-soft text-ink'
+          }`}
+        >
+          <Icon className="size-5" strokeWidth={2.4} />
+          {request.state === 'none' ? t.requests.propose : request.state === 'sent' ? t.requests.sentShort : t.requests.acceptedShort}
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="grid shrink-0 grid-cols-4 gap-6 border-t border-line bg-surface px-6 pt-4 pb-[max(24px,env(safe-area-inset-bottom))]">
       <button

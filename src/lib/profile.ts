@@ -125,7 +125,7 @@ export async function fetchProfile(): Promise<ProfileData | null> {
       : [],
   );
 
-  // A swap counts once it is accepted, whether the student sent it or received it on their post.
+  // A swap counts once it is marked completed, whether the student sent it or received it on their post.
   const postIds = cards.map((card) => card.id);
   const swapFilter = postIds.length
     ? `sender_id.eq.${userRow.id},post_id.in.(${postIds.join(',')})`
@@ -134,7 +134,7 @@ export async function fetchProfile(): Promise<ProfileData | null> {
   const { count: swapsDone, error: swapsError } = await supabase
     .from('swap_requests')
     .select('id', { count: 'exact', head: true })
-    .eq('status', 'accepted')
+    .eq('status', 'completed')
     .or(swapFilter);
 
   if (swapsError) throw swapsError;

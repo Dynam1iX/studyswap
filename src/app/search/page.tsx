@@ -31,6 +31,7 @@ import {
 } from '@/lib/search';
 import type { Category, StudyYear } from '@/types/database';
 import { useT } from '@/i18n';
+import { RequestSheet } from '@/components/requests/RequestSheet';
 
 /** Filters live in the URL (?q=&category=&year=&program=) so Back and links work. */
 function filtersFromParams(params: URLSearchParams): SearchFilters {
@@ -73,6 +74,8 @@ function SearchView() {
   const { liked: likedPosts, toggle: toggleLike } = useFavoriteIds();
   /** The card whose details modal is open, or null. */
   const [activeSwap, setActiveSwap] = useState<FeedPost | null>(null);
+  /** The card whose "propose a swap" sheet is open, or null. */
+  const [requesting, setRequesting] = useState<FeedPost | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Back / Forward: show the submitted text of that history entry in the box.
@@ -166,6 +169,7 @@ function SearchView() {
             likedPosts={likedPosts}
             onToggleLike={toggleLike}
             onOpen={setActiveSwap}
+            onRequest={setRequesting}
             onClearFilter={(key) => applyFilters({ ...filters, [key]: null })}
             onClearAll={() => applyFilters(EMPTY_FILTERS)}
           />
@@ -205,7 +209,8 @@ function SearchView() {
         onClose={() => setOpenFilter(null)}
       />
 
-      <SwapDetailModal post={activeSwap} onClose={() => setActiveSwap(null)} />
+      <SwapDetailModal post={activeSwap} onClose={() => setActiveSwap(null)} onRequest={setRequesting} />
+      <RequestSheet post={requesting} onClose={() => setRequesting(null)} />
     </>
   );
 }

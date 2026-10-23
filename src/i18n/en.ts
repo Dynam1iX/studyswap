@@ -1,3 +1,4 @@
+import type { RequestStatus } from '@/lib/requests';
 import type { Category, ContactMethod, DegreeLevel, PostStatus, TelegramVisibility } from '@/types/database';
 
 /** English texts. Russian and Kazakh (ru.ts, kz.ts) follow the same shape. */
@@ -332,6 +333,59 @@ export const en = {
     start: 'Start swapping',
     otherEmail: 'Use another e-mail',
     saveError: 'Could not save your profile',
+  },
+
+  requests: {
+    title: 'Requests',
+    subtitle: 'Swaps students proposed to you, and the ones you sent',
+    bellWithCount: (count: number) => `Requests, ${count} new`,
+    incoming: 'Incoming',
+    sentTab: 'Sent',
+    loading: 'Loading requests...',
+    propose: 'Propose a swap',
+    sentShort: 'Request sent',
+    acceptedShort: 'Swap accepted',
+    youTeach: 'You explain',
+    youLearn: 'You learn',
+    theyTeach: 'They explain',
+    youTeachShort: 'You explain',
+    message: 'Message',
+    optional: '(optional)',
+    messagePlaceholder: 'e.g. Free after 15:00, can meet in the library or online.',
+    howItWorks: 'The author sees your request and can accept it. Then you both see each other’s contacts.',
+    send: 'Send request',
+    sent: 'Request sent!',
+    accept: 'Accept',
+    decline: 'Decline',
+    cancel: 'Cancel request',
+    complete: 'Swap done',
+    waiting: 'Waiting for an answer',
+    acceptedHint: 'Agree on a time and place. When you have swapped, mark it as done.',
+    declinedHint: 'You can propose this swap again from the card.',
+    status: {
+      pending: 'Waiting',
+      accepted: 'Accepted',
+      declined: 'Declined',
+      cancelled: 'Cancelled',
+      completed: 'Completed',
+    } satisfies Record<RequestStatus, string> as Record<RequestStatus, string>,
+    toast: {
+      accept: 'Request accepted',
+      decline: 'Request declined',
+      cancel: 'Request cancelled',
+      complete: 'Swap marked as done',
+    },
+    errors: {
+      notAvailable: 'This card is no longer available.',
+      ownCard: 'You cannot propose a swap for your own card.',
+      already: 'You already sent a request for this card.',
+      tooLong: 'The message is too long.',
+      cannotChange: 'This request has already changed. Refresh the page.',
+    },
+    emptyIncoming: 'No requests yet',
+    emptyIncomingHint: 'When someone proposes a swap for your card, it shows up here.',
+    emptySent: 'You have not sent any requests',
+    emptySentHint: 'Tap ⇄ on a card in the Feed to propose a swap.',
   },
 };
 
