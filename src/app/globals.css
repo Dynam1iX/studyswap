@@ -28,6 +28,8 @@
   --color-danger-soft: #fff5f8;
   --color-success-soft: #ddf4e8;
   --color-warning: #b45309;
+  /* Dimmed page behind sheets. */
+  --color-scrim: rgb(27 21 48 / 0.55);
 
   --font-bricolage: "Bricolage Grotesque", sans-serif;
   --font-montserrat: "Montserrat", sans-serif;
@@ -564,6 +566,7 @@ html.dark {
   --color-danger-soft: #2a1520;
   --color-success-soft: #133b2c;
   --color-warning: #fbbf24;
+  --color-scrim: rgb(5 3 12 / 0.7);
 
   /* Subject colours: deep, muted versions of the light palette. */
   --cat-cs-bg: #1d2a4a;

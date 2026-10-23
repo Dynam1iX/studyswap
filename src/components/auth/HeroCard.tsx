@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { CATEGORY_PALETTE } from '@/lib/categoryPalette';
 import type { Category } from '@/types/database';
+import { ExchangeIcon } from '@/components/ui/ExchangeIcon';
 
 interface Pair {
   needs: { title: string; category: Category };
@@ -60,9 +61,7 @@ export function HeroCard() {
           <Half label="Needs help" subject={pair.needs} turn={turn} />
           <Half label="Can teach" subject={pair.teaches} turn={turn} />
           <span className="absolute top-1/2 right-6 flex size-11 -translate-y-1/2 items-center justify-center rounded-full bg-surface">
-            <img
-              src="/exchangeicon.svg"
-              alt=""
+            <ExchangeIcon
               style={{ transform: `rotate(${turn * 180}deg)` }}
               className="size-9 transition-transform duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)]"
             />

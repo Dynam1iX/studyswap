@@ -5,6 +5,7 @@ import { UserAvatar } from '@/components/ui/UserAvatar';
 import { useReplay } from '@/lib/useReplay';
 import type { CategoryPalette } from '@/lib/categoryPalette';
 import type { ContactMethod } from '@/types/database';
+import { ExchangeIcon } from '@/components/ui/ExchangeIcon';
 
 export interface CardAuthor {
   initials: string;
@@ -170,9 +171,8 @@ export function BarterCard({
       <div className={`relative flex w-full flex-col gap-2 ${onOpen ? 'pointer-events-none' : ''}`}>
         <SubjectHalf label="Needs help" half={needs} />
         <SubjectHalf label="Can teach" half={teaches} />
-        <img
-          src="/exchangeicon.svg"
-          alt="Exchange"
+        <ExchangeIcon
+          label="Exchange"
           className="pointer-events-none absolute top-1/2 right-[18px] z-10 block size-10 -translate-y-1/2 drop-shadow-[0_2px_8px_rgba(0,0,0,0.12)] transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:rotate-180 group-active:rotate-180"
         />
       </div>
