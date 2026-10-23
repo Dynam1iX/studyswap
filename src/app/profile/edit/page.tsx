@@ -11,7 +11,6 @@ import { TelegramUnlinkSheet } from '@/components/profile/TelegramUnlinkSheet';
 import { AvatarSheet } from '@/components/profile/AvatarSheet';
 import { useAvatarEditor } from '@/components/profile/useAvatarEditor';
 import { Toast, useToast } from '@/components/ui/Toast';
-import { avatarUrl } from '@/lib/avatar';
 import { degreeLabel, fetchProfile, type ProfileUser } from '@/lib/profile';
 import { messages, useT } from '@/i18n';
 
@@ -123,7 +122,7 @@ export default function EditProfilePage() {
     notify: showToast,
     onChange: (avatarPath) =>
       setState((prev) =>
-        prev.status === 'ready' ? { status: 'ready', user: { ...prev.user, avatarPath, avatarUrl: avatarUrl(avatarPath) } } : prev,
+        prev.status === 'ready' ? { status: 'ready', user: { ...prev.user, avatarPath } } : prev,
       ),
   });
 
@@ -233,7 +232,7 @@ export default function EditProfilePage() {
           open={avatar.open}
           onClose={() => avatar.setOpen(false)}
           initials={state.user.initials}
-          currentUrl={state.user.avatarUrl}
+          currentUrl={avatar.savedUrl}
           onSave={avatar.save}
           onRemove={avatar.remove}
         />

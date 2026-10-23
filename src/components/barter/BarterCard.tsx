@@ -10,8 +10,8 @@ import { useT } from '@/i18n';
 
 export interface CardAuthor {
   initials: string;
-  /** Profile photo, or null/undefined for initials. */
-  avatarUrl?: string | null;
+  /** Storage path of the profile photo, or null/undefined for initials. */
+  avatarPath?: string | null;
   name: string;
   /** "Software Engineering, Year 1" */
   subtitle: string;
@@ -133,7 +133,7 @@ export function BarterCard({
       {/* Author and wishlist */}
       <div className={`flex items-center justify-between ${layer}`}>
         <div className="flex min-w-0 items-center gap-2.5">
-          <UserAvatar initials={author.initials} url={author.avatarUrl ?? null} className="size-10 text-xs" />
+          <UserAvatar initials={author.initials} path={author.avatarPath} className="size-10 text-xs" />
           <div className="flex min-w-0 flex-col leading-tight">
             <span className="truncate text-[15px] font-semibold text-ink">{author.name}</span>
             <span className="truncate text-[13px] font-medium text-muted">{author.subtitle}</span>

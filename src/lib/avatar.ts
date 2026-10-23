@@ -1,5 +1,8 @@
+'use client';
+
 import { supabase } from '@/lib/supabase';
 import { messages } from '@/i18n';
+import { useEffect, useState } from 'react';
 
 /** Storage bucket for profile photos (see supabase/migrations/20261022180000_avatars.sql). */
 const BUCKET = 'avatars';
@@ -10,10 +13,75 @@ export const AVATAR_SIZE = 256;
 /** Encoding quality for WebP / JPEG (0 to 1). */
 const QUALITY = 0.85;
 
-/** Public URL of a photo in the avatars bucket, or null for "show initials". */
-export function avatarUrl(path: string | null | undefined): string | null {
+/** How long a photo link works. The bucket is private: links are signed for signed-in students. */
+const LINK_SECONDS = 60 * 60;
+/** Links are renewed this long before they expire. */
+const RENEW_MS = 5 * 60 * 1000;
+
+const signed = new Map<string, { url: string; expires: number }>();
+const inFlight = new Map<string, Promise<string | null>>();
+let queue: { path: string; resolve: (url: string | null) => void }[] = [];
+
+function cachedUrl(path: string): string | null {
+  const hit = signed.get(path);
+  return hit && hit.expires - RENEW_MS > Date.now() ? hit.url : null;
+}
+
+/** Signs every path asked for in the same tick with one request. */
+async function flushQueue() {
+  const batch = queue;
+  queue = [];
+  const paths = [...new Set(batch.map((item) => item.path))];
+  const urls = new Map<string, string>();
+  try {
+    const { data, error } = await supabase.storage.from(BUCKET).createSignedUrls(paths, LINK_SECONDS);
+    if (error) throw error;
+    const expires = Date.now() + LINK_SECONDS * 1000;
+    for (const row of data ?? []) {
+      if (row.path && row.signedUrl) {
+        urls.set(row.path, row.signedUrl);
+        signed.set(row.path, { url: row.signedUrl, expires });
+      }
+    }
+  } catch (err: unknown) {
+    console.error('Could not sign photo links:', err);
+  }
+  for (const item of batch) {
+    inFlight.delete(item.path);
+    item.resolve(urls.get(item.path) ?? null);
+  }
+}
+
+function signedUrl(path: string): Promise<string | null> {
+  const cached = cachedUrl(path);
+  if (cached) return Promise.resolve(cached);
+  const running = inFlight.get(path);
+  if (running) return running;
+  const promise = new Promise<string | null>((resolve) => {
+    if (queue.length === 0) queueMicrotask(() => void flushQueue());
+    queue.push({ path, resolve });
+  });
+  inFlight.set(path, promise);
+  return promise;
+}
+
+/** A temporary link to the photo at `path`, or null (no photo yet, or initials). */
+export function useAvatarUrl(path: string | null | undefined): string | null {
+  const [loaded, setLoaded] = useState<{ path: string; url: string | null } | null>(null);
+
+  useEffect(() => {
+    if (!path || cachedUrl(path)) return;
+    let cancelled = false;
+    void signedUrl(path).then((url) => {
+      if (!cancelled) setLoaded({ path, url });
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [path]);
+
   if (!path) return null;
-  return supabase.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
+  return cachedUrl(path) ?? (loaded?.path === path ? loaded.url : null);
 }
 
 export interface PreparedAvatar {

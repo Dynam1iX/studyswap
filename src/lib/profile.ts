@@ -1,6 +1,3 @@
-import { avatarUrl } from '@/lib/avatar';
-import { fetchTelegramHandles } from '@/lib/feed';
-import { currentEmail } from '@/lib/auth';
 import { getInitials, getShortName } from '@/lib/format';
 import { supabase } from '@/lib/supabase';
 import type { DegreeLevel, PostStatus, StudyYear, Subject, TelegramVisibility, User } from '@/types/database';
@@ -37,8 +34,6 @@ export interface ProfileUser {
   telegramVisibility: TelegramVisibility;
   /** Storage path of the photo, or null. */
   avatarPath: string | null;
-  /** Public URL of the photo, or null for initials. */
-  avatarUrl: string | null;
 }
 
 export interface ProfileStats {
@@ -60,6 +55,16 @@ type UserRow = Pick<
   User,
   'id' | 'full_name' | 'email' | 'telegram_handle' | 'telegram_visibility' | 'major' | 'study_year' | 'degree_level' | 'avatar_path'
 >;
+
+/**
+ * The signed-in student's own row. Other students' e-mails, settings and handles are not
+ * readable from the users table, so your own comes from get_my_profile().
+ */
+export async function fetchMyProfileRow(): Promise<UserRow | null> {
+  const { data, error } = await supabase.rpc('get_my_profile').maybeSingle();
+  if (error) throw error;
+  return (data as UserRow | null) ?? null;
+}
 
 /** A row of get_my_cards(). */
 interface PostRow {
@@ -97,20 +102,9 @@ function uniqueSubjects(subjects: ProfileSubject[]): ProfileSubject[] {
  * Loads everything the profile page shows. The student's own cards come from
  * get_my_cards(), which also returns inactive (archived) ones that RLS hides elsewhere.
  */
-export async function fetchProfile(emailOverride?: string): Promise<ProfileData | null> {
-  const email = emailOverride ?? (await currentEmail());
-  if (!email) return null;
-  const { data: userData, error: userError } = await supabase
-    .from('users')
-    .select('id, full_name, email, telegram_visibility, major, study_year, degree_level, avatar_path')
-    .eq('email', email)
-    .maybeSingle();
-
-  if (userError) throw userError;
-  const userRow = userData as UserRow | null;
+export async function fetchProfile(): Promise<ProfileData | null> {
+  const userRow = await fetchMyProfileRow();
   if (!userRow) return null;
-  // The handle is not readable from the table (see get_telegram_handles); your own always is.
-  userRow.telegram_handle = (await fetchTelegramHandles([userRow.id])).get(userRow.id) ?? null;
 
   const { data: postData, error: postsError } = await supabase.rpc('get_my_cards');
 
@@ -164,7 +158,6 @@ export async function fetchProfile(emailOverride?: string): Promise<ProfileData 
       telegramHandle: userRow.telegram_handle?.replace(/^@/, '') || null,
       telegramVisibility: userRow.telegram_visibility === 'accepted' ? 'accepted' : 'everyone',
       avatarPath: userRow.avatar_path ?? null,
-      avatarUrl: avatarUrl(userRow.avatar_path),
     },
     stats: {
       swapsDone: swapsDone ?? 0,

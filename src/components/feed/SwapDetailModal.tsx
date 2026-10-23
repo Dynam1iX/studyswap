@@ -4,7 +4,6 @@ import { useId, useState, type CSSProperties, type ReactNode } from 'react';
 import { CalendarDays, Mail, Send, Star, Tag, X } from 'lucide-react';
 import { BottomSheet } from '@/components/ui/BottomSheet';
 import { UserAvatar } from '@/components/ui/UserAvatar';
-import { avatarUrl } from '@/lib/avatar';
 import { paletteFor } from '@/lib/categoryPalette';
 import { getAuthorName, getContactHref, getContactMethod, type FeedPost } from '@/lib/feed';
 import { formatPostedAt, formatStudyInfo, getInitials } from '@/lib/format';
@@ -67,7 +66,7 @@ function SwapDetailBody({ post }: { post: FeedPost }) {
       <div className="flex items-center gap-3">
         <UserAvatar
           initials={getInitials(authorName)}
-          url={avatarUrl(post.author?.avatar_path)}
+          path={post.author?.avatar_path}
           className="size-12 text-base font-bold"
         />
         <div className="flex min-w-0 flex-1 flex-col gap-0.5">
@@ -133,7 +132,7 @@ function SwapDetailBody({ post }: { post: FeedPost }) {
           icon={getContactMethod(post) === 'telegram' ? <Send className="size-5" /> : <Mail className="size-5" />}
           label={t.details.contactVia}
         >
-          {getContactMethod(post) === 'telegram' ? `Telegram · @${post.author?.telegram_handle}` : t.details.universityEmail}
+          {post.contact?.method === 'telegram' ? `Telegram · @${post.contact.value}` : t.details.universityEmail}
         </DetailRow>
         <DetailRow icon={<Tag className="size-5" />} label={t.details.status} valueClassName="text-success">
           {t.details.statusOpen}
