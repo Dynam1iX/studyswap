@@ -15,6 +15,7 @@ Every change to the database lives in `migrations/` as a numbered SQL file, so t
 | `20261022140000_favorites.sql` | Likes: `favorites` table + `get_favorites`, `add_favorite`, `remove_favorite` | Applied (SQL Editor) |
 | `20261023010000_owner_rules.sql` | Phase 2: no access without sign-in, own cards/requests only, read-only profile, Telegram handle hidden by column (`get_telegram_handles`), participants-only swap requests, `delete_my_account`, demo fallback removed | Applied (SQL Editor) |
 | `20261023120000_telegram_bot.sql` | Telegram bot: one-time link tokens (`create_telegram_link`, `get_telegram_link_status`), `telegram_link_from_bot` (service role only), `unlink_my_telegram`, `users.telegram_user_id` (one Telegram account per student) | Pending |
+| `20261023140000_remove_test_accounts.sql` | Removes the 2026-10-20 test accounts (profiles without a sign-in account) with their cards, requests and likes | Pending |
 | `20261022200000_sign_in.sql` | Only `6 digits@astanait.edu.kz` can sign up (trigger on `auth.users`); `complete_my_profile`; signed-in students never fall back to the demo account | Applied (SQL Editor) |
 | `20261022180000_avatars.sql` | Storage bucket `avatars` (own-folder policies), `users.avatar_path`, `set_my_avatar`, `remove_my_avatar` | Applied (SQL Editor) |
 | `20261022160000_profile_settings.sql` | `users.telegram_visibility`; `get_my_cards`, `update_my_card`, `set_my_card_status`, `delete_my_card`, `set_telegram_visibility`, `export_my_data` | Applied (SQL Editor) |
