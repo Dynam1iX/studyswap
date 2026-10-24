@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
+import { HelpButton } from '@/components/help/HelpSheet';
 
-/** Logo row at the top of every page; `actions` sit on the right. */
+/** Logo row at the top of every page; `actions` sit on the right (default: the "How it works" button). */
 export function AppHeader({ actions }: { actions?: ReactNode }) {
   return (
     <header className="flex items-center justify-between gap-3 px-4 pt-4 pb-2 lg:pt-8 lg:pb-4">
@@ -14,7 +15,7 @@ export function AppHeader({ actions }: { actions?: ReactNode }) {
           StudySwap
         </span>
       </div>
-      {actions}
+      {actions ?? <HelpButton />}
     </header>
   );
 }

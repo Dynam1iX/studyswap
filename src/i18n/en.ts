@@ -261,6 +261,38 @@ export const en = {
     unlinkError: 'Could not unlink Telegram',
   },
 
+  help: {
+    button: 'How it works',
+    title: 'How StudySwap works',
+    videoLabel: 'Video: creating a barter card, step by step',
+    videoNote: 'The video has no sound. Its steps:',
+    transcript: [
+      'Press + to create your barter card.',
+      'Choose the subject you need help with.',
+      'Describe what exactly you need.',
+      'Choose what you can teach in return and describe it.',
+      'Check the preview and publish: your card appears in the Feed and students write to you directly.',
+    ],
+    stepLabel: (n: number) => `Step ${n}`,
+    steps: [
+      {
+        title: 'Find a swap',
+        text: 'Scroll the Feed or search by subject. Tap a card to see the details.',
+        alt: 'The Feed: a card of a student who needs help with Calculus I and can teach Introduction to Programming 1.',
+      },
+      {
+        title: 'Create your card',
+        text: 'Press +, choose what you need and what you can teach, describe the topics and publish.',
+        alt: 'The Create form: Linear Algebra is needed, Object-Oriented Programming is offered, topics are filled in.',
+      },
+      {
+        title: 'Write directly',
+        text: 'Open a card and message the student on Telegram or by university e-mail.',
+        alt: 'Swap details of a card with the Message on Telegram button.',
+      },
+    ],
+  },
+
   edit: {
     title: 'Edit profile',
     back: 'Back to profile',
