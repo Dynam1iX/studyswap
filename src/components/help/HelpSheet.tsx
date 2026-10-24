@@ -3,12 +3,19 @@
 import { useId, useState } from 'react';
 import { CircleHelp, X } from 'lucide-react';
 import { BottomSheet } from '@/components/ui/BottomSheet';
-import { useT } from '@/i18n';
+import { useI18n, useT, type Language } from '@/i18n';
 
 /**
  * Step screenshots: WebP at 200 and 400 px wide (the picture is 96 px wide on phones and
  * about 180 px in the three desktop columns, so 400 covers 2x screens). Masters: media/help/*.png.
  */
+/** Subtitle tracks; `code` is the BCP 47 tag (Kazakh is "kk", the site's own key is "kz"). */
+const CAPTIONS: { lang: Language; code: string; label: string }[] = [
+  { lang: 'en', code: 'en', label: 'English' },
+  { lang: 'ru', code: 'ru', label: 'Русский' },
+  { lang: 'kz', code: 'kk', label: 'Қазақша' },
+];
+
 const STEP_IMAGES = ['/help/step-1-find', '/help/step-2-create', '/help/step-3-write'];
 
 /** "?" button for the logo row; opens "How StudySwap works". */
@@ -34,7 +41,7 @@ export function HelpButton() {
 
 /** "How StudySwap works": a silent how-to video (with its steps as text) and three illustrated steps. */
 function HelpSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const t = useT();
+  const { t, language } = useI18n();
   const titleId = useId();
   const transcriptId = useId();
 
@@ -61,7 +68,9 @@ function HelpSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
       }
     >
       <div className="flex flex-col gap-5 px-6 pt-2 pb-8">
+        {/* key: a language switch reloads the tracks, so the right subtitles are on by default. */}
         <video
+          key={language}
           controls
           playsInline
           // Nothing is downloaded until the student presses Play (the poster is a 31 KB WebP).
@@ -74,6 +83,17 @@ function HelpSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
           {/* VP9 WebM where supported (Chrome, Firefox, Edge), H.264 MP4 for Safari and the rest. */}
           <source src="/help/how-to-create.webm" type="video/webm" />
           <source src="/help/how-to-create.mp4" type="video/mp4" />
+          {/* The clip has no speech: these are its on-screen steps, in the site's three languages. */}
+          {CAPTIONS.map((track) => (
+            <track
+              key={track.lang}
+              kind="captions"
+              srcLang={track.code}
+              label={track.label}
+              src={`/help/how-to-create.${track.lang}.vtt`}
+              default={track.lang === language}
+            />
+          ))}
         </video>
 
         <div id={transcriptId} className="flex flex-col gap-2 rounded-2xl bg-soft p-4">
@@ -101,7 +121,7 @@ function HelpSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
                 className="aspect-[43/60] w-24 shrink-0 rounded-xl border border-line object-cover object-top sm:w-full sm:rounded-2xl"
               />
               <span className="flex flex-col gap-1">
-                <span className="text-[11px] font-bold tracking-wider text-brand-from uppercase">{t.help.stepLabel(index + 1)}</span>
+                <span className="text-[11px] font-bold tracking-wider text-brand-ink uppercase">{t.help.stepLabel(index + 1)}</span>
                 <span className="font-bricolage text-base font-extrabold text-ink">{step.title}</span>
                 <span className="text-[13px] leading-snug font-medium text-muted">{step.text}</span>
               </span>

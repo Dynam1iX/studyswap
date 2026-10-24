@@ -166,7 +166,7 @@ function LanguagePill() {
             >
               <span
                 className={`flex h-7 w-9 shrink-0 items-center justify-center rounded-lg text-xs font-extrabold ${
-                  selected ? 'bg-linear-to-r from-brand-from to-brand-to text-white' : 'bg-soft text-muted'
+                  selected ? 'bg-linear-to-r from-brand-fill-from to-brand-fill-to text-white' : 'bg-soft text-muted'
                 }`}
               >
                 {item.label}

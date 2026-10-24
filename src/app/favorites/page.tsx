@@ -38,7 +38,7 @@ function SavedBadge({ count }: { count: number }) {
       key={count}
       className="flex h-8 shrink-0 animate-pop items-center rounded-2xl bg-brand-soft px-3.5 text-xs font-bold motion-reduce:animate-none"
     >
-      <span className="bg-linear-to-r from-brand-from to-brand-to bg-clip-text text-transparent">
+      <span className="bg-linear-to-r from-brand-text-from to-brand-text-to bg-clip-text text-transparent">
         {t.favorites.saved(count)}
       </span>
     </span>
@@ -62,7 +62,7 @@ function EmptyState() {
       </div>
       <Link
         href="/"
-        className="shine mt-1 flex h-11 items-center rounded-xl bg-linear-to-r from-brand-from to-brand-to px-5 text-sm font-bold text-white shadow-[0_6px_16px_rgba(173,70,255,0.3)] transition active:scale-95"
+        className="shine mt-1 flex h-11 items-center rounded-xl bg-linear-to-r from-brand-fill-from to-brand-fill-to px-5 text-sm font-bold text-white shadow-[0_6px_16px_rgba(173,70,255,0.3)] transition active:scale-95"
       >
         {t.favorites.goToFeed}
       </Link>

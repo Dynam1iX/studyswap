@@ -181,7 +181,7 @@ function ManageForm({
         type="button"
         onClick={() => run('save')}
         disabled={!changed || !valid || busy !== null}
-        className="flex h-14 cursor-pointer items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-brand-from to-brand-to text-base font-bold text-white shadow-[0_8px_20px_rgba(200,40,140,0.28)] transition active:scale-[0.98] disabled:cursor-default disabled:opacity-50"
+        className="flex h-14 cursor-pointer items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-brand-fill-from to-brand-fill-to text-base font-bold text-white shadow-[0_8px_20px_rgba(200,40,140,0.28)] transition active:scale-[0.98] disabled:cursor-default disabled:opacity-50"
       >
         {busy === 'save' && <Loader2 className="size-5 animate-spin" />}
         {t.manage.save}

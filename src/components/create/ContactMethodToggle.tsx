@@ -54,7 +54,7 @@ export function ContactMethodToggle({ value, onChange, telegramAvailable }: Cont
       {!telegramAvailable && (
         <p className="text-[12px] font-semibold text-muted">
           {t.create.telegramHintBefore}
-          <Link href="/profile/edit" className="text-brand-from underline-offset-2 hover:underline">
+          <Link href="/profile/edit" className="text-brand-ink underline-offset-2 hover:underline">
             {t.create.telegramHintLink}
           </Link>
           {t.create.telegramHintAfter}

@@ -48,12 +48,13 @@ function NavTabItem({ config, active, pings = 0 }: { config: TabConfig; active: 
         // A new key replays the bounce on every like.
         key={pings}
         src={active ? config.activeIcon : config.icon}
-        alt={label}
+        // Decorative: the tab's name is written under it.
+        alt=""
         className={`size-[22px] ${active ? '' : 'theme-icon'} ${bounce ? 'animate-nav-bounce motion-reduce:animate-none' : ''}`}
       />
       <span
         className={`text-[11px] font-semibold ${
-          active ? 'bg-linear-to-r from-brand-from to-brand-to bg-clip-text text-transparent' : 'text-muted'
+          active ? 'bg-linear-to-r from-brand-text-from to-brand-text-to bg-clip-text text-transparent' : 'text-muted'
         }`}
       >
         {label}

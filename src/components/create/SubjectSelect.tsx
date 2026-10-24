@@ -29,7 +29,7 @@ export function SubjectSelect({ label, subjects, value, onChange, error, shakeKe
   return (
     <div key={shakeKey} className={`space-y-1.5 transition ${spaced ? 'pt-1' : ''} ${error ? 'animate-shake' : ''}`}>
       <label className="block text-[14px] font-bold text-ink">
-        {label} <span className="text-brand-from">*</span>
+        {label} <span className="text-brand-ink">*</span>
       </label>
 
       <div className="relative">

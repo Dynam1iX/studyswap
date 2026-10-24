@@ -28,7 +28,7 @@ function ChipFill({ active }: { active: boolean }) {
   return (
     <span
       aria-hidden
-      className={`absolute inset-0 bg-linear-to-r from-brand-from to-brand-to transition-opacity duration-300 ${
+      className={`absolute inset-0 bg-linear-to-r from-brand-fill-from to-brand-fill-to transition-opacity duration-300 ${
         active ? 'opacity-100' : 'opacity-0'
       }`}
     />

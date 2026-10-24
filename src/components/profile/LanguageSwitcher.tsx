@@ -121,7 +121,7 @@ export function LanguageSwitcher({ value, onChange }: LanguageSwitcherProps) {
         ref={pillRef}
         aria-hidden
         style={{ left: cellLeft(index) }}
-        className="pointer-events-none absolute top-[3px] h-11 w-12 rounded-xl bg-linear-to-r from-brand-from to-brand-to shadow-[0_4px_10px_rgba(173,70,255,0.3)]"
+        className="pointer-events-none absolute top-[3px] h-11 w-12 rounded-xl bg-linear-to-r from-brand-fill-from to-brand-fill-to shadow-[0_4px_10px_rgba(173,70,255,0.3)]"
       />
       {LANGUAGES.map((lang, i) => {
         const selected = lang.value === picked;

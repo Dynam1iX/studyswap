@@ -19,6 +19,17 @@
   --color-soft: #f4f0fb;
   --color-brand-from: #ad46ff;
   --color-brand-to: #f6339a;
+  /* Behind white text (buttons, active chips, the hotbar pill): the same hues, darker, so
+     white text keeps at least 4.5:1 along the whole gradient (5.4:1 → 4.9:1). The bright pair
+     above stays for decoration, icons and rings. */
+  --color-brand-fill-from: #9333ea;
+  --color-brand-fill-to: #d61f78;
+  /* Gradient-coloured text on the page (≥ 4.5:1 on white and on brand-soft; lighter at night). */
+  --color-brand-text-from: #9333ea;
+  --color-brand-text-to: #be185d;
+  /* Telegram buttons with white text (4.9:1 → 5.4:1). */
+  --color-telegram-from: #1677b3;
+  --color-telegram-to: #0f6fa8;
   --color-success: #0b6b48;
   --color-danger: #e02424;
   /* Cards, sheets, fields: white in the light theme. */
@@ -564,6 +575,8 @@ html.dark {
   --color-toast: #2e2648;
   --color-brand-soft: #2a1f45;
   --color-brand-ink: #d3a8ff;
+  --color-brand-text-from: #c084fc;
+  --color-brand-text-to: #f472b6;
   --color-success: #34d399;
   --color-danger: #f87171;
   --color-danger-ink: #ff8aa6;

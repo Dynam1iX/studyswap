@@ -221,7 +221,7 @@ export default function ProfilePage() {
                 <li className="hidden lg:block">
                   <Link
                     href="/create"
-                    className="group flex min-h-[190px] flex-col items-center justify-center gap-2 rounded-3xl border-[1.5px] border-dashed border-field text-sm font-semibold text-muted transition hover:border-brand-from hover:bg-surface hover:text-brand-from"
+                    className="group flex min-h-[190px] flex-col items-center justify-center gap-2 rounded-3xl border-[1.5px] border-dashed border-field text-sm font-semibold text-muted transition hover:border-brand-from hover:bg-surface hover:text-brand-ink"
                   >
                     <span className="halo relative flex size-11 items-center justify-center rounded-full bg-linear-to-r from-brand-from to-brand-to text-white shadow-[0_6px_16px_rgba(173,70,255,0.3)] transition-transform group-hover:scale-105">
                       <Plus className="size-6 transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:rotate-90" strokeWidth={2.5} />

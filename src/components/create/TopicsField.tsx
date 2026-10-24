@@ -20,7 +20,7 @@ export function TopicsField({ label, placeholder, value, onChange, error, shakeK
   return (
     <div key={shakeKey} className={`space-y-1.5 pt-1 transition ${error ? 'animate-shake' : ''}`}>
       <label className="block text-[14px] font-bold text-ink">
-        {label} <span className="text-xs font-semibold text-brand-from">*</span>
+        {label} <span className="text-xs font-semibold text-brand-ink">*</span>
       </label>
 
       <div className="relative">

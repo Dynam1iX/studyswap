@@ -83,13 +83,14 @@ function SubjectHalf({ label, half }: { label: string; half: CardHalf }) {
   );
 }
 
+/** Contact icons are decorative: the button says "Message on Telegram" / "Send an Email". */
 const CONTACT_ICON = {
-  telegram: { icon: '/telegram.svg', alt: 'Telegram' },
-  email: { icon: '/email.svg', alt: 'Email' },
-} as const satisfies Record<ContactMethod, { icon: string; alt: string }>;
+  telegram: { icon: '/telegram.svg' },
+  email: { icon: '/email.svg' },
+} as const satisfies Record<ContactMethod, { icon: string }>;
 
 const contactClasses =
-  'flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-brand-from to-brand-to text-[15px] font-semibold text-white no-underline';
+  'flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-brand-fill-from to-brand-fill-to text-[15px] font-semibold text-white no-underline';
 
 /** The "Needs help / Can teach" card used in the Feed and in the Create preview. */
 export function BarterCard({
@@ -115,7 +116,7 @@ export function BarterCard({
   const contact = { ...CONTACT_ICON[contactMethod], label: t.card.contact[contactMethod] };
   const contactContent = (
     <>
-      <img src={contact.icon} alt={contact.alt} className="size-[22px]" />
+      <img src={contact.icon} alt="" className="size-[22px]" />
       <span>{contact.label}</span>
     </>
   );
@@ -194,7 +195,7 @@ export function BarterCard({
           className={`flex h-12 w-full items-center justify-between gap-2 rounded-xl bg-soft px-4 text-[14px] font-semibold text-muted no-underline transition hover:text-ink ${interactive}`}
         >
           <span>{t.card.yourCard}</span>
-          <span className="flex items-center gap-1.5 bg-linear-to-r from-brand-from to-brand-to bg-clip-text text-transparent">
+          <span className="flex items-center gap-1.5 bg-linear-to-r from-brand-text-from to-brand-text-to bg-clip-text text-transparent">
             <Settings2 aria-hidden className="size-4 text-brand-from" strokeWidth={2.2} />
             {t.card.manageInProfile}
           </span>

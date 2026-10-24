@@ -31,7 +31,7 @@ function CheckFailed() {
       <button
         type="button"
         onClick={() => window.location.reload()}
-        className="h-12 cursor-pointer rounded-xl bg-linear-to-r from-brand-from to-brand-to px-6 text-sm font-bold text-white active:scale-95"
+        className="h-12 cursor-pointer rounded-xl bg-linear-to-r from-brand-fill-from to-brand-fill-to px-6 text-sm font-bold text-white active:scale-95"
       >
         {t.common.tryAgain}
       </button>
