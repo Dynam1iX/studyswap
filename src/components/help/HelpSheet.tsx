@@ -5,7 +5,11 @@ import { CircleHelp, X } from 'lucide-react';
 import { BottomSheet } from '@/components/ui/BottomSheet';
 import { useT } from '@/i18n';
 
-const STEP_IMAGES = ['/help/step-1-find.png', '/help/step-2-create.png', '/help/step-3-write.png'];
+/**
+ * Step screenshots: WebP at 200 and 400 px wide (the picture is 96 px wide on phones and
+ * about 180 px in the three desktop columns, so 400 covers 2x screens). Masters: media/help/*.png.
+ */
+const STEP_IMAGES = ['/help/step-1-find', '/help/step-2-create', '/help/step-3-write'];
 
 /** "?" button for the logo row; opens "How StudySwap works". */
 export function HelpButton() {
@@ -60,12 +64,15 @@ function HelpSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
         <video
           controls
           playsInline
-          preload="auto"
-          poster="/help/how-to-create-poster.png"
+          // Nothing is downloaded until the student presses Play (the poster is a 31 KB WebP).
+          preload="none"
+          poster="/help/how-to-create-poster.webp"
           aria-label={t.help.videoLabel}
           aria-describedby={transcriptId}
           className="aspect-video w-full rounded-2xl border border-line bg-soft"
         >
+          {/* VP9 WebM where supported (Chrome, Firefox, Edge), H.264 MP4 for Safari and the rest. */}
+          <source src="/help/how-to-create.webm" type="video/webm" />
           <source src="/help/how-to-create.mp4" type="video/mp4" />
         </video>
 
@@ -83,7 +90,13 @@ function HelpSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
             // Phones: a small picture beside the text; wider screens: three columns.
             <li key={step.title} className="flex items-start gap-3 sm:flex-col sm:gap-2">
               <img
-                src={STEP_IMAGES[index]}
+                src={`${STEP_IMAGES[index]}-400.webp`}
+                srcSet={`${STEP_IMAGES[index]}-200.webp 200w, ${STEP_IMAGES[index]}-400.webp 400w`}
+                sizes="(min-width: 640px) 180px, 96px"
+                width={400}
+                height={558}
+                loading="lazy"
+                decoding="async"
                 alt={step.alt}
                 className="aspect-[43/60] w-24 shrink-0 rounded-xl border border-line object-cover object-top sm:w-full sm:rounded-2xl"
               />

@@ -53,8 +53,8 @@ src/
   i18n/                   EN / RU / KZ texts (en.ts is the source; ru.ts, kz.ts follow its shape), useT(), I18nProvider
   types/
     database.ts           Row types of the Supabase tables
-public/                   Logo, icons, sounds/ (interface sounds, MP3)
-media/                    Source files of the media: sounds/*.wav masters (own work, synthesised with ffmpeg)
+public/                   Logo, icons, sounds/ (interface sounds, MP3), help/ (how-to video, poster, step screenshots)
+media/                    Media sources and inventory (README): sound masters, video/screenshot recording scripts, PNG masters
 ```
 
 ### Conventions
