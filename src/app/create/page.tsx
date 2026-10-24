@@ -15,6 +15,7 @@ import { paletteFor } from '@/lib/categoryPalette';
 import { createBarterPost, fetchCreateFormData } from '@/lib/create';
 import { formatStudyInfo, getInitials, getShortName } from '@/lib/format';
 import { useReplay } from '@/lib/useReplay';
+import { playSound } from '@/lib/sound';
 import type { ContactMethod, Subject } from '@/types/database';
 import { useT } from '@/i18n';
 
@@ -110,6 +111,7 @@ export default function CreateBarterPage() {
   const offeredSubject = subjects.find((s) => s.id === offeredSubjectId);
 
   const failValidation = (message?: string) => {
+    playSound('error');
     if (message) setServerError(message);
     setShakeTrigger((prev) => prev + 1);
   };
@@ -148,6 +150,7 @@ export default function CreateBarterPage() {
       setSubmitting(false);
       setPublished(true);
       bubble();
+      playSound('publish');
       window.setTimeout(() => router.push('/'), 900);
     } catch (err: unknown) {
       setSubmitting(false);

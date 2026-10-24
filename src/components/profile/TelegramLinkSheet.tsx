@@ -12,6 +12,7 @@ import {
   type TelegramLinkStatus,
 } from '@/lib/telegram';
 import { useReplay } from '@/lib/useReplay';
+import { playSound } from '@/lib/sound';
 import { messages, useT } from '@/i18n';
 
 /** How often the site asks whether the bot finished the link. */
@@ -133,6 +134,7 @@ function LinkFlow({
           const handle = (await fetchMyTelegramHandle()) ?? '';
           if (cancelled) return;
           setState({ step: 'linked', handle });
+          playSound('linked');
           window.setTimeout(() => {
             onLinked(handle);
             onClose();
