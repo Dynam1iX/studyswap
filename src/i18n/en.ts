@@ -44,6 +44,9 @@ export const en = {
     needsHelp: 'Needs help',
     canTeach: 'Can teach',
     exchange: 'Exchange',
+    /** Shown instead of the contact button on the student's own card. */
+    yourCard: 'This is your card',
+    manageInProfile: 'Manage in Profile',
     like: 'Add to favorites',
     openDetails: 'Show swap details',
     openDetailsOf: (name: string) => `Show details of ${name}'s swap`,
@@ -157,6 +160,9 @@ export const en = {
     add: '+ Add',
     myCards: 'My cards',
     noCards: 'You have no cards yet. Tap + to create one.',
+    /** Desktop "new card" tile when there are no cards yet. */
+    noCardsTitle: 'No cards yet',
+    noCardsHint: 'Create your first one',
     needs: 'Needs',
     teaches: 'Teaches',
     manage: 'Manage',

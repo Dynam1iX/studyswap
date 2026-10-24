@@ -680,6 +680,7 @@ html.lang-in #app-scroll > div > :nth-child(5) { animation-delay: 200ms; }
 html.lang-in #app-scroll > div > :nth-child(6) { animation-delay: 250ms; }
 html.lang-in #app-scroll > div > :nth-child(7) { animation-delay: 300ms; }
 html.lang-in #app-scroll > div > :nth-child(n + 8) { animation-delay: 350ms; }
-html.lang-in nav span {
+html.lang-in nav:not([data-hotbar]) span,
+html.lang-in nav[data-hotbar] [aria-current] .hotbar-label {
   animation: rise 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
 }

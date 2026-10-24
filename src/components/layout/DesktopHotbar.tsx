@@ -71,13 +71,16 @@ function HotbarItem({ config, active, pings }: { config: HotbarTab; active: bool
           active ? 'ml-2 grid-cols-[1fr] opacity-100' : 'ml-0 grid-cols-[0fr] opacity-0'
         }`}
       >
-        <span className="overflow-hidden text-[15px] font-semibold whitespace-nowrap">{label}</span>
+        <span className="hotbar-label overflow-hidden text-[15px] font-semibold whitespace-nowrap">{label}</span>
       </span>
     </Link>
   );
 }
 
 /**
+ * The language switch replays a rise animation on nav labels (globals.css); `data-hotbar`
+ * keeps it off the pill and hidden labels here, whose opacity it would otherwise force to 1.
+ *
  * Desktop navigation (≥992px): a floating glass bar at the bottom centre. It lives in the
  * root layout, so it stays mounted between pages and the active pill can flow from tab to tab.
  */
@@ -98,7 +101,9 @@ export function DesktopHotbar() {
   );
 
   return (
-    <nav className="fixed bottom-7 left-1/2 z-40 hidden -translate-x-1/2 items-center gap-2 rounded-full border border-line bg-surface/70 p-2 font-montserrat shadow-[0_12px_32px_rgba(60,30,110,0.16)] backdrop-blur-xl lg:flex">
+    <nav
+      data-hotbar
+      className="fixed bottom-7 left-1/2 z-40 hidden -translate-x-1/2 items-center gap-2 rounded-full border border-line bg-surface/70 p-2 font-montserrat shadow-[0_12px_32px_rgba(60,30,110,0.16)] backdrop-blur-xl lg:flex">
       {LEFT.map(item)}
 
       <Link

@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import type { DegreeLevel, StudyYear } from '@/types/database';
 import { messages } from '@/i18n';
@@ -125,4 +126,23 @@ export async function completeProfile(profile: NewProfile): Promise<void> {
     p_degree: profile.degree,
   });
   if (error) throw new Error(error.message);
+}
+
+/**
+ * The signed-in student's id (null until known), so pages can tell their own cards apart.
+ * Read from the stored session: no network request.
+ */
+export function useMyId(): string | null {
+  const [id, setId] = useState<string | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    supabase.auth.getSession().then(({ data }) => {
+      if (!cancelled) setId(data.session?.user.id ?? null);
+    });
+    // Every card asks; the stored session is read locally, so this stays cheap.
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+  return id;
 }

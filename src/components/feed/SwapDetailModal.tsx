@@ -1,6 +1,8 @@
 'use client';
 
 import { useId, useState, type CSSProperties, type ReactNode } from 'react';
+import Link from 'next/link';
+import { useMyId } from '@/lib/auth';
 import { CalendarDays, Mail, Send, Tag, X } from 'lucide-react';
 import { BottomSheet } from '@/components/ui/BottomSheet';
 import { UserAvatar } from '@/components/ui/UserAvatar';
@@ -176,7 +178,10 @@ function TextBlock({ title, text }: { title: string; text: string }) {
 
 function Chip({ children, className = '', style }: { children: ReactNode; className?: string; style?: CSSProperties }) {
   return (
-    <span style={style} className={`inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-[13px] font-semibold ${className}`}>
+    <span
+      style={style}
+      className={`inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-[13px] font-semibold ${className}`}
+    >
       {children}
     </span>
   );
@@ -206,7 +211,9 @@ function DetailRow({
 
 function SwapDetailActions({ post, onClose }: { post: FeedPost; onClose: () => void }) {
   const t = useT();
+  const myId = useMyId();
   const isTelegram = getContactMethod(post) === 'telegram';
+  const own = Boolean(myId) && post.author?.id === myId;
   return (
     <div className="grid shrink-0 grid-cols-4 gap-6 border-t border-line bg-surface px-6 pt-4 pb-[max(24px,env(safe-area-inset-bottom))]">
       <button
@@ -216,15 +223,29 @@ function SwapDetailActions({ post, onClose }: { post: FeedPost; onClose: () => v
       >
         {t.common.close}
       </button>
-      <a
-        href={getContactHref(post)}
-        target={isTelegram ? '_blank' : undefined}
-        rel="noreferrer"
-        className="col-span-3 flex h-14 items-center justify-center gap-2.5 rounded-2xl bg-linear-to-r from-brand-from to-brand-to text-base font-bold text-white no-underline shadow-[0_8px_20px_rgba(200,40,140,0.28)] transition hover:opacity-95 active:scale-[0.99]"
-      >
-        <img src={isTelegram ? '/telegram.svg' : '/email.svg'} alt="" className={isTelegram ? 'size-6' : 'size-[22px]'} />
-        {t.card.contact[isTelegram ? 'telegram' : 'email']}
-      </a>
+      {own ? (
+        <Link
+          href="/profile"
+          onClick={onClose}
+          className="col-span-3 flex h-14 items-center justify-center gap-2 rounded-2xl bg-soft text-[15px] font-bold text-muted no-underline transition hover:text-ink"
+        >
+          {t.card.yourCard} · {t.card.manageInProfile}
+        </Link>
+      ) : (
+        <a
+          href={getContactHref(post)}
+          target={isTelegram ? '_blank' : undefined}
+          rel="noreferrer"
+          className="col-span-3 flex h-14 items-center justify-center gap-2.5 rounded-2xl bg-linear-to-r from-brand-from to-brand-to text-base font-bold text-white no-underline shadow-[0_8px_20px_rgba(200,40,140,0.28)] transition hover:opacity-95 active:scale-[0.99]"
+        >
+          <img
+            src={isTelegram ? '/telegram.svg' : '/email.svg'}
+            alt=""
+            className={isTelegram ? 'size-6' : 'size-[22px]'}
+          />
+          {t.card.contact[isTelegram ? 'telegram' : 'email']}
+        </a>
+      )}
     </div>
   );
 }

@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
+import { Settings2 } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { useReplay } from '@/lib/useReplay';
 import type { CategoryPalette } from '@/lib/categoryPalette';
@@ -37,6 +39,8 @@ interface BarterCardProps {
   onOpen?: () => void;
   /** Accessible name of the open action. */
   openLabel?: string;
+  /** The student's own card: no heart and no contact button (you cannot answer yourself). */
+  own?: boolean;
 }
 
 function SubjectHalf({ label, half }: { label: string; half: CardHalf }) {
@@ -97,6 +101,7 @@ export function BarterCard({
   onToggleLike,
   onOpen,
   openLabel,
+  own = false,
 }: BarterCardProps) {
   const t = useT();
   // With onOpen, a full-size button sits under the content. Content ignores clicks
@@ -140,7 +145,7 @@ export function BarterCard({
           </div>
         </div>
 
-        {onToggleLike ? (
+        {own ? null : onToggleLike ? (
           <button
             type="button"
             onClick={() => {
@@ -179,7 +184,18 @@ export function BarterCard({
         />
       </div>
 
-      {contactHref ? (
+      {own ? (
+        <Link
+          href="/profile"
+          className={`flex h-12 w-full items-center justify-between gap-2 rounded-xl bg-soft px-4 text-[14px] font-semibold text-muted no-underline transition hover:text-ink ${interactive}`}
+        >
+          <span>{t.card.yourCard}</span>
+          <span className="flex items-center gap-1.5 bg-linear-to-r from-brand-from to-brand-to bg-clip-text text-transparent">
+            <Settings2 aria-hidden className="size-4 text-brand-from" strokeWidth={2.2} />
+            {t.card.manageInProfile}
+          </span>
+        </Link>
+      ) : contactHref ? (
         <a
           href={contactHref}
           target={contactMethod === 'telegram' ? '_blank' : undefined}
