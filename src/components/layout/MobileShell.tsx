@@ -13,6 +13,11 @@ interface MobileShellProps {
    * keeps the 576px phone column on desktop too.
    */
   wide?: boolean;
+  /**
+   * Desktop layout for a single task (Create): the page becomes a 1000px panel in the
+   * middle of the screen that pops in like a modal. Phones are unaffected.
+   */
+  panel?: boolean;
 }
 
 /**
@@ -28,20 +33,22 @@ interface MobileShellProps {
  * On desktop the phone BottomNav is hidden and the floating DesktopHotbar (root layout)
  * takes its place, so the content leaves room for it at the bottom.
  */
-export function MobileShell({ children, footer, wide = false }: MobileShellProps) {
+export function MobileShell({ children, footer, wide = false, panel = false }: MobileShellProps) {
+  const desktop = panel
+    ? 'lg:relative lg:my-12 lg:min-h-0 lg:max-w-[1000px] lg:animate-pop lg:rounded-[28px] lg:border lg:border-line lg:bg-surface lg:p-3 lg:shadow-[0_24px_64px_rgba(27,21,48,0.16)] motion-reduce:lg:animate-none'
+    : `lg:bg-transparent ${wide ? 'lg:max-w-[944px] xl:max-w-[1172px]' : ''}`;
   return (
-    <div
-      className={`app-shell mx-auto flex min-h-dvh w-full max-w-[576px] flex-col bg-page font-montserrat lg:bg-transparent ${
-        wide ? 'lg:max-w-[944px] xl:max-w-[1172px]' : ''
-      }`}
-    >
+    <>
+      {/* Outside the shell: the panel's pop animation would otherwise pin it to the panel. */}
       <DesktopGlow />
-      <div id={APP_SCROLL_ID} className="app-shell-content relative flex-1 pb-6 lg:pb-32">
-        {children}
+      <div className={`app-shell mx-auto flex min-h-dvh w-full max-w-[576px] flex-col bg-page font-montserrat ${desktop}`}>
+        <div id={APP_SCROLL_ID} className={`app-shell-content relative flex-1 pb-6 ${panel ? 'lg:pb-1' : 'lg:pb-32'}`}>
+          {children}
+        </div>
+        {/* Desktop: the footer's own bar is hidden, so it only carries toasts; lift them above the hotbar. */}
+        {footer && <div className="sticky bottom-0 z-40 shrink-0 lg:bottom-[104px]">{footer}</div>}
       </div>
-      {/* Desktop: the footer's own bar is hidden, so it only carries toasts; lift them above the hotbar. */}
-      {footer && <div className="sticky bottom-0 z-40 shrink-0 lg:bottom-[104px]">{footer}</div>}
-    </div>
+    </>
   );
 }
 

@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useRef, useState, type PointerEvent, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type CSSProperties, type PointerEvent, type ReactNode, type RefObject } from 'react';
 import { APP_SCROLL_ID } from '@/components/layout/MobileShell';
+import { useIsDesktop } from '@/lib/useIsDesktop';
 
 /** Must match the duration-300 transition below. */
 const EXIT_MS = 300;
@@ -35,15 +36,34 @@ interface BottomSheetProps {
   /** Sticky actions under the scrolling body. */
   footer?: ReactNode;
   children: ReactNode;
+  /** Desktop width of the centred modal: md 520px (default), lg 640px. */
+  size?: 'md' | 'lg';
+  /**
+   * Desktop only: open as a small menu under this element (no dimmed page),
+   * e.g. the Year / Faculty filter buttons.
+   */
+  anchor?: RefObject<HTMLElement | null>;
 }
+
+const DESKTOP_WIDTH = { md: 'max-w-[520px]', lg: 'max-w-[640px]' } as const;
+/** Width of the anchored desktop menu. */
+const MENU_WIDTH = 320;
+/** Spring used across the app (pop, nav-bounce). */
+const SPRING = 'cubic-bezier(0.34, 1.56, 0.64, 1)';
 
 /**
  * Accessible modal built on the native <dialog> element:
  * focus is trapped and returned to the trigger by the browser, Escape closes it.
  *
  * Mobile-first bottom sheet: swipe down, tap the backdrop, × or Escape to close.
+ * Desktop (≥992px): a modal in the middle of the blurred page that pops in with a spring,
+ * or, with `anchor`, a menu that drops down from the button that opened it.
  */
-export function BottomSheet({ open, onClose, labelledBy, header, footer, children }: BottomSheetProps) {
+export function BottomSheet({ open, onClose, labelledBy, header, footer, children, size = 'md', anchor }: BottomSheetProps) {
+  const desktop = useIsDesktop();
+  /** Where the anchored menu sits (viewport px), measured when it opens. */
+  const [menuAt, setMenuAt] = useState<{ top: number; left: number } | null>(null);
+  const asMenu = desktop && Boolean(anchor);
   const dialogRef = useRef<HTMLDialogElement>(null);
   /** The scrolling body; swipes inside it may scroll it, nothing else may scroll. */
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -67,6 +87,12 @@ export function BottomSheet({ open, onClose, labelledBy, header, footer, childre
       // Two frames so the closed styles are painted before the enter transition starts.
       let second = 0;
       const first = requestAnimationFrame(() => {
+        // Desktop menu: drop down from the button that opened it (kept inside the window).
+        const rect = anchor?.current?.getBoundingClientRect();
+        if (rect) {
+          const left = Math.min(rect.left, window.innerWidth - MENU_WIDTH - 16);
+          setMenuAt({ top: rect.bottom + 8, left: Math.max(16, left) });
+        }
         second = requestAnimationFrame(() => setEntered(true));
       });
       return () => {
@@ -84,7 +110,7 @@ export function BottomSheet({ open, onClose, labelledBy, header, footer, childre
       setDragY(0);
     }, EXIT_MS);
     return () => window.clearTimeout(timer);
-  }, [open]);
+  }, [open, anchor]);
 
   // iOS Safari: a swipe that the sheet body cannot use goes to the browser, which then
   // collapses its address bar and drags the whole sheet up (seen when the page is near
@@ -119,7 +145,7 @@ export function BottomSheet({ open, onClose, labelledBy, header, footer, childre
   }, [open]);
 
   const onPointerDown = (event: PointerEvent<HTMLDivElement>) => {
-    if (event.pointerType === 'mouse') return;
+    if (event.pointerType === 'mouse' || desktop) return;
     dragStart.current = event.clientY;
     try {
       event.currentTarget.setPointerCapture(event.pointerId);
@@ -152,26 +178,18 @@ export function BottomSheet({ open, onClose, labelledBy, header, footer, childre
       }}
       className="fixed inset-0 m-0 h-full max-h-none w-full max-w-none overflow-hidden overscroll-none bg-transparent p-0 backdrop:bg-transparent"
     >
-      {/* Backdrop */}
+      {/* Backdrop (clear behind the desktop menu, but a click on it still closes) */}
       <div
         aria-hidden
         onClick={onClose}
-        className={`absolute inset-0 touch-none bg-scrim transition-opacity duration-300 motion-reduce:transition-none ${
-          shown ? 'opacity-100' : 'opacity-0'
-        }`}
+        className={`absolute inset-0 touch-none transition-opacity duration-300 motion-reduce:transition-none ${
+          asMenu ? '' : 'bg-scrim lg:backdrop-blur-[6px]'
+        } ${shown ? 'opacity-100' : 'opacity-0'}`}
       />
 
       {/* Pinned to the bottom edge itself (not aligned inside a full-height box) and moved
           with a plain 3D transform: the most reliable combination on iOS WebKit. */}
-      <div
-        style={{
-          transform: shown ? `translate3d(0, ${dragY}px, 0)` : 'translate3d(0, 100%, 0)',
-          willChange: 'transform',
-        }}
-        className={`fixed inset-x-0 bottom-0 mx-auto flex max-h-[80%] w-full max-w-[576px] flex-col overflow-hidden rounded-t-[28px] bg-surface shadow-[0_-8px_32px_rgba(27,21,48,0.18)] ${
-          dragY ? '' : 'transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] motion-reduce:transition-none'
-        }`}
-      >
+      <div style={panelStyle(desktop, asMenu, shown, dragY, menuAt)} className={panelClass(desktop, asMenu, size, dragY)}>
         {/* Handle + title: drag here to swipe the sheet down */}
         <div
           onPointerDown={onPointerDown}
@@ -180,20 +198,71 @@ export function BottomSheet({ open, onClose, labelledBy, header, footer, childre
           onPointerCancel={onPointerEnd}
           className="shrink-0 touch-none select-none"
         >
-          <div className="flex justify-center pt-2.5 pb-0.5">
-            <span className="h-[5px] w-10 rounded-full bg-line-strong" />
-          </div>
+          {desktop ? (
+            <div className="h-3" />
+          ) : (
+            <div className="flex justify-center pt-2.5 pb-0.5">
+              <span className="h-[5px] w-10 rounded-full bg-line-strong" />
+            </div>
+          )}
           {header}
         </div>
 
         <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
           {children}
-          {/* Fades the text out above the actions while there is more to scroll */}
-          <div aria-hidden className="pointer-events-none sticky bottom-0 -mt-10 h-10 bg-linear-to-t from-surface to-surface/0" />
+          {/* Fades the text out above the actions while there is more to scroll (not in the short desktop menu) */}
+          {!asMenu && (
+            <div aria-hidden className="pointer-events-none sticky bottom-0 -mt-10 h-10 bg-linear-to-t from-surface to-surface/0" />
+          )}
         </div>
 
         {footer}
       </div>
     </dialog>
   );
+}
+
+/** Panel position and enter/exit motion: sheet from below, desktop modal pop, or drop-down menu. */
+function panelStyle(
+  desktop: boolean,
+  asMenu: boolean,
+  shown: boolean,
+  dragY: number,
+  menuAt: { top: number; left: number } | null,
+): CSSProperties {
+  if (!desktop) {
+    return {
+      transform: shown ? `translate3d(0, ${dragY}px, 0)` : 'translate3d(0, 100%, 0)',
+      willChange: 'transform',
+    };
+  }
+  if (asMenu) {
+    return {
+      top: menuAt?.top ?? 96,
+      left: menuAt?.left ?? 16,
+      width: MENU_WIDTH,
+      opacity: shown ? 1 : 0,
+      transform: shown ? 'translate3d(0, 0, 0) scale(1)' : 'translate3d(0, -8px, 0) scale(0.96)',
+      transformOrigin: 'top left',
+      transition: `opacity 200ms ease-out, transform 300ms ${SPRING}`,
+    };
+  }
+  return {
+    opacity: shown ? 1 : 0,
+    transform: shown ? 'translate3d(0, 0, 0) scale(1)' : 'translate3d(0, 24px, 0) scale(0.94)',
+    transition: `opacity 220ms ease-out, transform 420ms ${SPRING}`,
+  };
+}
+
+function panelClass(desktop: boolean, asMenu: boolean, size: 'md' | 'lg', dragY: number): string {
+  const common = 'flex flex-col overflow-hidden bg-surface motion-reduce:transition-none';
+  if (!desktop) {
+    return `${common} fixed inset-x-0 bottom-0 mx-auto max-h-[80%] w-full max-w-[576px] rounded-t-[28px] shadow-[0_-8px_32px_rgba(27,21,48,0.18)] ${
+      dragY ? '' : 'transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]'
+    }`;
+  }
+  if (asMenu) {
+    return `${common} fixed max-h-[min(460px,70dvh)] rounded-[20px] border border-line shadow-[0_16px_40px_rgba(27,21,48,0.18)]`;
+  }
+  return `${common} fixed inset-0 m-auto h-fit max-h-[86dvh] w-[calc(100%-48px)] ${DESKTOP_WIDTH[size]} rounded-[28px] shadow-[0_24px_64px_rgba(27,21,48,0.28)]`;
 }

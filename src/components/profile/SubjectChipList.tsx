@@ -15,7 +15,7 @@ interface SubjectChipListProps {
 export function SubjectChipList({ title, subjects, emptyText }: SubjectChipListProps) {
   const t = useT();
   return (
-    <section className="flex flex-col gap-2">
+    <section className="flex flex-col gap-2 lg:rounded-3xl lg:border lg:border-line lg:bg-surface lg:p-5">
       <h2 className="font-bricolage text-lg font-extrabold text-ink">{title}</h2>
       <ul className="flex flex-wrap items-center gap-2">
         {subjects.map((subject, index) => (
