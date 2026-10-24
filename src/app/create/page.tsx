@@ -2,7 +2,8 @@
 
 import { useEffect, useLayoutEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Check, ShieldCheck } from 'lucide-react';
+import Link from 'next/link';
+import { Check, ShieldCheck, X } from 'lucide-react';
 import { BarterCard, type CardHalf } from '@/components/barter/BarterCard';
 import { ContactMethodToggle } from '@/components/create/ContactMethodToggle';
 import { CreateNavBar } from '@/components/create/CreateNavBar';
@@ -60,7 +61,10 @@ export default function CreateBarterPage() {
   const [hasTelegram, setHasTelegram] = useState(false);
   const [authorAvatar, setAuthorAvatar] = useState<string | null>(null);
   const [authorName, setAuthorName] = useState('Alzhan Y.');
-  const [authorStudy, setAuthorStudy] = useState<{ major: string | null; year: number | null }>({ major: null, year: null });
+  const [authorStudy, setAuthorStudy] = useState<{
+    major: string | null;
+    year: number | null;
+  }>({ major: null, year: null });
 
   useEffect(() => {
     let cancelled = false;
@@ -155,14 +159,25 @@ export default function CreateBarterPage() {
   const offeredError = errors.offered ? (errors.sameSubject ? t.create.sameSubject : t.create.offeredMissing) : null;
 
   return (
-    <MobileShell>
-      <AppHeader />
-      <CreateNavBar />
+    <MobileShell panel>
+      {/* Phones: logo and the Back · title · Cancel row. Desktop: title and × of the panel. */}
+      <div className="lg:hidden">
+        <AppHeader />
+        <CreateNavBar />
+      </div>
+      <div className="hidden items-center justify-between px-4 pt-2 lg:flex">
+        <h1 className="font-bricolage text-[26px] font-extrabold text-ink">{t.create.title}</h1>
+        <Link
+          href="/"
+          aria-label={t.common.close}
+          className="flex size-11 items-center justify-center rounded-full bg-soft text-ink transition hover:bg-line active:scale-90"
+        >
+          <X className="size-5" strokeWidth={2.4} />
+        </Link>
+      </div>
 
       <div className="animate-rise px-4 py-2 motion-reduce:animate-none">
-        <p className="text-[14px] leading-[21px] font-semibold text-muted">
-          {t.create.intro}
-        </p>
+        <p className="text-[14px] leading-[21px] font-semibold text-muted">{t.create.intro}</p>
       </div>
 
       {serverError && (
@@ -174,95 +189,123 @@ export default function CreateBarterPage() {
         </div>
       )}
 
-      {/* Form */}
-      <div style={{ animationDelay: '70ms' }} className="animate-rise px-4 py-2 motion-reduce:animate-none">
-        <div className="space-y-4 rounded-[24px] border border-line bg-surface p-4 shadow-sm">
-          <SubjectSelect
-            label={t.create.neededSubject}
-            subjects={subjects}
-            value={neededSubjectId}
-            onChange={(id) => {
-              setNeededSubjectId(id);
-              setErrors((prev) => ({ ...prev, needed: false, sameSubject: false }));
-              setServerError(null);
-            }}
-            error={neededError}
-            shakeKey={shakeTrigger}
-          />
+      {/* Desktop: form on the left, live preview on the right. */}
+      <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start lg:gap-2">
+        {/* Form */}
+        <div style={{ animationDelay: '70ms' }} className="animate-rise px-4 py-2 motion-reduce:animate-none">
+          <div className="space-y-4 rounded-[24px] border border-line bg-surface p-4 shadow-sm lg:border-0 lg:p-0 lg:shadow-none">
+            <SubjectSelect
+              label={t.create.neededSubject}
+              subjects={subjects}
+              value={neededSubjectId}
+              onChange={(id) => {
+                setNeededSubjectId(id);
+                setErrors((prev) => ({
+                  ...prev,
+                  needed: false,
+                  sameSubject: false,
+                }));
+                setServerError(null);
+              }}
+              error={neededError}
+              shakeKey={shakeTrigger}
+            />
 
-          <TopicsField
-            label={t.create.neededTopics}
-            placeholder={t.create.neededPlaceholder}
-            value={neededDetails}
-            onChange={(text) => {
-              setNeededDetails(text);
-              if (errors.neededDetails && text.trim()) setErrors((prev) => ({ ...prev, neededDetails: false }));
-              setServerError(null);
-            }}
-            error={errors.neededDetails ? t.create.neededTopicsMissing : null}
-            shakeKey={shakeTrigger}
-          />
+            <TopicsField
+              label={t.create.neededTopics}
+              placeholder={t.create.neededPlaceholder}
+              value={neededDetails}
+              onChange={(text) => {
+                setNeededDetails(text);
+                if (errors.neededDetails && text.trim()) setErrors((prev) => ({ ...prev, neededDetails: false }));
+                setServerError(null);
+              }}
+              error={errors.neededDetails ? t.create.neededTopicsMissing : null}
+              shakeKey={shakeTrigger}
+            />
 
-          <SubjectSelect
-            label={t.create.offeredSubject}
-            subjects={subjects}
-            value={offeredSubjectId}
-            onChange={(id) => {
-              setOfferedSubjectId(id);
-              setErrors((prev) => ({ ...prev, offered: false, sameSubject: false }));
-              setServerError(null);
-            }}
-            error={offeredError}
-            shakeKey={shakeTrigger}
-            spaced
-          />
+            <SubjectSelect
+              label={t.create.offeredSubject}
+              subjects={subjects}
+              value={offeredSubjectId}
+              onChange={(id) => {
+                setOfferedSubjectId(id);
+                setErrors((prev) => ({
+                  ...prev,
+                  offered: false,
+                  sameSubject: false,
+                }));
+                setServerError(null);
+              }}
+              error={offeredError}
+              shakeKey={shakeTrigger}
+              spaced
+            />
 
-          <TopicsField
-            label={t.create.offeredTopics}
-            placeholder={t.create.offeredPlaceholder}
-            value={offeredDetails}
-            onChange={(text) => {
-              setOfferedDetails(text);
-              if (errors.offeredDetails && text.trim()) setErrors((prev) => ({ ...prev, offeredDetails: false }));
-              setServerError(null);
-            }}
-            error={errors.offeredDetails ? t.create.offeredTopicsMissing : null}
-            shakeKey={shakeTrigger}
-          />
+            <TopicsField
+              label={t.create.offeredTopics}
+              placeholder={t.create.offeredPlaceholder}
+              value={offeredDetails}
+              onChange={(text) => {
+                setOfferedDetails(text);
+                if (errors.offeredDetails && text.trim()) setErrors((prev) => ({ ...prev, offeredDetails: false }));
+                setServerError(null);
+              }}
+              error={errors.offeredDetails ? t.create.offeredTopicsMissing : null}
+              shakeKey={shakeTrigger}
+            />
 
-          <ContactMethodToggle value={contactMethod} onChange={setContactMethod} telegramAvailable={hasTelegram} />
+            <ContactMethodToggle value={contactMethod} onChange={setContactMethod} telegramAvailable={hasTelegram} />
+          </div>
         </div>
-      </div>
 
-      {/* Live preview */}
-      <div style={{ animationDelay: '140ms' }} className="animate-rise px-4 pt-4 pb-2 motion-reduce:animate-none">
-        <h2 className="mb-2.5 text-[11px] font-bold tracking-[0.88px] text-muted uppercase">{t.create.preview}</h2>
-        <BarterCard
-          author={{ initials: getInitials(authorName), avatarPath: authorAvatar, name: authorName, subtitle: formatStudyInfo(t, authorStudy.major, authorStudy.year) }}
-          needs={previewHalf(neededSubject, neededDetails, t.create.previewSubject, t.create.previewNeeded)}
-          teaches={previewHalf(offeredSubject, offeredDetails, t.create.previewSubject, t.create.previewOffered)}
-          contactMethod={contactMethod}
-        />
-      </div>
+        <div className="lg:sticky lg:top-6">
+          {/* Live preview */}
+          <div
+            style={{ animationDelay: '140ms' }}
+            className="animate-rise px-4 pt-4 pb-2 motion-reduce:animate-none lg:pt-2"
+          >
+            <h2 className="mb-2.5 text-[11px] font-bold tracking-[0.88px] text-muted uppercase">{t.create.preview}</h2>
+            <BarterCard
+              author={{
+                initials: getInitials(authorName),
+                avatarPath: authorAvatar,
+                name: authorName,
+                subtitle: formatStudyInfo(t, authorStudy.major, authorStudy.year),
+              }}
+              needs={previewHalf(neededSubject, neededDetails, t.create.previewSubject, t.create.previewNeeded)}
+              teaches={previewHalf(offeredSubject, offeredDetails, t.create.previewSubject, t.create.previewOffered)}
+              contactMethod={contactMethod}
+            />
+          </div>
 
-      <div style={{ animationDelay: '210ms' }} className="animate-rise px-4 py-2 motion-reduce:animate-none">
-        <div className="flex items-center gap-3 rounded-[16px] bg-brand-soft p-4">
-          <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-brand-from to-brand-to text-white shadow-[0_4px_12px_rgba(173,70,255,0.3)]">
-            <ShieldCheck aria-hidden className="size-5" strokeWidth={2.2} />
-          </span>
-          <p className="text-[13px] leading-[19px] font-semibold text-ink">
-            {t.create.privacyNote}
-          </p>
+          <div style={{ animationDelay: '210ms' }} className="animate-rise px-4 py-2 motion-reduce:animate-none">
+            <div className="flex items-center gap-3 rounded-[16px] bg-brand-soft p-4">
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-brand-from to-brand-to text-white shadow-[0_4px_12px_rgba(173,70,255,0.3)]">
+                <ShieldCheck aria-hidden className="size-5" strokeWidth={2.2} />
+              </span>
+              <p className="text-[13px] leading-[19px] font-semibold text-ink">{t.create.privacyNote}</p>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Publish: at the end of the form, not pinned to the screen */}
-      <div style={{ animationDelay: '280ms' }} className="animate-rise px-4 pt-2 pb-4 motion-reduce:animate-none">
+      <div
+        style={{ animationDelay: '280ms' }}
+        className="animate-rise px-4 pt-2 pb-4 motion-reduce:animate-none lg:flex lg:items-center lg:justify-end lg:gap-3 lg:pt-4"
+      >
+        <Link
+          href="/"
+          className="hidden h-[56px] items-center rounded-[16px] border border-line-strong bg-surface px-7 text-[16px] font-bold text-ink transition hover:bg-soft active:scale-[0.97] lg:flex"
+        >
+          {t.common.cancel}
+        </Link>
         <button
           type="button"
           onClick={handleSubmit}
           disabled={submitting || loadingSubjects || published}
-          className={`bubbly flex h-[56px] w-full cursor-pointer items-center justify-center gap-2 rounded-[16px] bg-linear-to-r from-brand-from to-brand-to text-[17px] font-bold text-white shadow-[0_8px_20px_rgba(200,40,140,0.28)] transition hover:opacity-95 active:scale-[0.97] disabled:cursor-default ${
+          className={`bubbly flex h-[56px] w-full cursor-pointer lg:w-auto lg:px-10 items-center justify-center gap-2 rounded-[16px] bg-linear-to-r from-brand-from to-brand-to text-[17px] font-bold text-white shadow-[0_8px_20px_rgba(200,40,140,0.28)] transition hover:opacity-95 active:scale-[0.97] disabled:cursor-default ${
             published ? '' : 'disabled:opacity-50'
           } ${bubbling ? 'bubbly-animate' : ''}`}
         >

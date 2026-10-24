@@ -37,7 +37,7 @@ src/
     layout/               AppHeader, BottomNav (phones), DesktopHotbar (≥992px, root layout), MobileShell, NavIcons
     auth/                 AuthGate (redirects to /login or /welcome), login page parts
     barter/               BarterCard: the "Needs help / Can teach" card
-    ui/                   Generic UI: BottomSheet (accessible modal / bottom sheet)
+    ui/                   Generic UI: BottomSheet (accessible modal: bottom sheet on phones, centred modal or menu on desktop)
     feed/ create/ profile/ search/ favorites/  Components used by one page only
   lib/
     supabase.ts           Supabase client
@@ -57,7 +57,7 @@ public/                   Logo and icons
 
 ### Conventions
 
-- **Mobile first, desktop from 992px.** Breakpoints follow the Bootstrap grid of the Figma file: `lg` = 992px, `xl` = 1200px. Pages that have a desktop layout pass `wide` to `MobileShell` (container 912 / 1140px); the others keep the 576px phone column. On desktop the floating `DesktopHotbar` replaces `BottomNav`.
+- **Mobile first, desktop from 992px.** Breakpoints follow the Bootstrap grid of the Figma file: `lg` = 992px, `xl` = 1200px. Pages that have a desktop layout pass `wide` to `MobileShell` (container 912 / 1140px); the others keep the 576px phone column. On desktop the floating `DesktopHotbar` replaces `BottomNav`. Create passes `panel` instead: on desktop it is a 1000px panel in the middle of the screen. `BottomSheet` turns into a centred modal on desktop, or a drop-down menu when given an `anchor` (Search filters); `useIsDesktop()` tells components which layout is on screen.
 
 - **Colours and fonts** come from the tokens in `globals.css` (`bg-page`, `text-ink`, `text-muted`, `border-line`, `font-bricolage`…) and from `categoryPalette.ts` for subjects. No hard-coded copies in pages.
 - **Spacing:** page content has 16px side padding; blocks are 16px apart.

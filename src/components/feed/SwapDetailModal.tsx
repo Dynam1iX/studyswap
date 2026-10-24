@@ -32,6 +32,7 @@ export function SwapDetailModal({ post, onClose }: SwapDetailModalProps) {
       open={post !== null}
       onClose={onClose}
       labelledBy={titleId}
+      size="lg"
       header={
         <div className="flex items-center justify-between px-6 py-2">
           <h2 id={titleId} className="font-bricolage text-[22px] font-extrabold text-ink">

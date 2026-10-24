@@ -11,7 +11,8 @@ interface FilterBarProps {
   program: string | null;
   /** The filter whose sheet is open, so its chevron points up. */
   openFilter: FilterKind | null;
-  onOpen: (kind: FilterKind) => void;
+  /** `button` is the chip that was clicked: on desktop the options drop down from it. */
+  onOpen: (kind: FilterKind, button: HTMLElement) => void;
 }
 
 const CHIP =
@@ -26,13 +27,13 @@ function FilterChip({
   label: string;
   value: string | null;
   open: boolean;
-  onClick: () => void;
+  onClick: (button: HTMLElement) => void;
 }) {
   const active = value !== null;
   return (
     <button
       type="button"
-      onClick={onClick}
+      onClick={(event) => onClick(event.currentTarget)}
       aria-haspopup="dialog"
       aria-expanded={open}
       className={`${CHIP} ${
@@ -69,13 +70,13 @@ export function FilterBar({ year, program, openFilter, onOpen }: FilterBarProps)
         label={t.search.yearFilter}
         value={year ? t.common.year(year) : null}
         open={openFilter === 'year'}
-        onClick={() => onOpen('year')}
+        onClick={(button) => onOpen('year', button)}
       />
       <FilterChip
         label={t.search.facultyFilter}
         value={program}
         open={openFilter === 'faculty'}
-        onClick={() => onOpen('faculty')}
+        onClick={(button) => onOpen('faculty', button)}
       />
     </div>
   );

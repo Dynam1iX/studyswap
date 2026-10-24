@@ -2,17 +2,19 @@
 
 import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import Link from 'next/link';
-import { Loader2, LogOut, Pencil } from 'lucide-react';
+import { Loader2, LogOut, Pencil, Plus } from 'lucide-react';
 import { AppHeader } from '@/components/layout/AppHeader';
 import { BottomNav } from '@/components/layout/BottomNav';
 import { MobileShell } from '@/components/layout/MobileShell';
 import { AvatarSheet } from '@/components/profile/AvatarSheet';
+import { EditProfileSheet } from '@/components/profile/EditProfileSheet';
 import { ManageCardSheet, type CardChanges } from '@/components/profile/ManageCardSheet';
 import { MyCardItem } from '@/components/profile/MyCardItem';
 import { PrivacySheet } from '@/components/profile/PrivacySheet';
 import { ProfileHeaderCard } from '@/components/profile/ProfileHeaderCard';
 import { SettingsPanel } from '@/components/profile/SettingsPanel';
 import { TelegramLinkSheet } from '@/components/profile/TelegramLinkSheet';
+import { TelegramUnlinkSheet } from '@/components/profile/TelegramUnlinkSheet';
 import { SubjectChipList } from '@/components/profile/SubjectChipList';
 import { useAvatarEditor } from '@/components/profile/useAvatarEditor';
 import { Toast, useToast } from '@/components/ui/Toast';
@@ -27,6 +29,7 @@ import {
   type ProfileData,
 } from '@/lib/profile';
 import { signOut } from '@/lib/auth';
+import { useIsDesktop } from '@/lib/useIsDesktop';
 import { messages, useT } from '@/i18n';
 
 type LoadState =
@@ -44,6 +47,9 @@ function Rise({ index, children }: { index: number; children: ReactNode }) {
   );
 }
 
+const EDIT_BUTTON =
+  'flex h-11 cursor-pointer items-center gap-2 rounded-full border border-line-strong bg-surface px-4 text-sm font-semibold text-ink transition hover:bg-soft active:scale-95 disabled:cursor-default';
+
 function SectionTitle({ children }: { children: string }) {
   return <h2 className="font-bricolage text-lg font-extrabold text-ink">{children}</h2>;
 }
@@ -54,6 +60,10 @@ export default function ProfilePage() {
   /** The card whose Manage sheet is open, or null. */
   const [managing, setManaging] = useState<ProfileCard | null>(null);
   const [privacyOpen, setPrivacyOpen] = useState(false);
+  /** Desktop: Edit profile opens as a modal here instead of the /profile/edit page. */
+  const desktop = useIsDesktop();
+  const [editOpen, setEditOpen] = useState(false);
+  const [unlinkingTelegram, setUnlinkingTelegram] = useState(false);
   const { toast, show: showToast, hide: hideToast } = useToast();
 
   const load = useCallback(() => {
@@ -92,12 +102,14 @@ export default function ProfilePage() {
   };
 
   const [linkingTelegram, setLinkingTelegram] = useState(false);
-  const telegramLinked = (telegramHandle: string) => {
+  const setTelegramHandle = (telegramHandle: string | null) =>
     setState((prev) =>
       prev.status === 'ready'
-        ? { status: 'ready', data: { ...prev.data, user: { ...prev.data.user, telegramHandle: telegramHandle || null } } }
+        ? { status: 'ready', data: { ...prev.data, user: { ...prev.data.user, telegramHandle } } }
         : prev,
     );
+  const telegramLinked = (telegramHandle: string) => {
+    setTelegramHandle(telegramHandle || null);
     showToast(t.telegram.linkedToast);
   };
 
@@ -128,20 +140,30 @@ export default function ProfilePage() {
   );
 
   return (
-    <MobileShell footer={footer}>
+    <MobileShell wide footer={footer}>
       <AppHeader />
 
       {/* 16px sides, 8px top and bottom, 16px between blocks. */}
       <div className="flex flex-col gap-4 px-4 py-2">
         <div className="flex items-center justify-between">
-          <h1 className="animate-rise font-bricolage text-2xl font-extrabold text-ink motion-reduce:animate-none">{t.profile.title}</h1>
-          <Link
-            href="/profile/edit"
-            className="flex h-11 items-center gap-2 rounded-full border border-line-strong bg-surface px-4 text-sm font-semibold text-ink transition hover:bg-soft active:scale-95"
-          >
-            <Pencil className="size-4" />
-            {t.profile.edit}
-          </Link>
+          <h1 className="animate-rise font-bricolage text-2xl font-extrabold text-ink motion-reduce:animate-none lg:text-[32px]">{t.profile.title}</h1>
+          {desktop ? (
+            <button
+              type="button"
+              onClick={() => setEditOpen(true)}
+              disabled={state.status !== 'ready'}
+              aria-haspopup="dialog"
+              className={EDIT_BUTTON}
+            >
+              <Pencil className="size-4" />
+              {t.profile.edit}
+            </button>
+          ) : (
+            <Link href="/profile/edit" className={EDIT_BUTTON}>
+              <Pencil className="size-4" />
+              {t.profile.edit}
+            </Link>
+          )}
         </div>
 
         {state.status === 'loading' && (
@@ -164,7 +186,9 @@ export default function ProfilePage() {
         )}
 
         {state.status === 'ready' && (
-          <>
+          // Phones: one column. Desktop: student info, subjects and settings on the left,
+          // My cards on the right (spanning every row; the last 1fr row takes the slack).
+          <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[372px_minmax(0,1fr)] lg:grid-rows-[repeat(5,auto)_1fr] lg:gap-x-6">
             <Rise index={0}>
               <ProfileHeaderCard
                 user={state.data.user}
@@ -181,19 +205,31 @@ export default function ProfilePage() {
               <SubjectChipList title={t.profile.canTeach} subjects={state.data.canTeach} emptyText={t.profile.nothingYet} />
             </Rise>
 
-            <section style={{ animationDelay: '280ms' }} className="flex animate-rise flex-col gap-4 motion-reduce:animate-none">
+            <section
+              style={{ animationDelay: '280ms' }}
+              className="flex animate-rise flex-col gap-4 motion-reduce:animate-none lg:col-start-2 lg:row-span-6 lg:row-start-1"
+            >
               <SectionTitle>{t.profile.myCards}</SectionTitle>
-              {state.data.cards.length > 0 ? (
-                <ul className="flex flex-col gap-4">
-                  {state.data.cards.map((card) => (
-                    <li key={card.id}>
-                      <MyCardItem card={card} onManage={() => setManaging(card)} />
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-sm font-medium text-muted">{t.profile.noCards}</p>
-              )}
+              {state.data.cards.length === 0 && <p className="text-sm font-medium text-muted lg:hidden">{t.profile.noCards}</p>}
+              <ul className="flex flex-col gap-4 lg:grid lg:grid-cols-2 lg:items-start lg:gap-5">
+                {state.data.cards.map((card) => (
+                  <li key={card.id}>
+                    <MyCardItem card={card} onManage={() => setManaging(card)} />
+                  </li>
+                ))}
+                {/* Desktop: a tile that opens Create, next to the cards. */}
+                <li className="hidden lg:block">
+                  <Link
+                    href="/create"
+                    className="group flex min-h-[190px] flex-col items-center justify-center gap-2 rounded-3xl border-[1.5px] border-dashed border-field text-sm font-semibold text-muted transition hover:border-brand-from hover:bg-surface hover:text-brand-from"
+                  >
+                    <span className="halo relative flex size-11 items-center justify-center rounded-full bg-linear-to-r from-brand-from to-brand-to text-white shadow-[0_6px_16px_rgba(173,70,255,0.3)] transition-transform group-hover:scale-105">
+                      <Plus className="size-6 transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:rotate-90" strokeWidth={2.5} />
+                    </span>
+                    {state.data.cards.length === 0 ? t.profile.noCards : t.nav.create}
+                  </Link>
+                </li>
+              </ul>
             </section>
 
             <section style={{ animationDelay: '350ms' }} className="flex animate-rise flex-col gap-4 motion-reduce:animate-none">
@@ -211,11 +247,39 @@ export default function ProfilePage() {
               {loggingOut ? <Loader2 className="size-4 animate-spin" /> : <LogOut className="size-4" />}
               {t.profile.logOut}
             </button>
-          </>
+          </div>
         )}
       </div>
 
-      <TelegramLinkSheet open={linkingTelegram} onClose={() => setLinkingTelegram(false)} onLinked={telegramLinked} />
+      <TelegramLinkSheet
+        open={linkingTelegram}
+        onClose={() => setLinkingTelegram(false)}
+        onLinked={telegramLinked}
+        currentHandle={state.status === 'ready' ? state.data.user.telegramHandle : null}
+      />
+      {state.status === 'ready' && (
+        <>
+          <EditProfileSheet
+            open={editOpen}
+            onClose={() => setEditOpen(false)}
+            user={state.data.user}
+            avatarUrl={avatar.displayUrl}
+            avatarBusy={avatar.busy}
+            onEditAvatar={() => avatar.setOpen(true)}
+            onLinkTelegram={() => setLinkingTelegram(true)}
+            onUnlinkTelegram={() => setUnlinkingTelegram(true)}
+          />
+          <TelegramUnlinkSheet
+            open={unlinkingTelegram}
+            handle={state.data.user.telegramHandle}
+            onClose={() => setUnlinkingTelegram(false)}
+            onUnlinked={() => {
+              setTelegramHandle(null);
+              showToast(t.telegram.unlinkedToast);
+            }}
+          />
+        </>
+      )}
       <ManageCardSheet card={managing} onClose={() => setManaging(null)} onSave={saveCard} onDelete={removeCard} />
       {state.status === 'ready' && (
         <AvatarSheet

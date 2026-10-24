@@ -74,6 +74,8 @@ function SearchView() {
   /** The card whose details modal is open, or null. */
   const [activeSwap, setActiveSwap] = useState<FeedPost | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  /** The filter chip that opened the options (desktop drops them down from it). */
+  const filterAnchor = useRef<HTMLElement | null>(null);
 
   // Back / Forward: show the submitted text of that history entry in the box.
   const [lastQuery, setLastQuery] = useState(filters.query);
@@ -163,7 +165,15 @@ function SearchView() {
           </div>
 
           <div style={{ animationDelay: '120ms' }} className="animate-rise motion-reduce:animate-none">
-            <FilterBar year={filters.year} program={filters.program} openFilter={openFilter} onOpen={setOpenFilter} />
+            <FilterBar
+              year={filters.year}
+              program={filters.program}
+              openFilter={openFilter}
+              onOpen={(kind, button) => {
+                filterAnchor.current = button;
+                setOpenFilter(kind);
+              }}
+            />
           </div>
         </div>
 
@@ -212,6 +222,7 @@ function SearchView() {
         onYearChange={(year) => applyFilters({ ...filters, year })}
         onProgramChange={(program) => applyFilters({ ...filters, program })}
         onClose={() => setOpenFilter(null)}
+        anchor={filterAnchor}
       />
 
       <SwapDetailModal post={activeSwap} onClose={() => setActiveSwap(null)} />
