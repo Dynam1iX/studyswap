@@ -150,12 +150,21 @@ function SearchView() {
           {t.search.title}
         </h1>
 
-        <div style={{ animationDelay: '60ms' }} className="animate-rise motion-reduce:animate-none">
-          <SearchField value={searchQuery} onChange={setSearchQuery} onSubmit={submitSearch} inputRef={inputRef} />
-        </div>
+        {/* Phones: field, then the filter chips below. Desktop: one row. */}
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:gap-3">
+          <div style={{ animationDelay: '60ms' }} className="animate-rise motion-reduce:animate-none lg:flex-1">
+            <SearchField
+              value={searchQuery}
+              onChange={setSearchQuery}
+              onSubmit={submitSearch}
+              inputRef={inputRef}
+              hotkey
+            />
+          </div>
 
-        <div style={{ animationDelay: '120ms' }} className="animate-rise motion-reduce:animate-none">
-          <FilterBar year={filters.year} program={filters.program} openFilter={openFilter} onOpen={setOpenFilter} />
+          <div style={{ animationDelay: '120ms' }} className="animate-rise motion-reduce:animate-none">
+            <FilterBar year={filters.year} program={filters.program} openFilter={openFilter} onOpen={setOpenFilter} />
+          </div>
         </div>
 
         {showResults ? (
@@ -212,7 +221,7 @@ function SearchView() {
 
 export default function SearchPage() {
   return (
-    <MobileShell footer={<BottomNav active="search" />}>
+    <MobileShell wide footer={<BottomNav active="search" />}>
       <AppHeader />
       <Suspense>
         <SearchView />

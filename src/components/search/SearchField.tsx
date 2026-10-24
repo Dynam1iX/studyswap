@@ -1,6 +1,6 @@
 'use client';
 
-import type { FormEvent, RefObject } from 'react';
+import { useEffect, type FormEvent, type KeyboardEvent, type RefObject } from 'react';
 import { Search, X } from 'lucide-react';
 import { useT } from '@/i18n';
 
@@ -10,11 +10,34 @@ interface SearchFieldProps {
   /** Enter: run the search with the trimmed text. */
   onSubmit: (query: string) => void;
   inputRef?: RefObject<HTMLInputElement | null>;
+  /** Desktop keys: "/" anywhere on the page focuses the field, Esc clears it (or leaves it when empty). */
+  hotkey?: boolean;
 }
 
 /** Search box: a gradient ring and a brand-coloured icon fade in on focus. */
-export function SearchField({ value, onChange, onSubmit, inputRef }: SearchFieldProps) {
+export function SearchField({ value, onChange, onSubmit, inputRef, hotkey = false }: SearchFieldProps) {
   const t = useT();
+
+  useEffect(() => {
+    if (!hotkey) return;
+    const onKey = (event: globalThis.KeyboardEvent) => {
+      if (event.key !== '/' || event.metaKey || event.ctrlKey || event.altKey) return;
+      const target = event.target as HTMLElement | null;
+      if (target?.closest('input, textarea, select, [contenteditable="true"], dialog')) return;
+      event.preventDefault();
+      inputRef?.current?.focus();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [hotkey, inputRef]);
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (!hotkey || event.key !== 'Escape') return;
+    event.preventDefault();
+    if (value) onChange('');
+    else inputRef?.current?.blur();
+  };
+
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     onSubmit(value.trim());
@@ -48,10 +71,19 @@ export function SearchField({ value, onChange, onSubmit, inputRef }: SearchField
           maxLength={100}
           value={value}
           onChange={(event) => onChange(event.target.value)}
+          onKeyDown={handleKeyDown}
           placeholder={t.search.placeholder}
           aria-label={t.search.fieldLabel}
           className="min-w-0 flex-1 bg-transparent text-base font-semibold text-ink outline-none placeholder:text-placeholder"
         />
+        {hotkey && (
+          <kbd
+            aria-hidden
+            className="hidden h-7 shrink-0 items-center rounded-lg bg-soft px-2 font-montserrat text-xs font-bold text-muted lg:flex"
+          >
+            {value ? 'Esc' : '/'}
+          </kbd>
+        )}
         {value && (
           <button
             type="button"

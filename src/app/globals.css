@@ -5,6 +5,10 @@
 
 /* Design tokens: use them as Tailwind classes, e.g. bg-page, text-ink, border-line, font-bricolage. */
 @theme {
+  /* Desktop breakpoints follow the Bootstrap grid from the Figma file: LG 992, XL 1200. */
+  --breakpoint-lg: 62rem;
+  --breakpoint-xl: 75rem;
+
   --color-page: #fbf9ff;
   --color-ink: #1b1530;
   --color-muted: #5a5472;

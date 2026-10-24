@@ -88,7 +88,7 @@ export function SearchResults({
           <p className="text-xs font-medium text-muted">{t.search.nothingFoundHint}</p>
         </div>
       ) : (
-        <ul className="flex flex-col gap-4">
+        <ul className="flex flex-col gap-4 lg:grid lg:grid-cols-2 lg:items-start lg:gap-6 xl:grid-cols-3">
           {posts.map((post, index) => (
             <li
               key={post.id}

@@ -163,7 +163,7 @@ export default function FavoritesPage() {
   );
 
   return (
-    <MobileShell footer={footer}>
+    <MobileShell wide footer={footer}>
       <AppHeader />
 
       {/* 16px sides, 8px top and bottom, 16px between blocks. */}
@@ -187,7 +187,7 @@ export default function FavoritesPage() {
         {state.status === 'ready' && savedCount === 0 && posts.length === 0 && <EmptyState />}
 
         {state.status === 'ready' && posts.length > 0 && (
-          <ul className="flex flex-col overflow-x-clip">
+          <ul className="flex flex-col overflow-x-clip lg:grid lg:grid-cols-2 lg:items-start lg:gap-6 lg:overflow-visible xl:grid-cols-3">
             {posts.map((post, index) => {
               const isLeaving = leaving.has(post.id);
               return (
@@ -201,8 +201,8 @@ export default function FavoritesPage() {
                   <div className={`min-h-0 ${isLeaving ? 'overflow-hidden' : ''}`}>
                     <div
                       style={{ animationDelay: `${80 + Math.min(index, 5) * 70}ms` }}
-                      className={`animate-rise pb-4 transition-transform duration-300 ease-out motion-reduce:animate-none ${
-                        isLeaving ? 'translate-x-12' : 'translate-x-0'
+                      className={`animate-rise pb-4 transition-transform lg:pb-0 duration-300 ease-out motion-reduce:animate-none ${
+                        isLeaving ? 'translate-x-12 lg:translate-x-0 lg:scale-90' : 'translate-x-0'
                       }`}
                     >
                       <FeedPostCard
