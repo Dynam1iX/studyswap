@@ -6,7 +6,8 @@ export function AppHeader({ actions }: { actions?: ReactNode }) {
   return (
     <header className="flex items-center justify-between gap-3 px-4 pt-4 pb-2 lg:pt-8 lg:pb-4">
       <div className="flex min-w-0 items-center gap-2.5">
-        <img src="/StudySwapLogo.svg" alt="StudySwap" className="size-9 shrink-0 rounded-xl lg:size-10" />
+        {/* Decorative: the name is written right next to it. */}
+        <img src="/StudySwapLogo.svg" alt="" className="size-9 shrink-0 rounded-xl lg:size-10" />
         <span
           className={`font-bricolage text-2xl leading-[29px] font-bold text-ink lg:text-[26px] ${
             actions ? 'max-[400px]:text-xl' : ''

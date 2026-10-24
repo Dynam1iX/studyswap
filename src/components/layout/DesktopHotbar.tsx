@@ -54,7 +54,7 @@ function HotbarItem({ config, active, pings }: { config: HotbarTab; active: bool
       {/* Gradient pill: grows in on the active tab, shrinks away on the one being left. */}
       <span
         aria-hidden
-        className={`absolute inset-0 rounded-full bg-linear-to-r from-brand-from to-brand-to shadow-[0_6px_16px_rgba(173,70,255,0.35)] transition-[opacity,transform] duration-500 ${SPRING} ${
+        className={`absolute inset-0 rounded-full bg-linear-to-r from-brand-fill-from to-brand-fill-to shadow-[0_6px_16px_rgba(173,70,255,0.35)] transition-[opacity,transform] duration-500 ${SPRING} ${
           active ? 'scale-100 opacity-100' : 'scale-50 opacity-0'
         }`}
       />

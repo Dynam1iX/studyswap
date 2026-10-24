@@ -77,7 +77,7 @@ function BrandPanel() {
         <Headline onBrand />
         <p
           style={{ animationDelay: '500ms' }}
-          className="max-w-[460px] animate-rise text-lg font-semibold text-white/85 motion-reduce:animate-none"
+          className="max-w-[480px] animate-rise text-[19px] leading-snug font-bold text-white motion-reduce:animate-none"
         >
           {t.login.subtitle}
         </p>
@@ -257,7 +257,7 @@ export default function LoginPage() {
                   <button
                     type="submit"
                     disabled={busy}
-                    className={`bubbly flex h-12 cursor-pointer items-center justify-center gap-2 rounded-xl bg-linear-to-r from-brand-from to-brand-to text-lg font-semibold text-white shadow-[0_8px_20px_rgba(200,40,140,0.25)] transition active:scale-[0.97] disabled:cursor-default disabled:opacity-70 ${
+                    className={`bubbly flex h-12 cursor-pointer items-center justify-center gap-2 rounded-xl bg-linear-to-r from-brand-fill-from to-brand-fill-to text-lg font-semibold text-white shadow-[0_8px_20px_rgba(200,40,140,0.25)] transition active:scale-[0.97] disabled:cursor-default disabled:opacity-70 ${
                       bubbling ? 'bubbly-animate' : ''
                     }`}
                   >

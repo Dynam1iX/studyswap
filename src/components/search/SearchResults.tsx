@@ -52,7 +52,7 @@ export function SearchResults({
           onClick={onClearAll}
           className="h-11 cursor-pointer px-1 text-xs font-bold transition active:scale-95"
         >
-          <span className="bg-linear-to-r from-brand-from to-brand-to bg-clip-text text-transparent">{t.search.reset}</span>
+          <span className="bg-linear-to-r from-brand-text-from to-brand-text-to bg-clip-text text-transparent">{t.search.reset}</span>
         </button>
       </div>
 

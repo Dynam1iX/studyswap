@@ -44,7 +44,7 @@ export function TelegramSection({
           type="button"
           onClick={onLink}
           aria-haspopup="dialog"
-          className="shine flex h-12 cursor-pointer items-center justify-center gap-2.5 rounded-2xl bg-linear-to-r from-[#2AABEE] to-[#229ED9] text-base font-bold text-white shadow-[0_6px_16px_rgba(34,158,217,0.3)] transition active:scale-[0.98]"
+          className="shine flex h-12 cursor-pointer items-center justify-center gap-2.5 rounded-2xl bg-linear-to-r from-telegram-from to-telegram-to text-base font-bold text-white shadow-[0_6px_16px_rgba(34,158,217,0.3)] transition active:scale-[0.98]"
         >
           <img src="/telegram.svg" alt="" className="size-6 shrink-0" />
           {t.telegram.link}

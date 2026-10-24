@@ -140,7 +140,7 @@ export function AvatarSheet({ open, onClose, initials, currentUrl, onSave, onRem
               type="button"
               onClick={() => run('save')}
               disabled={busy !== null}
-              className="flex h-12 cursor-pointer items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-brand-from to-brand-to text-sm font-bold text-white shadow-[0_6px_16px_rgba(173,70,255,0.3)] transition active:scale-[0.98] disabled:opacity-60"
+              className="flex h-12 cursor-pointer items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-brand-fill-from to-brand-fill-to text-sm font-bold text-white shadow-[0_6px_16px_rgba(173,70,255,0.3)] transition active:scale-[0.98] disabled:opacity-60"
             >
               {busy === 'save' ? <Loader2 className="size-4 animate-spin" /> : <Check className="size-4" strokeWidth={3} />}
               {t.avatar.save}
@@ -151,7 +151,7 @@ export function AvatarSheet({ open, onClose, initials, currentUrl, onSave, onRem
             type="button"
             onClick={() => inputRef.current?.click()}
             disabled={busy !== null}
-            className="flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-brand-from to-brand-to text-sm font-bold text-white shadow-[0_6px_16px_rgba(173,70,255,0.3)] transition active:scale-[0.98] disabled:opacity-60"
+            className="flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-brand-fill-from to-brand-fill-to text-sm font-bold text-white shadow-[0_6px_16px_rgba(173,70,255,0.3)] transition active:scale-[0.98] disabled:opacity-60"
           >
             <Camera className="size-4" />
             {currentUrl ? t.avatar.chooseNew : t.avatar.choose}

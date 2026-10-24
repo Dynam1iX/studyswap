@@ -80,7 +80,7 @@ export function RecentSearches({ items, onPick, onRemove, onClearAll, delay = 0 
             onClick={clearAll}
             className="h-11 animate-pop cursor-pointer px-1 text-xs font-bold transition active:scale-95 motion-reduce:animate-none"
           >
-            <span className="bg-linear-to-r from-brand-from to-brand-to bg-clip-text text-transparent">{t.search.clearAll}</span>
+            <span className="bg-linear-to-r from-brand-text-from to-brand-text-to bg-clip-text text-transparent">{t.search.clearAll}</span>
           </button>
         )}
       </div>

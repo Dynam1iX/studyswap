@@ -308,7 +308,7 @@ export default function CreateBarterPage() {
           type="button"
           onClick={handleSubmit}
           disabled={submitting || loadingSubjects || published}
-          className={`bubbly flex h-[56px] w-full cursor-pointer lg:w-auto lg:px-10 items-center justify-center gap-2 rounded-[16px] bg-linear-to-r from-brand-from to-brand-to text-[17px] font-bold text-white shadow-[0_8px_20px_rgba(200,40,140,0.28)] transition hover:opacity-95 active:scale-[0.97] disabled:cursor-default ${
+          className={`bubbly flex h-[56px] w-full cursor-pointer lg:w-auto lg:px-10 items-center justify-center gap-2 rounded-[16px] bg-linear-to-r from-brand-fill-from to-brand-fill-to text-[17px] font-bold text-white shadow-[0_8px_20px_rgba(200,40,140,0.28)] transition hover:opacity-95 active:scale-[0.97] disabled:cursor-default ${
             published ? '' : 'disabled:opacity-50'
           } ${bubbling ? 'bubbly-animate' : ''}`}
         >

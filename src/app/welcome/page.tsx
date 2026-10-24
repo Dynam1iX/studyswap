@@ -54,7 +54,7 @@ function Segmented<T extends string | number>({
           >
             <span
               aria-hidden
-              className={`absolute inset-0 bg-linear-to-r from-brand-from to-brand-to transition-opacity duration-300 ${
+              className={`absolute inset-0 bg-linear-to-r from-brand-fill-from to-brand-fill-to transition-opacity duration-300 ${
                 selected ? 'opacity-100' : 'opacity-0'
               }`}
             />
@@ -215,7 +215,7 @@ export default function WelcomePage() {
         <button
           type="submit"
           disabled={busy}
-          className="shine flex h-14 cursor-pointer items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-brand-from to-brand-to text-[17px] font-bold text-white shadow-[0_8px_20px_rgba(200,40,140,0.28)] transition active:scale-[0.98] disabled:opacity-70"
+          className="shine flex h-14 cursor-pointer items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-brand-fill-from to-brand-fill-to text-[17px] font-bold text-white shadow-[0_8px_20px_rgba(200,40,140,0.28)] transition active:scale-[0.98] disabled:opacity-70"
         >
           {busy && <Loader2 className="size-5 animate-spin" />}
           {t.welcome.start}
