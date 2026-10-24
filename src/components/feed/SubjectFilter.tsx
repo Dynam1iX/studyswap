@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState, type MouseEvent } from 'react';
+import { useRef, useState, type PointerEvent } from 'react';
 import { paletteFor } from '@/lib/categoryPalette';
 import type { Subject } from '@/types/database';
 import { useT } from '@/i18n';
@@ -49,14 +49,40 @@ export function SubjectFilter({ subjects, value, onChange }: SubjectFilterProps)
     if (maxScroll > 0) setProgress(chips.scrollLeft / maxScroll);
   };
 
-  const handleTrackClick = (event: MouseEvent<HTMLDivElement>) => {
+  /** Where the pointer holds the thumb (px from its left edge) while dragging, or null. */
+  const grab = useRef<number | null>(null);
+  const [dragging, setDragging] = useState(false);
+
+  /** Puts the thumb under the pointer and scrolls the chips to match. */
+  const moveTo = (clientX: number, smooth: boolean) => {
     const track = trackRef.current;
     const chips = chipsRef.current;
-    if (!track || !chips) return;
+    if (!track || !chips || grab.current === null) return;
     const rect = track.getBoundingClientRect();
-    const next = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+    const room = rect.width - THUMB_WIDTH;
+    const next = room > 0 ? Math.max(0, Math.min(1, (clientX - rect.left - grab.current) / room)) : 0;
     setProgress(next);
-    chips.scrollTo({ left: next * (chips.scrollWidth - chips.clientWidth), behavior: 'smooth' });
+    chips.scrollTo({ left: next * (chips.scrollWidth - chips.clientWidth), behavior: smooth ? 'smooth' : 'instant' });
+  };
+
+  // Press the thumb and drag it (mouse or finger); pressing the track jumps there first.
+  const onPointerDown = (event: PointerEvent<HTMLDivElement>) => {
+    const track = trackRef.current;
+    if (!track) return;
+    const thumbLeft = track.getBoundingClientRect().left + progress * (track.clientWidth - THUMB_WIDTH);
+    const offset = event.clientX - thumbLeft;
+    const onThumb = offset >= 0 && offset <= THUMB_WIDTH;
+    grab.current = onThumb ? offset : THUMB_WIDTH / 2;
+    setDragging(true);
+    event.currentTarget.setPointerCapture(event.pointerId);
+    if (!onThumb) moveTo(event.clientX, true);
+  };
+  const onPointerMove = (event: PointerEvent<HTMLDivElement>) => {
+    if (grab.current !== null) moveTo(event.clientX, false);
+  };
+  const onPointerUp = () => {
+    grab.current = null;
+    setDragging(false);
   };
 
   return (
@@ -87,15 +113,20 @@ export function SubjectFilter({ subjects, value, onChange }: SubjectFilterProps)
         ))}
       </div>
 
-      <div className="px-4 py-1.5">
-        <div
-          ref={trackRef}
-          onClick={handleTrackClick}
-          className="relative h-[5px] w-full cursor-pointer rounded-full bg-line-strong"
-        >
+      {/* The whole strip is the grab area (taller than the 5px line) */}
+      <div
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerUp}
+        className={`group touch-none px-4 py-1.5 select-none ${dragging ? 'cursor-grabbing' : 'cursor-pointer'}`}
+      >
+        <div ref={trackRef} className="relative h-[5px] w-full rounded-full bg-line-strong">
           <div
             style={{ width: THUMB_WIDTH, left: `calc(${progress * 100}% - ${progress * THUMB_WIDTH}px)` }}
-            className="absolute top-0 h-full rounded-full bg-linear-to-r from-brand-from to-brand-to transition-all duration-75"
+            className={`absolute top-0 h-full rounded-full bg-linear-to-r from-brand-from to-brand-to transition-transform duration-200 group-hover:scale-y-[1.6] ${
+              dragging ? 'scale-y-[1.6] cursor-grabbing' : 'cursor-grab'
+            }`}
           />
         </div>
       </div>
