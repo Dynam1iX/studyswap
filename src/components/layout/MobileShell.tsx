@@ -14,10 +14,13 @@ interface MobileShellProps {
    */
   wide?: boolean;
   /**
-   * Desktop layout for a single task (Create): the page becomes a 1000px panel in the
-   * middle of the screen that pops in like a modal. Phones are unaffected.
+   * Desktop layout for a single task: the page becomes a card in the middle of the
+   * screen that pops in like a modal. "wide" (1000px) for Create, "narrow" (560px) for
+   * Complete profile. Phones are unaffected.
    */
-  panel?: boolean;
+  panel?: 'wide' | 'narrow';
+  /** Desktop: the full window (Login draws its own two-panel layout). */
+  full?: boolean;
 }
 
 /**
@@ -33,21 +36,30 @@ interface MobileShellProps {
  * On desktop the phone BottomNav is hidden and the floating DesktopHotbar (root layout)
  * takes its place, so the content leaves room for it at the bottom.
  */
-export function MobileShell({ children, footer, wide = false, panel = false }: MobileShellProps) {
+export function MobileShell({ children, footer, wide = false, panel, full = false }: MobileShellProps) {
   const desktop = panel
-    ? 'lg:relative lg:my-12 lg:min-h-0 lg:max-w-[1000px] lg:animate-pop lg:rounded-[28px] lg:border lg:border-line lg:bg-surface lg:p-3 lg:shadow-[0_24px_64px_rgba(27,21,48,0.16)] motion-reduce:lg:animate-none'
-    : `lg:bg-transparent ${wide ? 'lg:max-w-[944px] xl:max-w-[1172px]' : ''}`;
+    ? `lg:relative lg:min-h-0 lg:animate-pop lg:rounded-[28px] lg:border lg:border-line lg:bg-surface lg:p-3 lg:shadow-[0_24px_64px_rgba(27,21,48,0.16)] motion-reduce:lg:animate-none ${
+        panel === 'wide' ? 'lg:max-w-[1000px]' : 'lg:max-w-[560px] lg:p-5'
+      }`
+    : full
+      ? 'lg:max-w-none lg:bg-transparent'
+      : `lg:bg-transparent ${wide ? 'lg:max-w-[944px] xl:max-w-[1172px]' : ''}`;
+  const bottom = panel ? 'lg:pb-1' : full ? 'lg:pb-0' : 'lg:pb-32';
+  const shell = (
+    <div className={`app-shell mx-auto flex min-h-dvh w-full max-w-[576px] flex-col bg-page font-montserrat ${desktop}`}>
+      <div id={APP_SCROLL_ID} className={`app-shell-content relative flex-1 pb-6 ${bottom}`}>
+        {children}
+      </div>
+      {/* Desktop: the footer's own bar is hidden, so it only carries toasts; lift them above the hotbar. */}
+      {footer && <div className="sticky bottom-0 z-40 shrink-0 lg:bottom-[104px]">{footer}</div>}
+    </div>
+  );
   return (
     <>
       {/* Outside the shell: the panel's pop animation would otherwise pin it to the panel. */}
       <DesktopGlow />
-      <div className={`app-shell mx-auto flex min-h-dvh w-full max-w-[576px] flex-col bg-page font-montserrat ${desktop}`}>
-        <div id={APP_SCROLL_ID} className={`app-shell-content relative flex-1 pb-6 ${panel ? 'lg:pb-1' : 'lg:pb-32'}`}>
-          {children}
-        </div>
-        {/* Desktop: the footer's own bar is hidden, so it only carries toasts; lift them above the hotbar. */}
-        {footer && <div className="sticky bottom-0 z-40 shrink-0 lg:bottom-[104px]">{footer}</div>}
-      </div>
+      {/* A panel sits in the middle of the window (and scrolls with the page when taller). */}
+      {panel ? <div className="lg:flex lg:min-h-dvh lg:items-center lg:justify-center lg:px-6 lg:py-12">{shell}</div> : shell}
     </>
   );
 }

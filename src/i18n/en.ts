@@ -268,6 +268,9 @@ export const en = {
 
   login: {
     headline: 'Trade what you know for what you need.',
+    /** Desktop: title above the sign-in form (the headline sits in the brand panel). */
+    formTitle: 'Welcome to StudySwap',
+    formSubtitle: 'Sign in with your AITU student account.',
     subtitle: 'Find study partners on your campus. No money, just a fair swap.',
     emailLabel: 'University email',
     emailHint: 'Only university emails are accepted. This keeps StudySwap student-only.',

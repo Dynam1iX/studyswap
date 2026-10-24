@@ -159,7 +159,7 @@ export default function CreateBarterPage() {
   const offeredError = errors.offered ? (errors.sameSubject ? t.create.sameSubject : t.create.offeredMissing) : null;
 
   return (
-    <MobileShell panel>
+    <MobileShell panel="wide">
       {/* Phones: logo and the Back · title · Cancel row. Desktop: title and × of the panel. */}
       <div className="lg:hidden">
         <AppHeader />

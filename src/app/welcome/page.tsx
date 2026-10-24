@@ -122,7 +122,7 @@ export default function WelcomePage() {
   };
 
   return (
-    <MobileShell>
+    <MobileShell panel="narrow">
       <AppHeader />
 
       <form onSubmit={submit} noValidate className="flex flex-col gap-4 px-4 py-2">
