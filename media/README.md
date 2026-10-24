@@ -7,7 +7,8 @@ Source files and the tools that made them. What the site serves is in `public/`.
 | # | Asset | Where it is used | Format | Resolution / duration | File size | Source | Licence |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | App logo (`StudySwapLogo.svg`) | Header, browser tab, Login | SVG | Vector | 1.1 KB | Own work (Figma) | Own |
-| 2 | Navigation icons (`home`, `search`, `like`, `profile`… `.svg`) | Bottom bar, cards | SVG | Vector, 24 px grid | 0.4–1.1 KB each | Own work (Figma) | Own |
+| 2 | Navigation icons (`home`, `search`, `like`, `liked`, `profile` + `*selected.svg`; `NavIcons.tsx`) | Bottom bar, desktop hotbar, card heart | SVG | Vector, 24 px grid | 0.4–1.1 KB each | Hugeicons "home-04", ProIcons "search", Lucide "heart", TDesign "user-1" via Iconify; stroke width and size adjusted, gradient versions made by us | MIT (Hugeicons, ProIcons, TDesign), ISC (Lucide) |
+| 2b | Contact icons (`telegram.svg`, `telegram-circle.svg`, `email.svg`) | Contact buttons, Telegram rows | SVG | Vector | 0.6–1.2 KB each | IconPark "telegram" (outline), Material Symbols "alternate-email-rounded" via Iconify; the blue circle is ours | Apache-2.0 (IconPark © ByteDance, Material Symbols © Google) |
 | 3 | Interface icons (lucide-react) | Buttons, settings, help | SVG (inline, from the npm package) | Vector | in the JS bundle | lucide.dev | ISC |
 | 4 | Interface sounds (`public/sounds/*.mp3`) | Like, publish, Telegram linked, error | MP3, 64 kbps, mono, 44.1 kHz | 0.14–0.9 s | 1.7–7.8 KB each | Own work: synthesised with ffmpeg (`sounds/*.wav` are the masters) | Own |
 | 5 | How-to video (`how-to-create.webm` / `.mp4`) | "How it works" (? in the header) | WebM VP9 / MP4 H.264, no audio | 1280 × 720, 30 fps, 32 s | 615 KB / 770 KB | Own work: recorded from the running app with demo data (`help/record.js`) | Own |
@@ -56,3 +57,18 @@ ffmpeg -i step-1-find.png -vf scale=400:-1 -c:v libwebp -quality 80 step-1-find-
   #1677B3 → #0F6FA8 (4.9:1 → 5.4:1); gradient text uses `brand-text` (≥ 4.5:1 on white and brand-soft;
   lighter pair at night). The bright #AD46FF → #F6339A stays for decoration only. Video captions: white on
   rgba(27,21,48,0.88). Login headline and subtitle are large text (≥ 19 px bold, 3:1 rule).
+
+## Third-party icon licences
+
+Each SVG names its source in a comment. The licences allow use and modification, keeping the notice:
+
+| Icon set | Icons | Licence | Notice |
+| --- | --- | --- | --- |
+| Hugeicons (free stroke set) | home-04 | MIT | © Hugeicons — https://github.com/hugeicons/hugeicons-react |
+| ProIcons | search | MIT | © ProCode Software — https://github.com/ProCode-Software/proicons |
+| Lucide | heart (+ the interface icons in the app via `lucide-react`) | ISC | © Lucide Contributors — https://github.com/lucide-icons/lucide |
+| TDesign Icons | user-1 | MIT | © Tencent — https://github.com/Tencent/tdesign-icons |
+| IconPark | telegram (outline) | Apache-2.0 | © ByteDance — https://github.com/bytedance/IconPark |
+| Material Symbols | alternate-email-rounded | Apache-2.0 | © Google — https://github.com/google/material-design-icons |
+
+The Telegram plane is the Telegram logo, used only to label "Message on Telegram".
