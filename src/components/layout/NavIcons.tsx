@@ -1,6 +1,10 @@
 import type { SVGProps } from 'react';
 
-/** Navigation icons from /public (home, search, like, profile), drawn with currentColor. */
+/**
+ * Navigation icons, drawn with currentColor (same shapes as /public/home.svg etc.):
+ * Hugeicons "home-04" (MIT), ProIcons "search" (MIT), Lucide "heart" (ISC),
+ * TDesign "user-1" (MIT) — stroke widths and sizes matched to each other.
+ */
 const base = {
   viewBox: '0 0 24 24',
   fill: 'none',
@@ -12,33 +16,35 @@ const base = {
 
 export function HomeIcon(props: SVGProps<SVGSVGElement>) {
   return (
-    <svg {...base} strokeWidth={2} {...props}>
+    <svg {...base} {...props}>
       <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M18.9755 8.11299L13.9755 3.74199C12.8445 2.75299 11.1555 2.75299 10.0245 3.74199L5.02451 8.11299C3.99951 9.00899 3.99951 10.143 3.99951 11.007V16.003C3.99951 19.001 4.99951 20 7.99951 20H15.9995C18.9995 20 19.9995 19.001 19.9995 16.003V11.007C19.9995 10.143 19.9995 9.00899 18.9755 8.11299Z"
+        transform="translate(12 12) scale(0.89) translate(-12 -12)"
+        strokeWidth={2.25}
+        d="M3 11.99v2.51c0 3.3 0 4.95 1.025 5.975S6.7 21.5 10 21.5h4c3.3 0 4.95 0 5.975-1.025S21 17.8 21 14.5v-2.51c0-1.682 0-2.522-.356-3.25s-1.02-1.244-2.346-2.276l-2-1.555C14.233 3.303 13.2 2.5 12 2.5s-2.233.803-4.298 2.409l-2 1.555C4.375 7.496 3.712 8.012 3.356 8.74S3 10.308 3 11.99M16 17H8"
       />
-      <path d="M9 16H15" />
     </svg>
   );
 }
 
 export function SearchIcon(props: SVGProps<SVGSVGElement>) {
   return (
-    <svg {...base} strokeWidth={2.2} {...props}>
-      <path d="M11 17.5C14.5899 17.5 17.5 14.5899 17.5 11C17.5 7.41015 14.5899 4.5 11 4.5C7.41015 4.5 4.5 7.41015 4.5 11C4.5 14.5899 7.41015 17.5 11 17.5Z" />
-      <path d="M16 16L20 20" />
+    <svg {...base} {...props}>
+      <path
+        transform="translate(12 12) scale(0.93) translate(-12 -12)"
+        strokeWidth={2.37}
+        d="M15.553 15.553a7.06 7.06 0 1 0-9.985-9.985a7.06 7.06 0 0 0 9.985 9.985m0 0L20 20"
+      />
     </svg>
   );
 }
 
 export function HeartIcon(props: SVGProps<SVGSVGElement>) {
   return (
-    <svg {...base} strokeWidth={2} {...props}>
+    <svg {...base} {...props}>
       <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M12 19.9928C12 19.9928 5.72303 15.9078 4.00003 11.9928C1.69803 6.76379 9.00003 1.99279 12 7.61479C15 1.99279 22.301 6.76379 20 11.9928C18.277 15.9078 12 19.9928 12 19.9928Z"
+        transform="translate(12 12.4) scale(0.9) translate(-12 -12)"
+        strokeWidth={2.22}
+        d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676a.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"
       />
     </svg>
   );
@@ -47,8 +53,7 @@ export function HeartIcon(props: SVGProps<SVGSVGElement>) {
 export function ProfileIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg {...base} strokeWidth={2} {...props}>
-      <path d="M12 12.3C14.0986 12.3 15.8 10.5986 15.8 8.49995C15.8 6.40127 14.0986 4.69995 12 4.69995C9.90127 4.69995 8.19995 6.40127 8.19995 8.49995C8.19995 10.5986 9.90127 12.3 12 12.3Z" />
-      <path d="M4.5 20C5.3 16.4 8.3 14.5 12 14.5C15.7 14.5 18.7 16.4 19.5 20" />
+      <path d="M19.5 20v-1a4 4 0 0 0-4-4h-7a4 4 0 0 0-4 4v1M16 7.5a4 4 0 1 1-8 0a4 4 0 0 1 8 0Z" />
     </svg>
   );
 }

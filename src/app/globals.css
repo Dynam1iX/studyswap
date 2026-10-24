@@ -234,6 +234,32 @@ html.app-scroll .app-shell-content {
   overscroll-behavior: contain;
 }
 
+/* Scrollbars: a slim gradient thumb on a clear track (Chrome, Edge, Safari), a thin tinted one in
+   Firefox. Phones use overlay scrollbars and are not affected. */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background: linear-gradient(var(--color-brand-from), var(--color-brand-to)) padding-box;
+  opacity: 0.6;
+}
+::-webkit-scrollbar-thumb:hover {
+  border-width: 2px;
+}
+@supports (-moz-appearance: none) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--color-brand-from) 55%, transparent) transparent;
+  }
+}
+
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
