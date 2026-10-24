@@ -226,7 +226,14 @@ export default function ProfilePage() {
                     <span className="halo relative flex size-11 items-center justify-center rounded-full bg-linear-to-r from-brand-from to-brand-to text-white shadow-[0_6px_16px_rgba(173,70,255,0.3)] transition-transform group-hover:scale-105">
                       <Plus className="size-6 transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:rotate-90" strokeWidth={2.5} />
                     </span>
-                    {state.data.cards.length === 0 ? t.profile.noCards : t.nav.create}
+                    {state.data.cards.length === 0 ? (
+                      <span className="flex flex-col items-center gap-0.5 px-6 text-center">
+                        <span className="text-[15px] font-bold text-ink">{t.profile.noCardsTitle}</span>
+                        <span>{t.profile.noCardsHint}</span>
+                      </span>
+                    ) : (
+                      <span className="px-6 text-center">{t.nav.create}</span>
+                    )}
                   </Link>
                 </li>
               </ul>

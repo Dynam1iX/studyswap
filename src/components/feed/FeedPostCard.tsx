@@ -2,6 +2,7 @@
 
 import { BarterCard } from '@/components/barter/BarterCard';
 import { CATEGORY_PALETTE } from '@/lib/categoryPalette';
+import { useMyId } from '@/lib/auth';
 import { getAuthorName, getContactHref, getContactMethod, type FeedPost } from '@/lib/feed';
 import { formatStudyInfo, getInitials } from '@/lib/format';
 import { useT } from '@/i18n';
@@ -18,6 +19,7 @@ interface FeedPostCardProps {
 export function FeedPostCard({ post, liked, onToggleLike, onOpen }: FeedPostCardProps) {
   const t = useT();
   const authorName = getAuthorName(post);
+  const myId = useMyId();
 
   return (
     <BarterCard
@@ -39,6 +41,7 @@ export function FeedPostCard({ post, liked, onToggleLike, onOpen }: FeedPostCard
       }}
       contactMethod={getContactMethod(post)}
       contactHref={getContactHref(post)}
+      own={Boolean(myId) && post.author?.id === myId}
       liked={liked}
       onToggleLike={() => onToggleLike(post.id)}
       onOpen={() => onOpen(post)}
