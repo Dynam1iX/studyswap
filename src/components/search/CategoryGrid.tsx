@@ -55,7 +55,7 @@ function CategoryCard({
         window.setTimeout(onSelect, 220);
       }}
       style={{ backgroundColor: palette.bg, animationDelay: `${delay + index * 70}ms` }}
-      className="group relative flex h-36 animate-rise cursor-pointer flex-col items-start justify-between overflow-hidden rounded-3xl p-3.5 text-left transition-[transform,box-shadow] duration-300 ease-out hover:-translate-y-0.5 hover:shadow-[0_10px_24px_rgba(60,30,110,0.12)] active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-from motion-reduce:animate-none"
+      className="group relative flex h-36 animate-rise lg:h-44 lg:p-5 cursor-pointer flex-col items-start justify-between overflow-hidden rounded-3xl p-3.5 text-left transition-[transform,box-shadow] duration-300 ease-out hover:-translate-y-0.5 hover:shadow-[0_10px_24px_rgba(60,30,110,0.12)] active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-from motion-reduce:animate-none"
     >
       {/* Soft light that sweeps across on hover */}
       <span
@@ -74,7 +74,7 @@ function CategoryCard({
       </span>
 
       <span className="relative flex flex-col gap-1">
-        <span style={{ color: palette.title }} className="font-bricolage text-base leading-5 font-extrabold">
+        <span style={{ color: palette.title }} className="font-bricolage text-base leading-5 font-extrabold lg:text-xl lg:leading-6">
           {t.search.categoryTitles[category.id]}
         </span>
         {count === null ? (
@@ -92,10 +92,10 @@ function CategoryCard({
   );
 }
 
-/** "Browse categories": 2×2 grid of subject categories. */
+/** "Browse categories": 2×2 grid of subject categories (one row of four on desktop). */
 export function CategoryGrid({ counts, onSelect, delay = 0 }: CategoryGridProps) {
   return (
-    <div className="grid grid-cols-2 gap-3.5">
+    <div className="grid grid-cols-2 gap-3.5 lg:grid-cols-4 lg:gap-6">
       {SEARCH_CATEGORIES.map((id, index) => (
         <CategoryCard
           key={id}

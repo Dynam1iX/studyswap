@@ -46,22 +46,25 @@ export default function FeedPage() {
       : posts.filter((post) => post.needed?.id === selectedSubject || post.offered?.id === selectedSubject);
 
   return (
-    <MobileShell footer={<BottomNav active="feed" />}>
+    <MobileShell wide footer={<BottomNav active="feed" />}>
       <AppHeader />
       <div className="animate-rise motion-reduce:animate-none">
         <SubjectFilter subjects={subjects} value={selectedSubject} onChange={setSelectedSubject} />
       </div>
 
       <div style={{ animationDelay: '80ms' }} className="animate-rise px-4 pt-3 pb-1 motion-reduce:animate-none">
-        <h1 className="font-bricolage text-[22px] leading-[26px] font-bold text-ink">{t.feed.title}</h1>
+        <h1 className="font-bricolage text-[22px] leading-[26px] font-bold text-ink lg:text-[32px] lg:leading-10">{t.feed.title}</h1>
       </div>
 
       {/* key: the list fades in again whenever the subject filter changes */}
-      <main key={String(selectedSubject)} className="w-full space-y-4 p-4">
+      <main
+        key={String(selectedSubject)}
+        className="w-full space-y-4 p-4 lg:grid lg:grid-cols-2 lg:items-start lg:gap-6 lg:space-y-0 xl:grid-cols-3"
+      >
         {loading ? (
           <FeedSkeleton />
         ) : visiblePosts.length === 0 ? (
-          <div className="animate-pop rounded-2xl border border-line bg-surface p-6 py-16 text-center text-xs font-medium text-muted motion-reduce:animate-none">
+          <div className="animate-pop rounded-2xl border border-line bg-surface p-6 py-16 text-center text-xs font-medium text-muted motion-reduce:animate-none lg:col-span-full">
             {t.feed.empty}
           </div>
         ) : (

@@ -29,7 +29,7 @@ function SkeletonCard({ index }: { index: number }) {
 export function FeedSkeleton({ count = 3 }: { count?: number }) {
   const t = useT();
   return (
-    <div aria-busy aria-label={t.feed.loading} className="space-y-4">
+    <div aria-busy aria-label={t.feed.loading} className="space-y-4 lg:col-span-full lg:grid lg:grid-cols-2 lg:gap-6 lg:space-y-0 xl:grid-cols-3">
       {Array.from({ length: count }, (_, index) => (
         <SkeletonCard key={index} index={index} />
       ))}

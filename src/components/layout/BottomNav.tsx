@@ -28,7 +28,7 @@ const RIGHT_TABS: TabConfig[] = [
 ];
 
 /** Counts likes made on this page, so the Favorite icon can bounce once per like. */
-function useFavoritePings(): number {
+export function useFavoritePings(): number {
   const [pings, setPings] = useState(0);
   useEffect(() => {
     const onAdded = () => setPings((n) => n + 1);
@@ -84,12 +84,12 @@ function NavTabItem({ config, active, pings = 0 }: { config: TabConfig; active: 
   );
 }
 
-/** Bottom bar shared by every page (rendered as MobileShell's footer). */
+/** Bottom bar shared by every page (rendered as MobileShell's footer). Phones only: desktop uses DesktopHotbar. */
 export function BottomNav({ active }: { active: NavTab }) {
   const t = useT();
   const favoritePings = useFavoritePings();
   return (
-    <nav className="flex h-[76px] w-full items-center justify-around border-t border-line bg-surface px-3">
+    <nav className="flex h-[76px] w-full lg:hidden items-center justify-around border-t border-line bg-surface px-3">
       {LEFT_TABS.map((config) => (
         <NavTabItem key={config.tab} config={config} active={config.tab === active} />
       ))}

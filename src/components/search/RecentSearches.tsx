@@ -98,10 +98,12 @@ export function RecentSearches({ items, onPick, onRemove, onClearAll, delay = 0 
           ))}
         </div>
       ) : hasItems ? (
-        <ul className="flex flex-col overflow-x-clip pb-3">
+        <ul className="flex flex-col overflow-x-clip pb-3 lg:grid lg:grid-cols-2 lg:gap-x-8">
           {items!.map((item, index) => {
             const isLeaving = leaving.has(item.id);
             const isLast = index === items!.length - 1;
+            // Desktop shows two columns: the last row of the pair has no divider either.
+            const isLastPair = index >= items!.length - (items!.length % 2 === 0 ? 2 : 1);
             return (
               <li
                 key={item.id}
@@ -113,7 +115,7 @@ export function RecentSearches({ items, onPick, onRemove, onClearAll, delay = 0 
                   <div
                     className={`flex h-14 animate-rise items-center justify-between gap-2 transition-transform duration-300 ease-out motion-reduce:animate-none ${
                       isLast ? '' : 'border-b border-line'
-                    } ${isLeaving ? 'translate-x-10' : 'translate-x-0'}`}
+                    } ${isLastPair ? 'lg:border-b-0' : 'lg:border-b lg:border-line'} ${isLeaving ? 'translate-x-10' : 'translate-x-0'}`}
                     style={{ animationDelay: `${delay + 60 + index * 50}ms` }}
                   >
                     <button

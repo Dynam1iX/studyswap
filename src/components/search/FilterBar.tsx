@@ -15,7 +15,7 @@ interface FilterBarProps {
 }
 
 const CHIP =
-  'relative flex h-11 shrink-0 cursor-pointer items-center gap-1.5 overflow-hidden rounded-3xl border px-3.5 text-sm font-semibold transition-[transform,border-color,color,box-shadow] duration-300 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-from';
+  'relative flex h-11 shrink-0 lg:h-14 lg:px-5 cursor-pointer items-center gap-1.5 overflow-hidden rounded-3xl border px-3.5 text-sm font-semibold transition-[transform,border-color,color,box-shadow] duration-300 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-from';
 
 function FilterChip({
   label,
