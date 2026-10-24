@@ -3,6 +3,7 @@
 import { ChevronRight, ShieldCheck } from 'lucide-react';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { ThemeToggle } from './ThemeToggle';
+import { SoundToggle } from '@/components/settings/SoundToggle';
 import { useI18n } from '@/i18n';
 
 interface SettingsPanelProps {
@@ -20,6 +21,10 @@ export function SettingsPanel({ onOpenPrivacy }: SettingsPanelProps) {
       <div className="flex h-16 items-center justify-between border-b border-line">
         <span className="text-base font-bold text-ink">{t.settings.theme}</span>
         <ThemeToggle />
+      </div>
+      <div className="flex h-16 items-center justify-between border-b border-line">
+        <span className="text-base font-bold text-ink">{t.settings.sounds}</span>
+        <SoundToggle />
       </div>
       <button
         type="button"

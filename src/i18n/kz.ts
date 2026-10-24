@@ -180,6 +180,7 @@ export const kz: Messages = {
     theme: 'Интерфейс тақырыбы',
     darkTheme: 'Қараңғы тақырып',
     privacy: 'Құпиялылық және қауіпсіздік',
+    sounds: 'Дыбыстар',
   },
 
   manage: {

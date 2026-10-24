@@ -188,6 +188,7 @@ export const ru: Messages = {
     theme: 'Тема оформления',
     darkTheme: 'Тёмная тема',
     privacy: 'Конфиденциальность и безопасность',
+    sounds: 'Звуки',
   },
 
   manage: {

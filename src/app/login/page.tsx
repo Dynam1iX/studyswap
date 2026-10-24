@@ -5,6 +5,8 @@ import { ArrowLeft, Loader2, MailCheck } from 'lucide-react';
 import { CodeInput } from '@/components/auth/CodeInput';
 import { HeroCard } from '@/components/auth/HeroCard';
 import { MicrosoftLogo } from '@/components/auth/MicrosoftLogo';
+import { playSound } from '@/lib/sound';
+import { QuickSettings } from '@/components/settings/QuickSettings';
 import { AppHeader } from '@/components/layout/AppHeader';
 import { MobileShell } from '@/components/layout/MobileShell';
 import {
@@ -137,6 +139,7 @@ export default function LoginPage() {
   }, [resendIn]);
 
   const fail = (message: string) => {
+    playSound('error');
     setError(message);
     setShake((n) => n + 1);
   };
@@ -184,9 +187,13 @@ export default function LoginPage() {
       {/* Desktop: brand panel on the left, the form centred on the right. */}
       <div className="lg:grid lg:min-h-dvh lg:grid-cols-[minmax(0,1fr)_minmax(440px,40%)] lg:gap-6 lg:p-6">
         <BrandPanel />
-        <div className="lg:flex lg:flex-col lg:justify-center">
+        <div className="lg:relative lg:flex lg:flex-col lg:justify-center">
+          {/* Language, theme and sound: in the logo row on phones, top right on desktop. */}
           <div className="lg:hidden">
-            <AppHeader />
+            <AppHeader actions={<QuickSettings />} />
+          </div>
+          <div className="absolute top-2 right-2 hidden lg:block">
+            <QuickSettings />
           </div>
 
           {/* 16px sides, 8px top and bottom, 16px between blocks. */}

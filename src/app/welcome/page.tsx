@@ -6,6 +6,7 @@ import { AppHeader } from '@/components/layout/AppHeader';
 import { MobileShell } from '@/components/layout/MobileShell';
 import { completeProfile, currentEmail, nameFromAccount, signOut, type NewProfile } from '@/lib/auth';
 import { PROGRAM_GROUPS, STUDY_YEARS } from '@/lib/search';
+import { playSound } from '@/lib/sound';
 import type { StudyYear } from '@/types/database';
 import { useT } from '@/i18n';
 
@@ -106,6 +107,7 @@ export default function WelcomePage() {
     if (missing || !studyYear || !degree) {
       setError(missing);
       setShake((n) => n + 1);
+      playSound('error');
       return;
     }
     setBusy(true);
@@ -117,6 +119,7 @@ export default function WelcomePage() {
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : t.welcome.saveError);
       setShake((n) => n + 1);
+      playSound('error');
       setBusy(false);
     }
   };

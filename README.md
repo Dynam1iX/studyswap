@@ -49,10 +49,12 @@ src/
     auth.ts               Sign-in: e-mail codes, Microsoft, current student, complete profile
     telegram.ts           Telegram linking through the bot: link token, status, unlink
     theme.ts              Light / dark theme: saved choice, applied before paint, circle reveal
+    sound.ts              Interface sounds (like, publish, Telegram linked, error): on by default, switch in Settings and on Login
   i18n/                   EN / RU / KZ texts (en.ts is the source; ru.ts, kz.ts follow its shape), useT(), I18nProvider
   types/
     database.ts           Row types of the Supabase tables
-public/                   Logo and icons
+public/                   Logo, icons, sounds/ (interface sounds, MP3)
+media/                    Source files of the media: sounds/*.wav masters (own work, synthesised with ffmpeg)
 ```
 
 ### Conventions

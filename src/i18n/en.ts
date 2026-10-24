@@ -182,6 +182,8 @@ export const en = {
     theme: 'Interface theme',
     darkTheme: 'Dark theme',
     privacy: 'Privacy and security',
+    /** Interface sounds (like, publish, Telegram linked, error). */
+    sounds: 'Sounds',
   },
 
   manage: {

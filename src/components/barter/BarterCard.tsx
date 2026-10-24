@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Settings2 } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { useReplay } from '@/lib/useReplay';
+import { playSound } from '@/lib/sound';
 import type { CategoryPalette } from '@/lib/categoryPalette';
 import type { ContactMethod } from '@/types/database';
 import { ExchangeIcon } from '@/components/ui/ExchangeIcon';
@@ -150,7 +151,10 @@ export function BarterCard({
             type="button"
             onClick={() => {
               // Liking pops the heart and bursts bubbles; unliking only shrinks it (active:scale).
-              if (!liked) burst();
+              if (!liked) {
+                burst();
+                playSound('like');
+              }
               setPops((n) => n + 1);
               onToggleLike();
             }}
