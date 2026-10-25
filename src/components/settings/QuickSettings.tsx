@@ -39,7 +39,7 @@ function ThemeButton() {
       aria-pressed={night}
       aria-label={t.settings.darkTheme}
       title={t.settings.darkTheme}
-      className="relative flex size-10 shrink-0 cursor-pointer items-center justify-center overflow-hidden rounded-full border border-line-strong bg-surface transition hover:bg-soft active:scale-90 max-[400px]:size-9"
+      className="relative flex size-10 shrink-0 cursor-pointer items-center justify-center overflow-hidden rounded-full border border-line-strong bg-surface transition hover:bg-soft active:scale-90"
     >
       <Sun
         aria-hidden
@@ -121,12 +121,12 @@ function LanguagePill() {
         aria-expanded={open}
         aria-controls={menuId}
         aria-label={`${t.settings.language}: ${current?.name}`}
-        className={`flex h-10 shrink-0 cursor-pointer items-center gap-1.5 rounded-full border bg-surface pr-2.5 pl-3 text-sm max-[400px]:h-9 max-[400px]:pr-2 max-[400px]:pl-2.5 font-bold text-ink transition hover:bg-soft active:scale-95 ${
+        className={`flex h-10 shrink-0 cursor-pointer items-center gap-1.5 rounded-full border bg-surface pr-2.5 pl-3 text-sm font-bold text-ink transition hover:bg-soft active:scale-95 ${
           open ? 'border-brand-from shadow-[0_0_0_3px_rgba(173,70,255,0.15)]' : 'border-line-strong'
         }`}
       >
-        {/* The globe makes room for the logo on 360px phones. */}
-        <Globe aria-hidden className="size-4 text-muted max-[400px]:hidden" strokeWidth={2.2} />
+        {/* The globe makes room for the logo on phones (the row is tight below 440px). */}
+        <Globe aria-hidden className="size-4 text-muted max-[440px]:hidden" strokeWidth={2.2} />
         <span key={language} className="animate-pop motion-reduce:animate-none">
           {current?.label}
         </span>
@@ -142,7 +142,7 @@ function LanguagePill() {
         role="menu"
         aria-label={t.settings.language}
         onKeyDown={onMenuKey}
-        className={`absolute top-full right-0 z-50 mt-2 flex w-48 origin-top-right flex-col gap-0.5 rounded-2xl border border-line bg-surface p-1.5 shadow-[0_16px_40px_rgba(27,21,48,0.18)] transition-[opacity,transform] duration-300 ${SPRING} ${
+        className={`absolute top-full right-0 z-50 mt-2 flex w-48 origin-top-right max-[400px]:right-auto max-[400px]:left-0 max-[400px]:origin-top-left flex-col gap-0.5 rounded-2xl border border-line bg-surface p-1.5 shadow-[0_16px_40px_rgba(27,21,48,0.18)] transition-[opacity,transform] duration-300 ${SPRING} ${
           open ? 'visible scale-100 opacity-100' : 'invisible scale-90 opacity-0'
         }`}
       >
@@ -184,7 +184,7 @@ function LanguagePill() {
 /** Language, theme and sound for pages without Settings (Login). */
 export function QuickSettings() {
   return (
-    <div className="flex items-center gap-2 max-[400px]:gap-1.5">
+    <div className="flex items-center gap-2">
       <LanguagePill />
       <ThemeButton />
       <SoundToggle compact />
