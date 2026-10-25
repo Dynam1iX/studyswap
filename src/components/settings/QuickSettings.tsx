@@ -125,8 +125,8 @@ function LanguagePill() {
           open ? 'border-brand-from shadow-[0_0_0_3px_rgba(173,70,255,0.15)]' : 'border-line-strong'
         }`}
       >
-        {/* The globe makes room for the logo on 360px phones. */}
-        <Globe aria-hidden className="size-4 text-muted max-[400px]:hidden" strokeWidth={2.2} />
+        {/* The globe makes room for the logo on phones (the row is tight below 440px). */}
+        <Globe aria-hidden className="size-4 text-muted max-[440px]:hidden" strokeWidth={2.2} />
         <span key={language} className="animate-pop motion-reduce:animate-none">
           {current?.label}
         </span>
@@ -142,7 +142,7 @@ function LanguagePill() {
         role="menu"
         aria-label={t.settings.language}
         onKeyDown={onMenuKey}
-        className={`absolute top-full right-0 z-50 mt-2 flex w-48 origin-top-right flex-col gap-0.5 rounded-2xl border border-line bg-surface p-1.5 shadow-[0_16px_40px_rgba(27,21,48,0.18)] transition-[opacity,transform] duration-300 ${SPRING} ${
+        className={`absolute top-full right-0 z-50 mt-2 flex w-48 origin-top-right max-[400px]:right-auto max-[400px]:left-0 max-[400px]:origin-top-left flex-col gap-0.5 rounded-2xl border border-line bg-surface p-1.5 shadow-[0_16px_40px_rgba(27,21,48,0.18)] transition-[opacity,transform] duration-300 ${SPRING} ${
           open ? 'visible scale-100 opacity-100' : 'invisible scale-90 opacity-0'
         }`}
       >
