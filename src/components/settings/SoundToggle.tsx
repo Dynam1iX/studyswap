@@ -32,7 +32,7 @@ export function SoundToggle({ compact = false }: { compact?: boolean }) {
         aria-pressed={on}
         aria-label={t.settings.sounds}
         title={t.settings.sounds}
-        className={`flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full border border-line-strong bg-surface transition hover:bg-soft active:scale-90 ${
+        className={`flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full border border-line-strong bg-surface transition hover:bg-soft active:scale-90 max-[400px]:size-9 ${
           on ? 'text-brand-from' : 'text-muted'
         }`}
       >

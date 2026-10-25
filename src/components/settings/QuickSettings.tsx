@@ -39,7 +39,7 @@ function ThemeButton() {
       aria-pressed={night}
       aria-label={t.settings.darkTheme}
       title={t.settings.darkTheme}
-      className="relative flex size-10 shrink-0 cursor-pointer items-center justify-center overflow-hidden rounded-full border border-line-strong bg-surface transition hover:bg-soft active:scale-90"
+      className="relative flex size-10 shrink-0 cursor-pointer items-center justify-center overflow-hidden rounded-full border border-line-strong bg-surface transition hover:bg-soft active:scale-90 max-[400px]:size-9"
     >
       <Sun
         aria-hidden
@@ -121,7 +121,7 @@ function LanguagePill() {
         aria-expanded={open}
         aria-controls={menuId}
         aria-label={`${t.settings.language}: ${current?.name}`}
-        className={`flex h-10 shrink-0 cursor-pointer items-center gap-1.5 rounded-full border bg-surface pr-2.5 pl-3 text-sm font-bold text-ink transition hover:bg-soft active:scale-95 ${
+        className={`flex h-10 shrink-0 cursor-pointer items-center gap-1.5 rounded-full border bg-surface pr-2.5 pl-3 text-sm max-[400px]:h-9 max-[400px]:pr-2 max-[400px]:pl-2.5 font-bold text-ink transition hover:bg-soft active:scale-95 ${
           open ? 'border-brand-from shadow-[0_0_0_3px_rgba(173,70,255,0.15)]' : 'border-line-strong'
         }`}
       >
@@ -184,7 +184,7 @@ function LanguagePill() {
 /** Language, theme and sound for pages without Settings (Login). */
 export function QuickSettings() {
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 max-[400px]:gap-1.5">
       <LanguagePill />
       <ThemeButton />
       <SoundToggle compact />
