@@ -20,7 +20,9 @@ Every change to the database lives in `migrations/` as a numbered SQL file, so t
 | `20261023190000_private_data_lock.sql` | Part 2 (after the app is live): other students see only id, name, major, year, photo path; private avatars bucket | Applied (SQL Editor) |
 | `20261024020000_no_requests.sql` | No swap requests or ratings: every linked Telegram is visible to signed-in students; `set_telegram_visibility` no longer callable | Applied (SQL Editor) |
 | `20261027120000_student_profile.sql` | Another student's page `/u/[id]`: `get_student_profile` (name, major, year, photo path; contact = visible Telegram handle, otherwise the university e-mail only for students with an active card, as on the cards) | Applied (SQL Editor) |
-| `20261027140000_card_preview.sql` | Card links `/c/<slug>-<code>`: `get_card_preview` — **public on purpose** (chat apps fetch link previews without signing in); returns only subjects, topics, author first name + initial, major, year of an active card | **Not applied yet** — run in the SQL Editor |
+| `20261027140000_card_preview.sql` | Card links `/c/<slug>-<code>`: `get_card_preview` — **public on purpose** (chat apps fetch link previews without signing in); returns only subjects, topics, author first name + initial, major, year of an active card | Applied (SQL Editor) |
+| `20261024010000_swap_requests.sql` | Swap requests in the app (statuses, six request functions, handles visible after an accepted swap). Applied 2026-10-24 but the file was lost; **restored from the live database for history only — do not re-run** | Applied (SQL Editor) |
+| `20261027160000_hardening.sql` | Bug review fixes: cards cannot set their own `id` / `created_at`, unique 8-character link code; drops `swap_requests` and its functions (`get_telegram_handles`, `export_my_data` updated); the AITU e-mail rule also on e-mail change | **Not applied yet** — run in the SQL Editor |
 | `20261022200000_sign_in.sql` | Only `6 digits@astanait.edu.kz` can sign up (trigger on `auth.users`); `complete_my_profile`; signed-in students never fall back to the demo account | Applied (SQL Editor) |
 | `20261022180000_avatars.sql` | Storage bucket `avatars` (own-folder policies), `users.avatar_path`, `set_my_avatar`, `remove_my_avatar` | Applied (SQL Editor) |
 | `20261022160000_profile_settings.sql` | `users.telegram_visibility`; `get_my_cards`, `update_my_card`, `set_my_card_status`, `delete_my_card`, `set_telegram_visibility`, `export_my_data` | Applied (SQL Editor) |
@@ -40,26 +42,24 @@ Supabase asks for confirmation before destructive statements (`DROP`, `DELETE`).
 | `users` | AITU students: name, `@astanait.edu.kz` e-mail, optional Telegram, major, year |
 | `subjects` | Course catalogue in four categories: CS & Dev, Mathematics, Humanities, Languages |
 | `barter_posts` | Barter cards: needed subject + topics, offered subject + topics, contact method, status |
-| `swap_requests` | A student asks a card's author to swap: `pending` → `accepted` / `declined` |
 | `search_history` | Recent searches of a student (10 newest, one row per query) |
 | `favorites` | Cards a student liked (one row per student and card) |
 
 ## Rules enforced by the database
 
 **Data**
-- Accounts: only `6 digits@astanait.edu.kz` can sign up (trigger on `auth.users`)
+- Accounts: only `6 digits@astanait.edu.kz` can sign up or switch to it (triggers on `auth.users`, insert and e-mail change)
 - Telegram is optional; when set: 5–32 letters, digits or `_`, without `@`
 - Topic texts are required, at most 150 characters (same as the Create form)
 - The two subjects of a card must differ
-- One swap request per student per card; you cannot request your own card (trigger `prevent_self_swap`)
+- A card's `id` and `created_at` are set by the database; the first 8 characters of the id (the link code) are unique
 - Status, contact method, role, year and category only accept the listed values
 
 **Access (Row Level Security, phase 2)**
-- Nothing is readable or callable without signing in
-- Students create cards and swap requests only as themselves; cards change only through `update_my_card` / `set_my_card_status` / `delete_my_card`
-- The profile row is read-only; it changes only through functions (avatar, Telegram visibility)
-- Telegram handles are not readable from the table: `get_telegram_handles` returns your own, public ones, and those of students with an accepted swap between you
-- Swap requests are visible only to the sender and the card's author
+- Nothing is readable or callable without signing in, except `get_card_preview` (link previews: subjects, topics, first name + initial, major, year of an active card)
+- Students create cards only as themselves; cards change only through `update_my_card` / `set_my_card_status` / `delete_my_card`
+- The profile row is read-only; it changes only through functions (avatar, Telegram)
+- Other students' rows: only id, name, major, year and photo path; e-mail and Telegram only through `get_post_contacts`, `get_student_profile`, `get_telegram_handles` (every linked handle is visible to signed-in students)
 - `search_history`, `favorites` and every `*_my_*` function act only on the signed-in student
 - Profile photos: anyone signed in can view them; a student can change files only in `avatars/<own id>/`
 
