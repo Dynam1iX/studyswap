@@ -86,7 +86,7 @@ function NavTabItem({ config, active, pings = 0 }: { config: TabConfig; active: 
 }
 
 /** Bottom bar shared by every page (rendered as MobileShell's footer). Phones only: desktop uses DesktopHotbar. */
-export function BottomNav({ active }: { active: NavTab }) {
+export function BottomNav({ active }: { active?: NavTab }) {
   const t = useT();
   const favoritePings = useFavoritePings();
   return (

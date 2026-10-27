@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
-import type { ReactNode } from 'react';
-import { AuthGate } from '@/components/auth/AuthGate';
+import { Suspense, type ReactNode } from 'react';
+import { AuthGate, Splash } from '@/components/auth/AuthGate';
 import { DesktopHotbar } from '@/components/layout/DesktopHotbar';
 import { THEME_COLORS, THEME_INIT_SCRIPT } from '@/lib/theme';
 import './globals.css';
@@ -38,10 +38,14 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       </head>
       <body className="bg-page text-ink antialiased">
         <I18nProvider>
-          <AuthGate>
-            {children}
-            <DesktopHotbar />
-          </AuthGate>
+          {/* Suspense: on /u/[id] the address is only known in the browser. Elsewhere the
+              gate renders its splash on the server exactly as before. */}
+          <Suspense fallback={<Splash />}>
+            <AuthGate>
+              {children}
+              <DesktopHotbar />
+            </AuthGate>
+          </Suspense>
         </I18nProvider>
       </body>
     </html>

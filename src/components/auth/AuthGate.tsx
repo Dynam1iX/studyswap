@@ -39,7 +39,7 @@ function CheckFailed() {
   );
 }
 
-function Splash() {
+export function Splash() {
   return (
     <div className="flex min-h-dvh items-center justify-center bg-page">
       <img src="/StudySwapLogo.svg" alt="StudySwap" className="size-14 animate-breathe rounded-2xl motion-reduce:animate-none" />

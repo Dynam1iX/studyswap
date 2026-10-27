@@ -175,6 +175,26 @@ export const kz: Messages = {
     cardDeleted: 'Карточка өшірілді',
   },
 
+  student: {
+    open: (name) => `Профильді ашу: ${name}`,
+    profile: 'Профиль',
+    loading: 'Профиль жүктелуде...',
+    loadError: 'Профильді жүктеу мүмкін болмады',
+    notFound: 'Студент табылмады',
+    noContact: 'Әзірге байланыс жоқ',
+    canHelpYou: 'Сізге көмектесе алады',
+    youCanHelp: 'Сіз көмектесе аласыз',
+    perfectMatch: 'Тамаша алмасу: бір-біріңізге көмектесе аласыздар',
+    matchChip: 'Сіздің пәндеріңізбен сәйкес',
+    needHelpWith: 'Көмек керек',
+    canTeach: 'Түсіндіре алады',
+    cards: 'Карточкалар',
+    noCards: 'Белсенді карточкалар жоқ',
+    share: 'Бөлісу',
+    linkCopied: 'Сілтеме көшірілді',
+    copyFailed: 'Сілтемені көшіру мүмкін болмады',
+  },
+
   settings: {
     language: 'Тіл',
     theme: 'Интерфейс тақырыбы',
