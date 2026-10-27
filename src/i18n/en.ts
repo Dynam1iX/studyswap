@@ -41,6 +41,11 @@ export const en = {
   },
 
   card: {
+    /** Pre-filled Telegram message; the link shows the card as a picture in the chat. */
+    telegramMessage: (url: string) => `Hi! I'm writing about your StudySwap card: ${url}`,
+    shareCard: 'Copy card link',
+    cardLinkCopied: 'Card link copied',
+    cardNotFound: 'This card is no longer available',
     needsHelp: 'Needs help',
     canTeach: 'Can teach',
     exchange: 'Exchange',

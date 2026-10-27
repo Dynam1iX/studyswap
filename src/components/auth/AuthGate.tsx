@@ -11,6 +11,30 @@ const LOGIN_PATH = '/login';
 /** "Complete your profile", for students signed in without a profile yet. */
 const WELCOME_PATH = '/welcome';
 
+/** A card or profile link opened while signed out: shown again right after signing in. */
+const RETURN_KEY = 'studyswap-return-to';
+const RETURNABLE = /^\/(c|u)\//;
+
+function rememberReturn(path: string) {
+  try {
+    if (RETURNABLE.test(path)) sessionStorage.setItem(RETURN_KEY, path);
+  } catch {
+    // Storage blocked: the student simply lands on the Feed.
+  }
+}
+
+/** Where to go after signing in (and completing the profile): the saved link, or the Feed. */
+export function takeReturnPath(): string {
+  try {
+    const path = sessionStorage.getItem(RETURN_KEY);
+    sessionStorage.removeItem(RETURN_KEY);
+    if (path && RETURNABLE.test(path)) return path;
+  } catch {
+    // ignore
+  }
+  return '/';
+}
+
 type Status = 'checking' | 'signed-out' | 'needs-profile' | 'ready' | 'error';
 
 /** Where a student with this status may be; null means "anywhere else". */
@@ -89,8 +113,10 @@ export function AuthGate({ children }: { children: ReactNode }) {
   const target = targetFor(status, pathname);
 
   useEffect(() => {
-    if (target) router.replace(target);
-  }, [target, router]);
+    if (!target) return;
+    if (target === LOGIN_PATH) rememberReturn(pathname);
+    router.replace(target === '/' ? takeReturnPath() : target);
+  }, [target, router, pathname]);
 
   if (status === 'error') return <CheckFailed />;
   if (status === 'checking' || target) return <Splash />;

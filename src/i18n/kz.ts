@@ -41,6 +41,10 @@ export const kz: Messages = {
   },
 
   card: {
+    telegramMessage: (url) => `Сәлем! StudySwap-тағы карточкаң бойынша жазып отырмын: ${url}`,
+    shareCard: 'Карточка сілтемесін көшіру',
+    cardLinkCopied: 'Карточка сілтемесі көшірілді',
+    cardNotFound: 'Бұл карточка енді қолжетімсіз',
     needsHelp: 'Көмек керек',
     canTeach: 'Түсіндіре аламын',
     exchange: 'Алмасу',
