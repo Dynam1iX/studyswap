@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { FeedPostCard } from '@/components/feed/FeedPostCard';
 import { FeedSkeleton } from '@/components/feed/FeedSkeleton';
 import { SubjectFilter, type SubjectFilterValue } from '@/components/feed/SubjectFilter';
@@ -11,6 +12,7 @@ import { MobileShell } from '@/components/layout/MobileShell';
 import { useFavoriteIds } from '@/lib/favorites';
 import { fetchFeed, type FeedPost } from '@/lib/feed';
 import type { Subject } from '@/types/database';
+import { Toast, useToast } from '@/components/ui/Toast';
 import { useT } from '@/i18n';
 
 export default function FeedPage() {
@@ -22,6 +24,10 @@ export default function FeedPage() {
   const { liked: likedPosts, toggle: toggleLike } = useFavoriteIds();
   /** The card whose details modal is open, or null. */
   const [activeSwap, setActiveSwap] = useState<FeedPost | null>(null);
+  const { toast, show: showToast, hide: hideToast } = useToast();
+  /** ?card=<code> from a card link (/c/...): open that card's details once the Feed is in. */
+  const cardCode = useSearchParams().get('card');
+  const router = useRouter();
 
   useEffect(() => {
     let cancelled = false;
@@ -40,13 +46,29 @@ export default function FeedPage() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!cardCode || loading) return;
+    const post = posts.find((p) => p.id.startsWith(cardCode));
+    router.replace('/', { scroll: false });
+    // A card link that no longer works (deleted or inactive card) gets a short note.
+    queueMicrotask(() => (post ? setActiveSwap(post) : showToast(t.card.cardNotFound)));
+  }, [cardCode, loading, posts, router, showToast, t]);
+
   const visiblePosts =
     selectedSubject === 'All'
       ? posts
       : posts.filter((post) => post.needed?.id === selectedSubject || post.offered?.id === selectedSubject);
 
   return (
-    <MobileShell wide footer={<BottomNav active="feed" />}>
+    <MobileShell
+      wide
+      footer={
+        <div className="relative">
+          <Toast toast={toast} onHide={hideToast} />
+          <BottomNav active="feed" />
+        </div>
+      }
+    >
       <AppHeader />
       <div className="animate-rise motion-reduce:animate-none">
         <SubjectFilter subjects={subjects} value={selectedSubject} onChange={setSelectedSubject} />

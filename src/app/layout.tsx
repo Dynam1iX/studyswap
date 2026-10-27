@@ -6,7 +6,16 @@ import { THEME_COLORS, THEME_INIT_SCRIPT } from '@/lib/theme';
 import './globals.css';
 import { I18nProvider } from '@/i18n';
 
+/** Base of absolute links in link previews (og:image): production, a Vercel preview, or local. */
+const SITE_BASE =
+  process.env.VERCEL_ENV === 'production'
+    ? 'https://studyswap-phi.vercel.app'
+    : process.env.VERCEL_BRANCH_URL
+      ? `https://${process.env.VERCEL_BRANCH_URL}`
+      : 'http://localhost:3000';
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_BASE),
   title: 'StudySwap — Academic Barter Platform',
   description: 'Peer-to-peer knowledge sharing for AITU students',
   icons: {

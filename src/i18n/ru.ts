@@ -49,6 +49,10 @@ export const ru: Messages = {
   },
 
   card: {
+    telegramMessage: (url) => `Привет! Пишу по твоей карточке на StudySwap: ${url}`,
+    shareCard: 'Скопировать ссылку на карточку',
+    cardLinkCopied: 'Ссылка на карточку скопирована',
+    cardNotFound: 'Эта карточка больше недоступна',
     needsHelp: 'Нужна помощь',
     canTeach: 'Могу объяснить',
     exchange: 'Обмен',

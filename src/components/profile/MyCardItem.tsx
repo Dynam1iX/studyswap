@@ -3,6 +3,7 @@
 import { paletteFor } from '@/lib/categoryPalette';
 import type { ProfileCard, ProfileSubject } from '@/lib/profile';
 import type { PostStatus } from '@/types/database';
+import { ShareCardButton } from '@/components/feed/ShareCardButton';
 import { ExchangeIcon } from '@/components/ui/ExchangeIcon';
 import { useT } from '@/i18n';
 
@@ -68,6 +69,9 @@ export function MyCardItem({ card, onManage }: MyCardItemProps) {
           <span aria-hidden style={{ backgroundColor: status.dot }} className="size-2 rounded-sm" />
           {t.profile.status[card.status]}
         </span>
+        <div className="flex items-center gap-2">
+        {/* Inactive cards have no working link. */}
+        {card.status === 'active' && <ShareCardButton card={card} className="size-10" />}
         <button
           type="button"
           onClick={() => onManage?.(card.id)}
@@ -76,6 +80,7 @@ export function MyCardItem({ card, onManage }: MyCardItemProps) {
         >
           {t.profile.manage}
         </button>
+        </div>
       </div>
     </div>
   );

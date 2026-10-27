@@ -11,6 +11,7 @@ import { getAuthorName, getContactHref, getContactMethod, type FeedPost } from '
 import { formatPostedAt, formatStudyInfo, getInitials } from '@/lib/format';
 import type { Subject } from '@/types/database';
 import { ExchangeIcon } from '@/components/ui/ExchangeIcon';
+import { ShareCardButton } from '@/components/feed/ShareCardButton';
 import { StudentLink } from '@/components/student/StudentLink';
 import { ViewableAvatar } from '@/components/ui/AvatarViewer';
 import { useAvatarUrl } from '@/lib/avatar';
@@ -45,6 +46,8 @@ export function SwapDetailModal({ post, onClose, linkAuthor = true }: SwapDetail
           <h2 id={titleId} className="font-bricolage text-[22px] font-extrabold text-ink">
             {t.details.title}
           </h2>
+          <div className="flex items-center gap-2">
+          {data && <ShareCardButton card={data} />}
           <button
             type="button"
             onClick={onClose}
@@ -53,6 +56,7 @@ export function SwapDetailModal({ post, onClose, linkAuthor = true }: SwapDetail
           >
             <X className="size-5" strokeWidth={2.4} />
           </button>
+          </div>
         </div>
       }
       footer={data && <SwapDetailActions post={data} onClose={onClose} />}

@@ -1,4 +1,6 @@
 import { supabase } from '@/lib/supabase';
+import { cardUrl } from '@/lib/cardLink';
+import { messages } from '@/i18n';
 import type { BarterPost, ContactMethod, Subject, User } from '@/types/database';
 
 /** What other students may see about an author (see migration private_data). */
@@ -99,7 +101,10 @@ export function getContactMethod(post: FeedPost): ContactMethod {
 /** Telegram link or a prefilled mailto: link for the post's contact method. */
 export function getContactHref(post: FeedPost): string {
   if (post.contact?.method === 'telegram') {
-    return `https://t.me/${post.contact.value}`;
+    // The message carries the card's link: Telegram shows the card as a picture under it,
+    // so the author knows which swap the message is about.
+    const text = encodeURIComponent(messages().card.telegramMessage(cardUrl(post)));
+    return `https://t.me/${post.contact.value}?text=${text}`;
   }
   const email = post.contact?.value ?? '';
   const subjectName = post.needed?.name;

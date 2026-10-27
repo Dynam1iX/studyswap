@@ -30,6 +30,7 @@ src/
     create/               /create   Create a barter offer
     profile/              /profile  Student profile; profile/edit: Telegram + student details
     u/[id]/               /u/<id>   Another student's profile: contact, matching subjects, active cards, share link
+    c/[slug]/             /c/<subjects>-<code>  A card's own link: opens the Feed with its details; opengraph-image draws the card for chat previews
     search/               /search   Search: categories, filters, recent searches, results
     favorites/            /favorites Liked cards, with Undo
     layout.tsx            Fonts, metadata
@@ -45,6 +46,7 @@ src/
     supabase.ts           Supabase client
     categoryPalette.ts    Colours for each subject category (the only place they live)
     search.ts             Search filters, AITU programs, recent-search functions
+    cardLink.ts           Card links (/c/...), parsing the code; cardPreview.ts: public preview data for the link picture
     student.ts            Another student's page: get_student_profile, their cards, matching subjects, avatar view transition
     favorites.ts          Likes: Supabase functions + useFavoriteIds (shared by Feed and Search)
     avatar.ts             Profile photos: crop to 256×256 WebP/JPEG, upload, public URL

@@ -1,5 +1,6 @@
 'use client';
 
+import { takeReturnPath } from '@/components/auth/AuthGate';
 import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
 import { ChevronDown, Loader2, Lock } from 'lucide-react';
 import { AppHeader } from '@/components/layout/AppHeader';
@@ -115,7 +116,7 @@ export default function WelcomePage() {
     try {
       await completeProfile({ firstName, lastName, major, studyYear, degree });
       // A full load so every page starts with the new profile.
-      window.location.assign('/');
+      window.location.assign(takeReturnPath());
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : t.welcome.saveError);
       setShake((n) => n + 1);
