@@ -3,7 +3,7 @@
 import { useId, useState, type CSSProperties, type ReactNode } from 'react';
 import Link from 'next/link';
 import { useMyId } from '@/lib/auth';
-import { CalendarDays, Mail, Send, Tag, X } from 'lucide-react';
+import { CalendarDays, ChevronRight, Mail, Send, Tag, X } from 'lucide-react';
 import { BottomSheet } from '@/components/ui/BottomSheet';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { paletteFor } from '@/lib/categoryPalette';
@@ -11,6 +11,7 @@ import { getAuthorName, getContactHref, getContactMethod, type FeedPost } from '
 import { formatPostedAt, formatStudyInfo, getInitials } from '@/lib/format';
 import type { Subject } from '@/types/database';
 import { ExchangeIcon } from '@/components/ui/ExchangeIcon';
+import { StudentLink } from '@/components/student/StudentLink';
 import { useT } from '@/i18n';
 import { useI18n } from '@/i18n';
 
@@ -18,10 +19,12 @@ interface SwapDetailModalProps {
   /** The card to show, or null when the modal is closed. */
   post: FeedPost | null;
   onClose: () => void;
+  /** false on the author's own page. */
+  linkAuthor?: boolean;
 }
 
 /** "More info" for a barter card: full texts, subjects, author and contact. */
-export function SwapDetailModal({ post, onClose }: SwapDetailModalProps) {
+export function SwapDetailModal({ post, onClose, linkAuthor = true }: SwapDetailModalProps) {
   const t = useT();
   const titleId = useId();
   // Keep the last post on screen while the sheet animates out.
@@ -52,12 +55,12 @@ export function SwapDetailModal({ post, onClose }: SwapDetailModalProps) {
       }
       footer={data && <SwapDetailActions post={data} onClose={onClose} />}
     >
-      {data && <SwapDetailBody post={data} />}
+      {data && <SwapDetailBody post={data} onClose={onClose} linkAuthor={linkAuthor} />}
     </BottomSheet>
   );
 }
 
-function SwapDetailBody({ post }: { post: FeedPost }) {
+function SwapDetailBody({ post, onClose, linkAuthor }: { post: FeedPost; onClose: () => void; linkAuthor: boolean }) {
   const { t, locale } = useI18n();
   const authorName = getAuthorName(post);
   const subjects = [post.offered, post.needed].filter((s): s is Subject => s !== null);
@@ -66,19 +69,41 @@ function SwapDetailBody({ post }: { post: FeedPost }) {
   return (
     <div className="flex flex-col gap-4 px-6 pt-2 pb-10">
       {/* Author */}
-      <div className="flex items-center gap-3">
-        <UserAvatar
-          initials={getInitials(authorName)}
-          path={post.author?.avatar_path}
-          className="size-12 text-base font-bold"
-        />
-        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-          <span className="truncate text-[17px] font-bold text-ink">{authorName}</span>
-          <span className="text-[13px] font-medium break-words text-muted">
-            {formatStudyInfo(t, post.author?.major, post.author?.study_year)}
-          </span>
-        </div>
-      </div>
+      {(() => {
+        const content = (
+          <>
+            <span data-student-avatar className="flex shrink-0 rounded-full">
+              <UserAvatar
+                initials={getInitials(authorName)}
+                path={post.author?.avatar_path}
+                className="size-12 text-base font-bold"
+              />
+            </span>
+            <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+              <span className="truncate text-[17px] font-bold text-ink">{authorName}</span>
+              <span className="text-[13px] font-medium break-words text-muted">
+                {formatStudyInfo(t, post.author?.major, post.author?.study_year)}
+              </span>
+            </span>
+          </>
+        );
+        return post.author && linkAuthor ? (
+          <StudentLink
+            author={post.author}
+            label={t.student.open(authorName)}
+            onNavigate={onClose}
+            className="group -mx-2 flex items-center gap-3 rounded-2xl p-2 transition hover:bg-soft active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-brand-from"
+          >
+            {content}
+            <span className="flex shrink-0 items-center gap-0.5 text-[13px] font-semibold text-brand-ink">
+              {t.student.profile}
+              <ChevronRight aria-hidden className="size-4 transition-transform group-hover:translate-x-0.5" strokeWidth={2.4} />
+            </span>
+          </StudentLink>
+        ) : (
+          <div className="flex items-center gap-3">{content}</div>
+        );
+      })()}
 
       {/* Can teach ⇄ Needs help */}
       <div className="relative grid grid-cols-2 gap-6">

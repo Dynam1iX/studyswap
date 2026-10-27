@@ -9,6 +9,8 @@ import { playSound } from '@/lib/sound';
 import type { CategoryPalette } from '@/lib/categoryPalette';
 import type { ContactMethod } from '@/types/database';
 import { ExchangeIcon } from '@/components/ui/ExchangeIcon';
+import { StudentLink } from '@/components/student/StudentLink';
+import type { FeedAuthor } from '@/lib/feed';
 import { useT } from '@/i18n';
 
 export interface CardAuthor {
@@ -42,6 +44,8 @@ interface BarterCardProps {
   openLabel?: string;
   /** The student's own card: no heart and no contact button (you cannot answer yourself). */
   own?: boolean;
+  /** Makes the avatar and name a link to the author's profile. */
+  authorLink?: FeedAuthor;
 }
 
 function SubjectHalf({ label, half }: { label: string; half: CardHalf }) {
@@ -104,6 +108,7 @@ export function BarterCard({
   onOpen,
   openLabel,
   own = false,
+  authorLink,
 }: BarterCardProps) {
   const t = useT();
   // With onOpen, a full-size button sits under the content. Content ignores clicks
@@ -118,6 +123,24 @@ export function BarterCard({
     <>
       <img src={contact.icon} alt="" className="size-[22px]" />
       <span>{contact.label}</span>
+    </>
+  );
+
+  const authorContent = (
+    <>
+      <span data-student-avatar className="flex shrink-0 rounded-full">
+        <UserAvatar initials={author.initials} path={author.avatarPath} className="size-10 text-xs" />
+      </span>
+      <span className="flex min-w-0 flex-col leading-tight">
+        <span
+          className={`truncate text-[15px] font-semibold text-ink ${
+            authorLink ? 'underline decoration-transparent underline-offset-2 transition-colors group-hover/author:decoration-current' : ''
+          }`}
+        >
+          {author.name}
+        </span>
+        <span className="truncate text-[13px] font-medium text-muted">{author.subtitle}</span>
+      </span>
     </>
   );
 
@@ -139,13 +162,17 @@ export function BarterCard({
 
       {/* Author and wishlist */}
       <div className={`flex items-center justify-between ${layer}`}>
-        <div className="flex min-w-0 items-center gap-2.5">
-          <UserAvatar initials={author.initials} path={author.avatarPath} className="size-10 text-xs" />
-          <div className="flex min-w-0 flex-col leading-tight">
-            <span className="truncate text-[15px] font-semibold text-ink">{author.name}</span>
-            <span className="truncate text-[13px] font-medium text-muted">{author.subtitle}</span>
-          </div>
-        </div>
+        {authorLink ? (
+          <StudentLink
+            author={authorLink}
+            label={t.student.open(author.name)}
+            className={`group/author -m-1 flex min-w-0 items-center gap-2.5 rounded-xl p-1 transition hover:bg-soft active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-brand-from ${interactive}`}
+          >
+            {authorContent}
+          </StudentLink>
+        ) : (
+          <div className="flex min-w-0 items-center gap-2.5">{authorContent}</div>
+        )}
 
         {own ? null : onToggleLike ? (
           <button

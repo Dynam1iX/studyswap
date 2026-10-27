@@ -13,10 +13,12 @@ interface FeedPostCardProps {
   onToggleLike: (postId: string) => void;
   /** Called when the card itself is clicked (opens the details modal). */
   onOpen: (post: FeedPost) => void;
+  /** false on the author's own page, where the name would lead back to it. */
+  linkAuthor?: boolean;
 }
 
 /** Maps a post from the database onto the shared BarterCard. */
-export function FeedPostCard({ post, liked, onToggleLike, onOpen }: FeedPostCardProps) {
+export function FeedPostCard({ post, liked, onToggleLike, onOpen, linkAuthor = true }: FeedPostCardProps) {
   const t = useT();
   const authorName = getAuthorName(post);
   const myId = useMyId();
@@ -46,6 +48,7 @@ export function FeedPostCard({ post, liked, onToggleLike, onOpen }: FeedPostCard
       onToggleLike={() => onToggleLike(post.id)}
       onOpen={() => onOpen(post)}
       openLabel={t.card.openDetailsOf(authorName)}
+      authorLink={linkAuthor && post.author ? post.author : undefined}
     />
   );
 }

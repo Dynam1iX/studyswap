@@ -29,6 +29,7 @@ src/
     welcome/              /welcome  Complete your profile (first sign-in; Microsoft fills in the name)
     create/               /create   Create a barter offer
     profile/              /profile  Student profile; profile/edit: Telegram + student details
+    u/[id]/               /u/<id>   Another student's profile: contact, matching subjects, active cards, share link
     search/               /search   Search: categories, filters, recent searches, results
     favorites/            /favorites Liked cards, with Undo
     layout.tsx            Fonts, metadata
@@ -39,10 +40,12 @@ src/
     barter/               BarterCard: the "Needs help / Can teach" card
     ui/                   Generic UI: BottomSheet (accessible modal: bottom sheet on phones, centred modal or menu on desktop)
     feed/ create/ profile/ search/ favorites/  Components used by one page only
+    student/              StudentLink (avatar + name → /u/<id>, avatar flies into the header), another student's page parts
   lib/
     supabase.ts           Supabase client
     categoryPalette.ts    Colours for each subject category (the only place they live)
     search.ts             Search filters, AITU programs, recent-search functions
+    student.ts            Another student's page: get_student_profile, their cards, matching subjects, avatar view transition
     favorites.ts          Likes: Supabase functions + useFavoriteIds (shared by Feed and Search)
     avatar.ts             Profile photos: crop to 256×256 WebP/JPEG, upload, public URL
     format.ts             Small text helpers (initials, short names)

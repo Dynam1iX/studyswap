@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { Check } from 'lucide-react';
 import type { ProfileSubject } from '@/lib/profile';
 import { SubjectChip } from './SubjectChip';
 import { useT } from '@/i18n';
@@ -9,10 +10,16 @@ interface SubjectChipListProps {
   title: string;
   subjects: ProfileSubject[];
   emptyText: string;
+  /** "+ Add" (your own profile only). */
+  showAdd?: boolean;
+  /** Subjects to ring as matches with yours (another student's page). */
+  highlight?: Set<number>;
+  /** Accessible note on a ringed chip. */
+  highlightLabel?: string;
 }
 
 /** "+ Add" leads to the Create page: subjects come from the student's cards for now. */
-export function SubjectChipList({ title, subjects, emptyText }: SubjectChipListProps) {
+export function SubjectChipList({ title, subjects, emptyText, showAdd = true, highlight, highlightLabel }: SubjectChipListProps) {
   const t = useT();
   return (
     <section className="flex flex-col gap-2 lg:rounded-3xl lg:border lg:border-line lg:bg-surface lg:p-5">
@@ -24,10 +31,27 @@ export function SubjectChipList({ title, subjects, emptyText }: SubjectChipListP
             style={{ animationDelay: `${index * 60}ms` }}
             className="animate-pop motion-reduce:animate-none"
           >
-            <SubjectChip subject={subject} />
+            {highlight?.has(subject.id) ? (
+              <span
+                title={highlightLabel}
+                className="relative inline-flex rounded-full ring-2 ring-brand-from ring-offset-2 ring-offset-page lg:ring-offset-surface"
+              >
+                <SubjectChip subject={subject} />
+                <span className="sr-only">{highlightLabel}</span>
+                <span
+                  aria-hidden
+                  className="absolute -top-1.5 -right-1.5 flex size-5 animate-pop items-center justify-center rounded-full bg-linear-to-r from-brand-from to-brand-to text-white shadow motion-reduce:animate-none"
+                >
+                  <Check className="size-3" strokeWidth={3.5} />
+                </span>
+              </span>
+            ) : (
+              <SubjectChip subject={subject} />
+            )}
           </li>
         ))}
         {subjects.length === 0 && <li className="text-sm text-muted">{emptyText}</li>}
+        {showAdd && (
         <li>
           <Link
             href="/create"
@@ -36,6 +60,7 @@ export function SubjectChipList({ title, subjects, emptyText }: SubjectChipListP
             {t.profile.add}
           </Link>
         </li>
+        )}
       </ul>
     </section>
   );

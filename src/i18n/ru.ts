@@ -183,6 +183,26 @@ export const ru: Messages = {
     cardDeleted: 'Карточка удалена',
   },
 
+  student: {
+    open: (name) => `Открыть профиль: ${name}`,
+    profile: 'Профиль',
+    loading: 'Загружаем профиль...',
+    loadError: 'Не удалось загрузить профиль',
+    notFound: 'Студент не найден',
+    noContact: 'Контакта пока нет',
+    canHelpYou: 'Может помочь вам с',
+    youCanHelp: 'Вы можете помочь с',
+    perfectMatch: 'Идеальный обмен: вы можете помочь друг другу',
+    matchChip: 'Совпадает с вашими предметами',
+    needHelpWith: 'Нужна помощь с',
+    canTeach: 'Может объяснить',
+    cards: 'Карточки',
+    noCards: 'Нет активных карточек',
+    share: 'Поделиться',
+    linkCopied: 'Ссылка скопирована',
+    copyFailed: 'Не удалось скопировать ссылку',
+  },
+
   settings: {
     language: 'Язык',
     theme: 'Тема оформления',

@@ -177,6 +177,28 @@ export const en = {
     cardDeleted: 'Card deleted',
   },
 
+  /** Another student's page (/u/[id]). */
+  student: {
+    open: (name: string) => `Open ${name}'s profile`,
+    /** Link next to the author in the swap details. */
+    profile: 'Profile',
+    loading: 'Loading profile...',
+    loadError: 'Could not load the profile',
+    notFound: 'Student not found',
+    noContact: 'No contact yet',
+    canHelpYou: 'Can help you with',
+    youCanHelp: 'You can help with',
+    perfectMatch: 'Perfect swap: you can help each other',
+    matchChip: 'Matches your subjects',
+    needHelpWith: 'Needs help with',
+    canTeach: 'Can teach',
+    cards: 'Cards',
+    noCards: 'No active cards',
+    share: 'Share',
+    linkCopied: 'Link copied',
+    copyFailed: 'Could not copy the link',
+  },
+
   settings: {
     language: 'Language',
     theme: 'Interface theme',
