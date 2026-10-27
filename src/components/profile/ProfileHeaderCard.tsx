@@ -22,7 +22,13 @@ export function ProfileHeaderCard({ user, avatarUrl, onEditAvatar, avatarBusy, o
   return (
     <div className="flex flex-col gap-4 rounded-3xl border border-line bg-surface p-4">
       <div className="flex items-center gap-4">
-        <Avatar initials={user.initials} url={avatarUrl} onEdit={onEditAvatar} busy={avatarBusy} />
+        <Avatar
+          initials={user.initials}
+          url={avatarUrl}
+          onEdit={onEditAvatar}
+          busy={avatarBusy}
+          view={{ name: user.displayName, subtitle: formatStudyInfo(t, user.major, user.studyYear) }}
+        />
         <div className="flex min-w-0 flex-col gap-0.5">
           <p className="truncate font-bricolage text-2xl font-extrabold text-ink">{user.displayName}</p>
           <p className="text-sm font-medium text-muted">

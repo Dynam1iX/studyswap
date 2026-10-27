@@ -6,6 +6,7 @@ import { useAvatarUrl } from '@/lib/avatar';
 import type { FeedAuthor, PostContact } from '@/lib/feed';
 import { formatStudyInfo, getInitials, getShortName } from '@/lib/format';
 import { STUDENT_AVATAR_TRANSITION, studentAvatarReady } from '@/lib/student';
+import { ViewableAvatar } from '@/components/ui/AvatarViewer';
 import { useT } from '@/i18n';
 
 interface StudentHeaderCardProps {
@@ -38,6 +39,11 @@ export function StudentHeaderCard({ author, contact }: StudentHeaderCardProps) {
   return (
     <div className="@container flex flex-col gap-4 rounded-3xl border border-line bg-surface p-4">
       <div className="flex items-center gap-4">
+        <ViewableAvatar
+          url={showPhoto ? url : null}
+          name={getShortName(name)}
+          subtitle={formatStudyInfo(t, author.major, author.study_year)}
+        >
         <div
           style={{ viewTransitionName: STUDENT_AVATAR_TRANSITION }}
           className="relative size-20 shrink-0 rounded-full p-[3px]"
@@ -58,6 +64,7 @@ export function StudentHeaderCard({ author, contact }: StudentHeaderCardProps) {
             )}
           </div>
         </div>
+        </ViewableAvatar>
         <div className="flex min-w-0 flex-col gap-0.5">
           <p className="truncate font-bricolage text-2xl font-extrabold text-ink">{getShortName(name)}</p>
           <p className="text-sm font-medium text-muted">{formatStudyInfo(t, author.major, author.study_year)}</p>

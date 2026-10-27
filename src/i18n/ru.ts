@@ -239,6 +239,8 @@ export const ru: Messages = {
   },
 
   avatar: {
+    view: (name) => `Открыть фото: ${name}`,
+    viewer: (name) => `Фото: ${name}`,
     title: 'Фото профиля',
     change: 'Сменить фото',
     choose: 'Выбрать фото',

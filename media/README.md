@@ -15,7 +15,7 @@ Source files and the tools that made them. What the site serves is in `public/`.
 | 5b | Video captions (`how-to-create.en/ru/kz.vtt`) | How-to video, subtitle tracks (site language on by default) | WebVTT | 6 cues, 0.7–32.9 s | ~0.6 KB each | Own work | Own |
 | 6 | Video poster (`how-to-create-poster.webp`) | Before the video plays | WebP q78 | 960 × 540 | 30 KB | Own work: last frame of the video | Own |
 | 7 | Step screenshots (`step-*-200/400.webp`) | "How it works", three steps | WebP q80, 200 w and 400 w (`srcset`) | 400 × 558 max | 5.6–17 KB each | Own work: screenshots of the app with demo data (`help/shots.js`) | Own |
-| 8 | Profile photos | Cards, Profile | WebP (JPEG fallback), cropped by the site | 256 × 256 | ~10–25 KB | Uploaded by each student | The student's own |
+| 8 | Profile photos | Cards, Profile, photo window (240 px) | WebP (JPEG fallback), cropped by the site | 256 × 256 | ~10–25 KB | Uploaded by each student | The student's own |
 | 9 | Fonts: Bricolage Grotesque, Montserrat | All text | WOFF2 (Google Fonts) | — | — | Google Fonts | SIL Open Font License 1.1 |
 
 Demo data only: the video and the screenshots show "Demo Student A…F" and a test account, no real students.

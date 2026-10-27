@@ -231,6 +231,8 @@ export const kz: Messages = {
   },
 
   avatar: {
+    view: (name) => `Фотоны ашу: ${name}`,
+    viewer: (name) => `Фото: ${name}`,
     title: 'Профиль суреті',
     change: 'Суретті өзгерту',
     choose: 'Сурет таңдау',
