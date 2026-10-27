@@ -12,6 +12,8 @@ import { formatPostedAt, formatStudyInfo, getInitials } from '@/lib/format';
 import type { Subject } from '@/types/database';
 import { ExchangeIcon } from '@/components/ui/ExchangeIcon';
 import { StudentLink } from '@/components/student/StudentLink';
+import { ViewableAvatar } from '@/components/ui/AvatarViewer';
+import { useAvatarUrl } from '@/lib/avatar';
 import { useT } from '@/i18n';
 import { useI18n } from '@/i18n';
 
@@ -60,6 +62,53 @@ export function SwapDetailModal({ post, onClose, linkAuthor = true }: SwapDetail
   );
 }
 
+/** Avatar (opens the photo) and name with "Profile ›" (opens the author's page). */
+function AuthorRow({ post, onClose, linkAuthor }: { post: FeedPost; onClose: () => void; linkAuthor: boolean }) {
+  const t = useT();
+  const authorName = getAuthorName(post);
+  const subtitle = formatStudyInfo(t, post.author?.major, post.author?.study_year);
+  const url = useAvatarUrl(post.author?.avatar_path);
+  const avatar = (
+    <ViewableAvatar url={url} name={authorName} subtitle={subtitle}>
+      <span data-student-avatar className="flex shrink-0 rounded-full">
+        <UserAvatar initials={getInitials(authorName)} path={post.author?.avatar_path} className="size-12 text-base font-bold" />
+      </span>
+    </ViewableAvatar>
+  );
+  const text = (
+    <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+      <span className="truncate text-[17px] font-bold text-ink">{authorName}</span>
+      <span className="text-[13px] font-medium break-words text-muted">{subtitle}</span>
+    </span>
+  );
+
+  if (!post.author || !linkAuthor) {
+    return (
+      <div className="flex items-center gap-3">
+        {avatar}
+        {text}
+      </div>
+    );
+  }
+  return (
+    <div className="-mx-2 flex items-center gap-1 rounded-2xl p-2 transition-colors has-[a:hover]:bg-soft">
+      {avatar}
+      <StudentLink
+        author={post.author}
+        label={t.student.open(authorName)}
+        onNavigate={onClose}
+        className="group flex min-w-0 flex-1 items-center gap-3 rounded-xl py-1 pl-2 transition active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-brand-from"
+      >
+        {text}
+        <span className="flex shrink-0 items-center gap-0.5 text-[13px] font-semibold text-brand-ink">
+          {t.student.profile}
+          <ChevronRight aria-hidden className="size-4 transition-transform group-hover:translate-x-0.5" strokeWidth={2.4} />
+        </span>
+      </StudentLink>
+    </div>
+  );
+}
+
 function SwapDetailBody({ post, onClose, linkAuthor }: { post: FeedPost; onClose: () => void; linkAuthor: boolean }) {
   const { t, locale } = useI18n();
   const authorName = getAuthorName(post);
@@ -69,41 +118,7 @@ function SwapDetailBody({ post, onClose, linkAuthor }: { post: FeedPost; onClose
   return (
     <div className="flex flex-col gap-4 px-6 pt-2 pb-10">
       {/* Author */}
-      {(() => {
-        const content = (
-          <>
-            <span data-student-avatar className="flex shrink-0 rounded-full">
-              <UserAvatar
-                initials={getInitials(authorName)}
-                path={post.author?.avatar_path}
-                className="size-12 text-base font-bold"
-              />
-            </span>
-            <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-              <span className="truncate text-[17px] font-bold text-ink">{authorName}</span>
-              <span className="text-[13px] font-medium break-words text-muted">
-                {formatStudyInfo(t, post.author?.major, post.author?.study_year)}
-              </span>
-            </span>
-          </>
-        );
-        return post.author && linkAuthor ? (
-          <StudentLink
-            author={post.author}
-            label={t.student.open(authorName)}
-            onNavigate={onClose}
-            className="group -mx-2 flex items-center gap-3 rounded-2xl p-2 transition hover:bg-soft active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-brand-from"
-          >
-            {content}
-            <span className="flex shrink-0 items-center gap-0.5 text-[13px] font-semibold text-brand-ink">
-              {t.student.profile}
-              <ChevronRight aria-hidden className="size-4 transition-transform group-hover:translate-x-0.5" strokeWidth={2.4} />
-            </span>
-          </StudentLink>
-        ) : (
-          <div className="flex items-center gap-3">{content}</div>
-        );
-      })()}
+      <AuthorRow post={post} onClose={onClose} linkAuthor={linkAuthor} />
 
       {/* Can teach ⇄ Needs help */}
       <div className="relative grid grid-cols-2 gap-6">

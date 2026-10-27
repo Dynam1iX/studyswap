@@ -34,7 +34,11 @@ export function StudentLink({ author, children, className = '', label, onNavigat
     if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     event.preventDefault();
     onNavigate?.();
-    const avatar = ref.current?.querySelector<HTMLElement>('[data-student-avatar]') ?? null;
+    // The avatar is inside the link (swap details) or next to it (cards).
+    const avatar =
+      ref.current?.querySelector<HTMLElement>('[data-student-avatar]') ??
+      ref.current?.parentElement?.querySelector<HTMLElement>('[data-student-avatar]') ??
+      null;
     if (href === '/profile') router.push(href);
     else openStudent(() => router.push(href), avatar);
   };

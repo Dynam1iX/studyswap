@@ -14,7 +14,7 @@ const SWIPE_CLOSE_PX = 100;
  * app-scroll mode) and returns a function that undoes it. Touch swipes are handled
  * separately: they are swallowed inside the dialog, so iOS never moves the page.
  */
-function lockPageScroll(): () => void {
+export function lockPageScroll(): () => void {
   const html = document.documentElement;
   const scroller = document.getElementById(APP_SCROLL_ID);
   const previous = { html: html.style.overflow, scroller: scroller?.style.overflowY ?? '' };
@@ -111,6 +111,15 @@ export function BottomSheet({ open, onClose, labelledBy, header, footer, childre
     }, EXIT_MS);
     return () => window.clearTimeout(timer);
   }, [open, anchor]);
+
+  // Leaving the page (or Next hiding it) cancels the exit timer above; close the dialog
+  // right away, or it stays in the top layer and the next page cannot be clicked.
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    return () => {
+      if (dialog?.open) dialog.close();
+    };
+  }, []);
 
   // iOS Safari: a swipe that the sheet body cannot use goes to the browser, which then
   // collapses its address bar and drags the whole sheet up (seen when the page is near

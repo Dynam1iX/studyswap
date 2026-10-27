@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Pencil } from 'lucide-react';
+import { ViewableAvatar } from '@/components/ui/AvatarViewer';
 import { useT } from '@/i18n';
 
 interface AvatarProps {
@@ -11,10 +12,12 @@ interface AvatarProps {
   onEdit?: () => void;
   /** Spins the gradient ring while a new photo uploads. */
   busy?: boolean;
+  /** Name and subtitle for the photo window; without them the photo does not open. */
+  view?: { name: string; subtitle: string };
 }
 
 /** Gradient ring avatar. The edit badge shares the same grid cell instead of absolute positioning. */
-export function Avatar({ initials, url = null, onEdit, busy = false }: AvatarProps) {
+export function Avatar({ initials, url = null, onEdit, busy = false, view }: AvatarProps) {
   const t = useT();
   // Initials if the photo cannot be loaded (deleted file, offline).
   const [failedUrl, setFailedUrl] = useState<string | null>(null);
@@ -22,7 +25,14 @@ export function Avatar({ initials, url = null, onEdit, busy = false }: AvatarPro
 
   return (
     <div className="grid size-20 shrink-0 animate-pop motion-reduce:animate-none">
-      <div className="relative col-start-1 row-start-1 rounded-full p-[3px]">
+      <ViewableAvatar
+        url={view && showPhoto && !busy ? url : null}
+        name={view?.name ?? ''}
+        subtitle={view?.subtitle}
+        onChange={onEdit}
+        className="relative col-start-1 row-start-1 block size-20"
+      >
+      <div className="relative col-start-1 row-start-1 size-20 rounded-full p-[3px]">
         {/* Ring: a conic gradient that spins while uploading */}
         <span
           aria-hidden
@@ -48,6 +58,8 @@ export function Avatar({ initials, url = null, onEdit, busy = false }: AvatarPro
           )}
         </div>
       </div>
+      </ViewableAvatar>
+      {onEdit && (
       <button
         type="button"
         onClick={onEdit}
@@ -57,6 +69,7 @@ export function Avatar({ initials, url = null, onEdit, busy = false }: AvatarPro
       >
         <Pencil className="size-3.5" strokeWidth={2.4} />
       </button>
+      )}
     </div>
   );
 }

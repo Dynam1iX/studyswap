@@ -38,7 +38,7 @@ src/
     layout/               AppHeader, BottomNav (phones), DesktopHotbar (≥992px, root layout), MobileShell, NavIcons
     auth/                 AuthGate (redirects to /login or /welcome), login page parts
     barter/               BarterCard: the "Needs help / Can teach" card
-    ui/                   Generic UI: BottomSheet (accessible modal: bottom sheet on phones, centred modal or menu on desktop)
+    ui/                   Generic UI: BottomSheet (accessible modal: bottom sheet on phones, centred modal or menu on desktop), AvatarViewer (tap a photo: small window, grows out of the avatar)
     feed/ create/ profile/ search/ favorites/  Components used by one page only
     student/              StudentLink (avatar + name → /u/<id>, avatar flies into the header), another student's page parts
   lib/

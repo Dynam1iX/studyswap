@@ -236,6 +236,9 @@ export const en = {
   },
 
   avatar: {
+    /** Opening a photo in the viewer. */
+    view: (name: string) => `Open ${name}'s photo`,
+    viewer: (name: string) => `${name}'s photo`,
     title: 'Profile photo',
     change: 'Change photo',
     choose: 'Choose a photo',
