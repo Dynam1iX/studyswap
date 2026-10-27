@@ -10,7 +10,7 @@ import { SwapDetailModal } from '@/components/feed/SwapDetailModal';
 import { AppHeader } from '@/components/layout/AppHeader';
 import { BottomNav } from '@/components/layout/BottomNav';
 import { MobileShell } from '@/components/layout/MobileShell';
-import { addFavorite, fetchFavoritePosts, removeFavorite } from '@/lib/favorites';
+import { fetchFavoritePosts, setFavorite } from '@/lib/favorites';
 import type { FeedPost } from '@/lib/feed';
 import { messages, useT } from '@/i18n';
 
@@ -78,7 +78,8 @@ export default function FavoritesPage() {
   const [removed, setRemoved] = useState<Removed | null>(null);
   /** The card whose details modal is open, or null. */
   const [activeSwap, setActiveSwap] = useState<FeedPost | null>(null);
-  const timers = useRef<number[]>([]);
+  /** Exit timer of each card that is sliding out. */
+  const timers = useRef(new Map<string, number>());
   const removals = useRef(0);
 
   useEffect(() => {
@@ -97,11 +98,21 @@ export default function FavoritesPage() {
     return () => {
       cancelled = true;
       pending.forEach((timer) => window.clearTimeout(timer));
+      pending.clear();
     };
   }, []);
 
   // Next.js keeps this page alive (hidden) after navigating away: drop the Undo toast then.
-  useLayoutEffect(() => () => setRemoved(null), []);
+  // Also forget cards that were sliding out (their timers stop while hidden; the list is
+  // loaded again when the page comes back) and close the details sheet.
+  useLayoutEffect(
+    () => () => {
+      setRemoved(null);
+      setLeaving(new Set());
+      setActiveSwap(null);
+    },
+    [],
+  );
 
   const posts = state.status === 'ready' ? state.posts : [];
   const savedCount = posts.filter((post) => !leaving.has(post.id)).length;
@@ -113,10 +124,17 @@ export default function FavoritesPage() {
     setLeaving((prev) => new Set(prev).add(post.id));
     removals.current += 1;
     setRemoved({ post, index, key: `${post.id}-${removals.current}` });
-    removeFavorite(post.id).catch((err: unknown) => console.error('Error removing favorite:', err));
+    setFavorite(post.id, false).catch((err: unknown) => {
+      // Not removed after all: bring the card back.
+      console.error('Error removing favorite:', err);
+      restore(post, index);
+      setRemoved((prev) => (prev?.post.id === post.id ? null : prev));
+    });
 
-    timers.current.push(
+    timers.current.set(
+      post.id,
       window.setTimeout(() => {
+        timers.current.delete(post.id);
         setState((prev) =>
           prev.status === 'ready' ? { status: 'ready', posts: prev.posts.filter((p) => p.id !== post.id) } : prev,
         );
@@ -129,11 +147,13 @@ export default function FavoritesPage() {
     );
   };
 
-  const undo = () => {
-    if (!removed) return;
-    const { post, index } = removed;
-    setRemoved(null);
-    addFavorite(post.id).catch((err: unknown) => console.error('Error restoring favorite:', err));
+  /** Puts a card back at its place (Undo, or an unlike that failed). */
+  const restore = (post: FeedPost, index: number) => {
+    const timer = timers.current.get(post.id);
+    if (timer !== undefined) {
+      window.clearTimeout(timer);
+      timers.current.delete(post.id);
+    }
     setLeaving((prev) => {
       const next = new Set(prev);
       next.delete(post.id);
@@ -146,6 +166,14 @@ export default function FavoritesPage() {
       next.splice(Math.min(index, next.length), 0, post);
       return { status: 'ready', posts: next };
     });
+  };
+
+  const undo = () => {
+    if (!removed) return;
+    const { post, index } = removed;
+    setRemoved(null);
+    setFavorite(post.id, true).catch((err: unknown) => console.error('Error restoring favorite:', err));
+    restore(post, index);
   };
 
   const expire = useCallback(() => setRemoved(null), []);

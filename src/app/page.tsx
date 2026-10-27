@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { FeedPostCard } from '@/components/feed/FeedPostCard';
 import { FeedSkeleton } from '@/components/feed/FeedSkeleton';
@@ -46,13 +46,42 @@ export default function FeedPage() {
     };
   }, []);
 
+  // Hidden by Next (another tab opened): close the sheet, or it opens again on return.
+  useLayoutEffect(() => () => setActiveSwap(null), []);
+
   useEffect(() => {
     if (!cardCode || loading) return;
-    const post = posts.find((p) => p.id.startsWith(cardCode));
     router.replace('/', { scroll: false });
-    // A card link that no longer works (deleted or inactive card) gets a short note.
-    queueMicrotask(() => (post ? setActiveSwap(post) : showToast(t.card.cardNotFound)));
-  }, [cardCode, loading, posts, router, showToast, t]);
+    const code = cardCode.toLowerCase();
+    if (!/^[0-9a-f]{8}$/.test(code)) {
+      queueMicrotask(() => showToast(t.card.cardNotFound));
+      return;
+    }
+    const open = (list: FeedPost[]) => {
+      const post = list.find((p) => p.id.startsWith(code));
+      // A card link that no longer works (deleted or inactive card) gets a short note.
+      if (post) setActiveSwap(post);
+      else showToast(t.card.cardNotFound);
+    };
+    if (posts.some((p) => p.id.startsWith(code))) {
+      queueMicrotask(() => open(posts));
+      return;
+    }
+    // Not in the list on screen (a newer card, or the list is from before): load it again.
+    let cancelled = false;
+    fetchFeed()
+      .then((data) => {
+        if (cancelled) return;
+        setPosts(data.posts);
+        setSubjects(data.subjects);
+        open(data.posts);
+      })
+      .catch(() => !cancelled && showToast(t.card.cardNotFound));
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cardCode, loading]);
 
   const visiblePosts =
     selectedSubject === 'All'

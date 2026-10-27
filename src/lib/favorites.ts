@@ -28,6 +28,35 @@ export async function removeFavorite(postId: string): Promise<void> {
   if (error) throw error;
 }
 
+/** Pending like/unlike per card: calls for one card run one after another, in order. */
+const queues = new Map<string, Promise<void>>();
+/** Number of requests made per card, to tell whether a failed one is still the latest. */
+const requests = new Map<string, number>();
+
+/**
+ * Likes or unlikes a card. Calls for the same card never overlap, so a quick
+ * like → unlike always ends unliked in the database (no out-of-order requests).
+ * Resolves to false when the call failed but a newer one for the card is queued.
+ */
+export function setFavorite(postId: string, like: boolean): Promise<boolean> {
+  const number = (requests.get(postId) ?? 0) + 1;
+  requests.set(postId, number);
+  const run = (queues.get(postId) ?? Promise.resolve()).then(() => (like ? addFavorite(postId) : removeFavorite(postId)));
+  const settled = run.catch(() => undefined);
+  queues.set(postId, settled);
+  void settled.then(() => {
+    if (queues.get(postId) === settled) queues.delete(postId);
+  });
+  return run.then(
+    () => true,
+    (err: unknown) => {
+      // Only the latest request decides what the heart shows.
+      if (requests.get(postId) === number) throw err;
+      return false;
+    },
+  );
+}
+
 /**
  * The liked cards themselves, in like order (newest first).
  * Cards that are no longer active are hidden by RLS and simply left out.
@@ -65,11 +94,22 @@ export function useFavoriteIds() {
     likedRef.current = liked;
   }, [liked]);
 
+  /** Cards tapped before the list arrived: the tap wins over the loaded state. */
+  const touched = useRef(new Set<string>());
+
   useEffect(() => {
     let cancelled = false;
     fetchFavoriteIds()
       .then((ids) => {
-        if (!cancelled) setLiked(new Set(ids));
+        if (cancelled) return;
+        setLiked((prev) => {
+          const next = new Set(ids);
+          for (const id of touched.current) {
+            if (prev.has(id)) next.add(id);
+            else next.delete(id);
+          }
+          return next;
+        });
       })
       .catch((err: unknown) => console.error('Error loading favorites:', err));
     return () => {
@@ -84,13 +124,15 @@ export function useFavoriteIds() {
         const next = new Set(prev);
         if (like) next.add(postId);
         else next.delete(postId);
+        likedRef.current = next;
         return next;
       });
 
+    touched.current.add(postId);
     flip(!wasLiked);
     if (!wasLiked) window.dispatchEvent(new Event(FAVORITE_ADDED_EVENT));
 
-    (wasLiked ? removeFavorite(postId) : addFavorite(postId)).catch((err: unknown) => {
+    setFavorite(postId, !wasLiked).catch((err: unknown) => {
       console.error('Error saving favorite:', err);
       flip(wasLiked);
     });

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useState, type ReactNode } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { ChevronLeft, Loader2, Share2 } from 'lucide-react';
 import { FeedPostCard } from '@/components/feed/FeedPostCard';
@@ -52,6 +52,8 @@ export function StudentPage() {
   const state: LoadState = loaded?.id === id ? loaded.state : { status: 'loading' };
   const { liked, toggle: toggleLike } = useFavoriteIds();
   const [activeSwap, setActiveSwap] = useState<FeedPost | null>(null);
+  // Hidden by Next (another tab opened): close the sheet, or it opens again on return.
+  useLayoutEffect(() => () => setActiveSwap(null), []);
   const { toast, show: showToast, hide: hideToast } = useToast();
   /** Shown at once from the card that was tapped, before the page has loaded. */
   const preview = knownStudent(id);
