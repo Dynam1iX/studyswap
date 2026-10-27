@@ -10,9 +10,6 @@ export type ContactMethod = 'telegram' | 'email';
 /** barter_posts.status */
 export type PostStatus = 'active' | 'completed' | 'archived';
 
-/** swap_requests.status */
-export type SwapStatus = 'pending' | 'accepted' | 'declined';
-
 /** users.role */
 export type UserRole = 'student' | 'moderator' | 'admin';
 
