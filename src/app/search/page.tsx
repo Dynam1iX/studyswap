@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { SwapDetailModal } from '@/components/feed/SwapDetailModal';
 import { AppHeader } from '@/components/layout/AppHeader';
@@ -73,6 +73,8 @@ function SearchView() {
   const { liked: likedPosts, toggle: toggleLike } = useFavoriteIds();
   /** The card whose details modal is open, or null. */
   const [activeSwap, setActiveSwap] = useState<FeedPost | null>(null);
+  // Hidden by Next (another tab opened): close the sheet, or it opens again on return.
+  useLayoutEffect(() => () => setActiveSwap(null), []);
   const inputRef = useRef<HTMLInputElement>(null);
   /** The filter chip that opened the options (desktop drops them down from it). */
   const filterAnchor = useRef<HTMLElement | null>(null);

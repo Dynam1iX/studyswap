@@ -20,6 +20,8 @@ interface AvatarViewerProps {
   onClose: () => void;
   /** Your own photo: a "Change photo" button under it. */
   onChange?: () => void;
+  /** Gets the focus back when the window closes (the avatar that opened it). */
+  returnTo: HTMLElement | null;
 }
 
 /** From the photo's place in the centre of the screen to the tapped avatar. */
@@ -31,7 +33,7 @@ function fromOrigin(photo: HTMLElement, origin: DOMRect): string {
 }
 
 /** A small centred window with the profile photo (phones and desktop alike). */
-function AvatarViewer({ url, name, subtitle, origin, onClose, onChange }: AvatarViewerProps) {
+function AvatarViewer({ url, name, subtitle, origin, onClose, onChange, returnTo }: AvatarViewerProps) {
   const t = useT();
   const titleId = useId();
   const photoRef = useRef<HTMLDivElement>(null);
@@ -84,7 +86,6 @@ function AvatarViewer({ url, name, subtitle, origin, onClose, onChange }: Avatar
 
   // Esc closes; the page underneath does not scroll; focus returns to the avatar after.
   useEffect(() => {
-    const previous = document.activeElement as HTMLElement | null;
     const unlock = lockPageScroll();
     const onKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -106,7 +107,7 @@ function AvatarViewer({ url, name, subtitle, origin, onClose, onChange }: Avatar
     return () => {
       window.removeEventListener('keydown', onKey, true);
       unlock();
-      previous?.focus({ preventScroll: true });
+      returnTo?.focus({ preventScroll: true });
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -182,11 +183,13 @@ export function ViewableAvatar({ url, name, subtitle, onChange, className = '', 
   const [origin, setOrigin] = useState<DOMRect | null>(null);
   /** Inside an open <dialog> (swap details) the window must live in it: the rest of the page is inert. */
   const [host, setHost] = useState<Element | null>(null);
+  const [trigger, setTrigger] = useState<HTMLElement | null>(null);
   if (!url) return <>{children}</>;
 
   const open = (event: MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
     event.preventDefault();
+    setTrigger(event.currentTarget);
     setHost(event.currentTarget.closest('dialog[open]') ?? document.body);
     setOrigin(event.currentTarget.getBoundingClientRect());
   };
@@ -211,6 +214,7 @@ export function ViewableAvatar({ url, name, subtitle, onChange, className = '', 
             subtitle={subtitle}
             origin={origin}
             onChange={onChange}
+            returnTo={trigger}
             onClose={() => setOrigin(null)}
           />,
           host,
