@@ -42,12 +42,14 @@ export function ProfileHeaderCard({ user, avatarUrl, onEditAvatar, avatarBusy, o
           href={`https://t.me/${user.telegramHandle}`}
           target="_blank"
           rel="noreferrer"
-          className="flex h-12 items-center justify-between rounded-2xl bg-soft px-3.5 transition hover:bg-line"
+          className="flex h-12 items-center justify-between gap-3 rounded-2xl bg-soft px-3.5 transition hover:bg-line"
         >
-          <span className="flex items-center gap-2.5 text-base font-semibold text-ink">
-            <img src="/telegram-circle.svg" alt="" className="size-7 shrink-0" />@{user.telegramHandle}
+          {/* Handles are up to 32 characters: shorten with "…" instead of widening the page. */}
+          <span className="flex min-w-0 items-center gap-2.5 text-base font-semibold text-ink">
+            <img src="/telegram-circle.svg" alt="" className="size-7 shrink-0" />
+            <span className="truncate">@{user.telegramHandle}</span>
           </span>
-          <span className="flex items-center gap-1.5 text-xs font-semibold text-success">
+          <span className="flex shrink-0 items-center gap-1.5 text-xs font-semibold text-success">
             <Check className="size-3.5" strokeWidth={3} />
             {t.telegram.linked}
           </span>

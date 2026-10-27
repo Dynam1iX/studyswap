@@ -29,7 +29,7 @@ export function Avatar({ initials, url = null, onEdit, busy = false, view }: Ava
         url={view && showPhoto && !busy ? url : null}
         name={view?.name ?? ''}
         subtitle={view?.subtitle}
-        onChange={onEdit}
+        onChange={busy ? undefined : onEdit}
         className="relative col-start-1 row-start-1 block size-20"
       >
       <div className="relative col-start-1 row-start-1 size-20 rounded-full p-[3px]">
@@ -63,9 +63,10 @@ export function Avatar({ initials, url = null, onEdit, busy = false, view }: Ava
       <button
         type="button"
         onClick={onEdit}
+        disabled={busy}
         aria-label={t.avatar.change}
         aria-haspopup="dialog"
-        className="relative z-10 col-start-1 row-start-1 flex size-8 cursor-pointer items-center justify-center self-end justify-self-end rounded-full border-[3px] border-surface bg-ink text-page transition-transform hover:-rotate-12 hover:scale-110 active:scale-90"
+        className="relative z-10 col-start-1 row-start-1 flex size-8 cursor-pointer items-center justify-center self-end justify-self-end rounded-full border-[3px] border-surface bg-ink text-page transition-transform hover:-rotate-12 hover:scale-110 active:scale-90 disabled:cursor-wait disabled:opacity-60 disabled:hover:rotate-0 disabled:hover:scale-100"
       >
         <Pencil className="size-3.5" strokeWidth={2.4} />
       </button>

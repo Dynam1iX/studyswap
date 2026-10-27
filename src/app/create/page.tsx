@@ -61,7 +61,9 @@ export default function CreateBarterPage() {
   /** Telegram is offered as a contact method only when the author has linked it. */
   const [hasTelegram, setHasTelegram] = useState(false);
   const [authorAvatar, setAuthorAvatar] = useState<string | null>(null);
-  const [authorName, setAuthorName] = useState('Alzhan Y.');
+  const [authorName, setAuthorName] = useState('');
+  /** Subjects or the profile could not be loaded: Publish stays off, a message says why. */
+  const [loadFailed, setLoadFailed] = useState(false);
   const [authorStudy, setAuthorStudy] = useState<{
     major: string | null;
     year: number | null;
@@ -79,9 +81,16 @@ export default function CreateBarterPage() {
           setAuthorAvatar(author.avatar_path);
           setAuthorName(getShortName(author.full_name));
           setAuthorStudy({ major: author.major, year: author.study_year });
+          // Telegram unlinked since the draft chose it: fall back to e-mail.
+          if (!author.telegram_handle) setContactMethod('email');
+        } else {
+          setLoadFailed(true);
         }
       })
-      .catch((err: unknown) => console.error('Initial data load error:', err))
+      .catch((err: unknown) => {
+        console.error('Initial data load error:', err);
+        if (!cancelled) setLoadFailed(true);
+      })
       .finally(() => {
         if (!cancelled) setLoadingSubjects(false);
       });
@@ -130,6 +139,10 @@ export default function CreateBarterPage() {
     if (!neededDetails.trim()) nextErrors.neededDetails = true;
     if (!offeredDetails.trim()) nextErrors.offeredDetails = true;
 
+    if (!authorId) {
+      failValidation(t.create.loadError);
+      return;
+    }
     if (Object.keys(nextErrors).length > 0 || !neededSubjectId || !offeredSubjectId) {
       setErrors(nextErrors);
       failValidation();
@@ -154,7 +167,8 @@ export default function CreateBarterPage() {
       window.setTimeout(() => router.push('/'), 900);
     } catch (err: unknown) {
       setSubmitting(false);
-      failValidation(err instanceof Error ? err.message : t.create.networkError);
+      console.error('Error publishing the card:', err);
+      failValidation(t.create.saveError);
     }
   };
 
@@ -183,12 +197,13 @@ export default function CreateBarterPage() {
         <p className="text-[14px] leading-[21px] font-semibold text-muted">{t.create.intro}</p>
       </div>
 
-      {serverError && (
+      {(serverError || loadFailed) && (
         <div
           key={`err-${shakeTrigger}`}
+          role="alert"
           className="mx-4 mb-2 animate-shake rounded-xl border border-danger-line bg-danger-soft p-3 text-xs font-semibold text-danger-ink"
         >
-          {serverError}
+          {serverError ?? t.create.loadError}
         </div>
       )}
 

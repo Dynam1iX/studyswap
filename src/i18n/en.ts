@@ -119,6 +119,9 @@ export const en = {
   },
 
   create: {
+    /** Subjects could not be loaded (Create stays usable once they are). */
+    loadError: 'Could not load the subjects. Check your connection and try again.',
+    saveError: 'Could not publish the card. Try again.',
     title: 'Create Barter Offer',
     intro: 'Exchange your academic strengths to get help with challenging subjects.',
     neededSubject: 'Subject you need help with',

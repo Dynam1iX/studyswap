@@ -182,15 +182,23 @@ export async function downloadMyData(): Promise<void> {
   document.body.appendChild(link);
   link.click();
   link.remove();
-  URL.revokeObjectURL(url);
+  // Later, not at once: iOS Safari may still be reading the file.
+  window.setTimeout(() => URL.revokeObjectURL(url), 10_000);
 }
 
 /**
- * Deletes the signed-in student for good: the photo file first (SQL cannot remove
- * Storage files), then everything in the database and the sign-in account.
+ * Deletes the signed-in student for good. Every file in the student's photo folder is
+ * removed, not only the current photo (an interrupted upload can leave another one).
+ * The folder is listed first, the account is deleted next (if that fails nothing is
+ * lost), then the files go: SQL cannot remove Storage files.
  */
-export async function deleteMyAccount(avatarPath: string | null): Promise<void> {
-  if (avatarPath) await supabase.storage.from('avatars').remove([avatarPath]);
+export async function deleteMyAccount(userId: string): Promise<void> {
+  const { data: files } = await supabase.storage.from('avatars').list(userId, { limit: 100 });
   const { error } = await supabase.rpc('delete_my_account');
   if (error) throw error;
+  const paths = (files ?? []).map((file) => `${userId}/${file.name}`);
+  if (paths.length > 0) {
+    const { error: removeError } = await supabase.storage.from('avatars').remove(paths);
+    if (removeError) console.error('Could not remove the photo files:', removeError);
+  }
 }

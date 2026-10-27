@@ -26,10 +26,11 @@ export async function fetchCreateFormData(): Promise<CreateFormData> {
         telegram_handle: me.telegram_handle,
       }
     : null;
+  if (subjectsRes.error) throw subjectsRes.error;
   return { subjects: (subjectsRes.data ?? []) as Subject[], author };
 }
 
 export async function createBarterPost(post: NewBarterPost): Promise<void> {
   const { error } = await supabase.from('barter_posts').insert([post]);
-  if (error) throw new Error(`Database error: ${error.message}`);
+  if (error) throw error;
 }

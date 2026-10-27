@@ -59,7 +59,8 @@ export function TelegramSection({
         key={handle}
         className="flex h-12 animate-pop items-center gap-2.5 rounded-2xl bg-soft px-3.5 text-base font-semibold text-ink motion-reduce:animate-none"
       >
-        <img src="/telegram-circle.svg" alt="" className="size-7 shrink-0" />@{handle}
+        <img src="/telegram-circle.svg" alt="" className="size-7 shrink-0" />
+        <span className="min-w-0 truncate">@{handle}</span>
       </div>
       <div className="grid grid-cols-2 gap-2">
         <button
