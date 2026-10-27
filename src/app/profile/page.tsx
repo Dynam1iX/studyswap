@@ -304,7 +304,7 @@ export default function ProfilePage() {
           onClose={() => setPrivacyOpen(false)}
           onDownload={downloadMyData}
           onDeleteAccount={async () => {
-            await deleteMyAccount(state.data.user.avatarPath);
+            await deleteMyAccount(state.data.user.id);
             await signOut();
             window.location.assign('/login');
           }}

@@ -1,8 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { removeAvatar, useAvatarUrl, uploadAvatar, type PreparedAvatar } from '@/lib/avatar';
 import { messages } from '@/i18n';
+
+/** Fired on window when a photo is saved or removed, so Profile and Edit profile agree. */
+const AVATAR_CHANGED_EVENT = 'studyswap:avatar-changed';
 
 interface AvatarOwner {
   id: string;
@@ -34,14 +37,45 @@ export function useAvatarEditor(user: AvatarOwner | null, { onChange, notify }: 
     [pendingUrl],
   );
 
+  /** The stored path right now (the user prop lags behind during an upload). */
+  const pathRef = useRef<string | null>(user?.avatarPath ?? null);
+  useEffect(() => {
+    pathRef.current = user?.avatarPath ?? null;
+  }, [user?.avatarPath]);
+  /** One change at a time: a second upload or Remove waits for the first to finish. */
+  const working = useRef(false);
+
+  // The other page's editor saved or removed a photo: show it here too.
+  const onChangeRef = useRef(onChange);
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  });
+  useEffect(() => {
+    const onChanged = (event: Event) => {
+      const path = (event as CustomEvent<string | null>).detail;
+      if (path === pathRef.current) return;
+      pathRef.current = path;
+      onChangeRef.current(path);
+    };
+    window.addEventListener(AVATAR_CHANGED_EVENT, onChanged);
+    return () => window.removeEventListener(AVATAR_CHANGED_EVENT, onChanged);
+  }, []);
+
+  const changed = (path: string | null) => {
+    pathRef.current = path;
+    onChange(path);
+    window.dispatchEvent(new CustomEvent(AVATAR_CHANGED_EVENT, { detail: path }));
+  };
+
   const save = async (avatar: PreparedAvatar) => {
-    if (!user) return;
+    if (!user || working.current) return;
+    working.current = true;
     setOpen(false);
     setBusy(true);
     setPendingUrl(URL.createObjectURL(avatar.blob));
     try {
-      const path = await uploadAvatar(user.id, avatar, user.avatarPath);
-      onChange(path);
+      const path = await uploadAvatar(user.id, avatar, pathRef.current);
+      changed(path);
       notify(messages().avatar.updated);
     } catch (err: unknown) {
       console.error('Error uploading the photo:', err);
@@ -49,15 +83,21 @@ export function useAvatarEditor(user: AvatarOwner | null, { onChange, notify }: 
     } finally {
       setPendingUrl(null);
       setBusy(false);
+      working.current = false;
     }
   };
 
   const remove = async () => {
-    if (!user) return;
-    await removeAvatar(user.avatarPath);
-    onChange(null);
-    setOpen(false);
-    notify(messages().avatar.removed);
+    if (!user || working.current) return;
+    working.current = true;
+    try {
+      await removeAvatar(pathRef.current);
+      changed(null);
+      setOpen(false);
+      notify(messages().avatar.removed);
+    } finally {
+      working.current = false;
+    }
   };
 
   /** What the avatar shows right now: the uploading preview, else the saved photo. */

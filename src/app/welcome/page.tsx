@@ -68,6 +68,9 @@ function Segmented<T extends string | number>({
 }
 
 /** First sign-in: the student fills in their details once; afterwards they are read-only. */
+/** First and last name together (with the space) fit the database limit of 100 characters. */
+const NAME_MAX = 49;
+
 export default function WelcomePage() {
   const t = useT();
   const [email, setEmail] = useState<string | null>(null);
@@ -85,8 +88,8 @@ export default function WelcomePage() {
     // Signed in with Microsoft: start from the name on the account (still editable).
     void nameFromAccount().then((name) => {
       if (!name) return;
-      setFirstName((current) => current || name.firstName.slice(0, 50));
-      setLastName((current) => current || name.lastName.slice(0, 50));
+      setFirstName((current) => current || name.firstName.slice(0, NAME_MAX));
+      setLastName((current) => current || name.lastName.slice(0, NAME_MAX));
     });
   }, []);
 
@@ -141,7 +144,7 @@ export default function WelcomePage() {
           <Field label={t.edit.firstName} delay={60}>
             <input
               value={firstName}
-              onChange={(event) => setFirstName(event.target.value.slice(0, 50))}
+              onChange={(event) => setFirstName(event.target.value.slice(0, NAME_MAX))}
               autoComplete="given-name"
               placeholder={t.welcome.firstPlaceholder}
               className={FIELD}
@@ -150,7 +153,7 @@ export default function WelcomePage() {
           <Field label={t.edit.lastName} delay={100}>
             <input
               value={lastName}
-              onChange={(event) => setLastName(event.target.value.slice(0, 50))}
+              onChange={(event) => setLastName(event.target.value.slice(0, NAME_MAX))}
               autoComplete="family-name"
               placeholder={t.welcome.lastPlaceholder}
               className={FIELD}
