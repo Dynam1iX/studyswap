@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { hasProfile } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
@@ -80,22 +80,51 @@ export function AuthGate({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [status, setStatus] = useState<Status>('checking');
+  /** Latest status and address, read inside the auth listener. */
+  const statusRef = useRef<Status>('checking');
+  const pathRef = useRef(pathname);
+  useEffect(() => {
+    pathRef.current = pathname;
+  }, [pathname]);
+  /** The student whose profile was last checked: SIGNED_IN repeats on every tab return. */
+  const checkedId = useRef<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
+    const set = (next: Status) => {
+      if (cancelled) return;
+      statusRef.current = next;
+      setStatus(next);
+    };
 
     const evaluate = async (userId: string | null) => {
       if (!userId) {
-        if (!cancelled) setStatus('signed-out');
+        const wasIn = statusRef.current === 'ready' || statusRef.current === 'needs-profile';
+        checkedId.current = null;
+        if (wasIn) {
+          // Signed out in another tab or the session expired: a full load clears every
+          // page Next keeps alive (and the previous student's data in them).
+          rememberReturn(pathRef.current);
+          window.location.assign(LOGIN_PATH);
+          return;
+        }
+        set('signed-out');
+        return;
+      }
+      // Same student as before (Supabase repeats SIGNED_IN when the tab comes back):
+      // nothing to check again.
+      if (userId === checkedId.current && (statusRef.current === 'ready' || statusRef.current === 'needs-profile')) {
         return;
       }
       try {
         const complete = await hasProfile(userId);
-        if (!cancelled) setStatus(complete ? 'ready' : 'needs-profile');
+        checkedId.current = userId;
+        set(complete ? 'ready' : 'needs-profile');
       } catch (err: unknown) {
         console.error('Could not check the profile:', err);
-        // Never let a student in without knowing whether their profile exists.
-        if (!cancelled) setStatus('error');
+        // Never let a student in without knowing whether their profile exists, but never
+        // throw out a student who is already in because of one failed request.
+        if (statusRef.current !== 'ready') set('error');
       }
     };
 
@@ -114,7 +143,7 @@ export function AuthGate({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!target) return;
-    if (target === LOGIN_PATH) rememberReturn(pathname);
+    if (target === LOGIN_PATH || target === WELCOME_PATH) rememberReturn(pathname);
     router.replace(target === '/' ? takeReturnPath() : target);
   }, [target, router, pathname]);
 
