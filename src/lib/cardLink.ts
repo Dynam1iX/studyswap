@@ -40,6 +40,7 @@ export function cardUrl(card: LinkableCard): string {
 
 /** The card code at the end of a /c/ slug, or null when it is not one. */
 export function parseCardCode(slug: string): string | null {
-  const code = decodeURIComponent(slug).split('-').pop()?.toLowerCase() ?? '';
+  // The router has already decoded the slug; decoding again throws on a "%".
+  const code = slug.split('-').pop()?.toLowerCase() ?? '';
   return /^[0-9a-f]{8}$/.test(code) ? code : null;
 }
