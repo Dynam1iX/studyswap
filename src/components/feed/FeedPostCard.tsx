@@ -36,6 +36,7 @@ export function FeedPostCard({ post, liked, onToggleLike, onOpen, linkAuthor = t
         palette: paletteFor(post.needed?.category),
         title: post.needed?.name || t.details.notSpecified,
         topic: post.description || post.needed?.code || '',
+        attachments: post.files.length,
       }}
       teaches={{
         palette: paletteFor(post.offered?.category),

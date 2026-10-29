@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Settings2 } from 'lucide-react';
+import { Paperclip, Settings2 } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/UserAvatar';
 import { useReplay } from '@/lib/useReplay';
 import { playSound } from '@/lib/sound';
@@ -28,6 +28,8 @@ export interface CardHalf {
   palette: CategoryPalette;
   title: string;
   topic: string;
+  /** Files with example tasks: a small 📎 count in the corner. */
+  attachments?: number;
 }
 
 interface BarterCardProps {
@@ -64,11 +66,14 @@ function SubjectHalf({ label, half }: { label: string; half: CardHalf }) {
       style={{ backgroundColor: half.palette.bg }}
       className="flex min-h-[83px] w-full flex-col justify-between rounded-xl p-3 transition-colors duration-500"
     >
-      <span
-        style={{ color: half.palette.label }}
-        className="block text-[10px] font-semibold tracking-wider uppercase transition-colors duration-500"
-      >
-        {label}
+      <span className="flex items-center justify-between gap-2">
+        <span
+          style={{ color: half.palette.label }}
+          className="block text-[10px] font-semibold tracking-wider uppercase transition-colors duration-500"
+        >
+          {label}
+        </span>
+        {half.attachments ? <AttachmentBadge count={half.attachments} color={half.palette.title} /> : null}
       </span>
       <span
         key={changes}
@@ -86,6 +91,22 @@ function SubjectHalf({ label, half }: { label: string; half: CardHalf }) {
         {half.topic}
       </span>
     </div>
+  );
+}
+
+/** "📎 2" in the corner of the "Needs help" half: this card has example tasks attached. */
+function AttachmentBadge({ count, color }: { count: number; color: string }) {
+  const t = useT();
+  return (
+    <span
+      style={{ color }}
+      title={t.files.attached(count)}
+      className="-my-1 flex h-5 animate-pop items-center gap-0.5 rounded-full bg-surface/75 px-1.5 text-[11px] font-bold motion-reduce:animate-none"
+    >
+      <Paperclip aria-hidden className="size-3" strokeWidth={2.6} />
+      <span aria-hidden>{count}</span>
+      <span className="sr-only">{t.files.attached(count)}</span>
+    </span>
   );
 }
 

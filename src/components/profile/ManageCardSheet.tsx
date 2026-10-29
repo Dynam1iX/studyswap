@@ -4,6 +4,7 @@ import { useId, useState } from 'react';
 import { Loader2, Trash2, X } from 'lucide-react';
 import { TOPICS_MAX_LENGTH } from '@/components/create/TopicsField';
 import { BottomSheet } from '@/components/ui/BottomSheet';
+import { AttachmentsField, itemsFromFiles, type AttachmentItem } from '@/components/files/AttachmentsField';
 import { paletteFor } from '@/lib/categoryPalette';
 import type { ProfileCard } from '@/lib/profile';
 import { useT } from '@/i18n';
@@ -12,6 +13,8 @@ export interface CardChanges {
   neededTopic: string;
   offeredTopic: string;
   active: boolean;
+  /** Files kept and newly picked ("Needs help" side). */
+  files: AttachmentItem[];
 }
 
 interface ManageCardSheetProps {
@@ -113,19 +116,25 @@ function ManageForm({
   const [neededTopic, setNeededTopic] = useState(card.neededTopic);
   const [offeredTopic, setOfferedTopic] = useState(card.offeredTopic);
   const [active, setActive] = useState(card.status === 'active');
+  const [files, setFiles] = useState<AttachmentItem[]>(() => itemsFromFiles(card.files));
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [busy, setBusy] = useState<'save' | 'delete' | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const filesChanged =
+    files.length !== card.files.length || files.some((item, index) => item.existing?.id !== card.files[index]?.id);
   const changed =
-    neededTopic.trim() !== card.neededTopic || offeredTopic.trim() !== card.offeredTopic || active !== (card.status === 'active');
+    neededTopic.trim() !== card.neededTopic ||
+    offeredTopic.trim() !== card.offeredTopic ||
+    active !== (card.status === 'active') ||
+    filesChanged;
   const valid = neededTopic.trim().length > 0 && offeredTopic.trim().length > 0;
 
   const run = async (kind: 'save' | 'delete') => {
     setBusy(kind);
     setError(null);
     try {
-      if (kind === 'save') await onSave(card, { neededTopic: neededTopic.trim(), offeredTopic: offeredTopic.trim(), active });
+      if (kind === 'save') await onSave(card, { neededTopic: neededTopic.trim(), offeredTopic: offeredTopic.trim(), active, files });
       else await onDelete(card);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : t.common.somethingWrong);
@@ -143,6 +152,7 @@ function ManageForm({
       <p className="-mt-2 text-xs font-medium text-muted">{t.manage.subjectsFixed}</p>
 
       <TopicInput label={t.create.neededTopics} value={neededTopic} onChange={setNeededTopic} />
+      <AttachmentsField items={files} onChange={setFiles} disabled={busy !== null} />
       <TopicInput label={t.manage.offeredTopics} value={offeredTopic} onChange={setOfferedTopic} />
 
       {/* Active ⇄ inactive */}

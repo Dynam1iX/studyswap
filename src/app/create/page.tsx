@@ -12,7 +12,8 @@ import { TopicsField } from '@/components/create/TopicsField';
 import { AppHeader } from '@/components/layout/AppHeader';
 import { MobileShell } from '@/components/layout/MobileShell';
 import { paletteFor } from '@/lib/categoryPalette';
-import { createBarterPost, fetchCreateFormData } from '@/lib/create';
+import { createBarterPost, fetchCreateFormData, FilesUploadError } from '@/lib/create';
+import { AttachmentsField, type AttachmentItem } from '@/components/files/AttachmentsField';
 import { formatStudyInfo, getInitials, getShortName } from '@/lib/format';
 import { useReplay } from '@/lib/useReplay';
 import { playSound } from '@/lib/sound';
@@ -51,6 +52,8 @@ export default function CreateBarterPage() {
   const [offeredSubjectId, setOfferedSubjectId] = useState<number | null>(null);
   const [neededDetails, setNeededDetails] = useState('');
   const [offeredDetails, setOfferedDetails] = useState('');
+  /** Photos / PDFs with the tasks ("Needs help" side). */
+  const [attachments, setAttachments] = useState<AttachmentItem[]>([]);
   const [contactMethod, setContactMethod] = useState<ContactMethod>('email');
 
   const [errors, setErrors] = useState<FormErrors>({});
@@ -159,7 +162,7 @@ export default function CreateBarterPage() {
         offered_description: offeredDetails.trim(),
         contact_method: contactMethod,
         status: 'active',
-      });
+      }, attachments.flatMap((item) => (item.prepared ? [item.prepared] : [])));
       setSubmitting(false);
       setPublished(true);
       bubble();
@@ -168,7 +171,7 @@ export default function CreateBarterPage() {
     } catch (err: unknown) {
       setSubmitting(false);
       console.error('Error publishing the card:', err);
-      failValidation(t.create.saveError);
+      failValidation(err instanceof FilesUploadError ? t.files.uploadError : t.create.saveError);
     }
   };
 
@@ -242,6 +245,8 @@ export default function CreateBarterPage() {
               shakeKey={shakeTrigger}
             />
 
+            <AttachmentsField items={attachments} onChange={setAttachments} disabled={submitting || published} />
+
             <SubjectSelect
               label={t.create.offeredSubject}
               subjects={subjects}
@@ -291,7 +296,10 @@ export default function CreateBarterPage() {
                 name: authorName,
                 subtitle: formatStudyInfo(t, authorStudy.major, authorStudy.year),
               }}
-              needs={previewHalf(neededSubject, neededDetails, t.create.previewSubject, t.create.previewNeeded)}
+              needs={{
+                ...previewHalf(neededSubject, neededDetails, t.create.previewSubject, t.create.previewNeeded),
+                attachments: attachments.length,
+              }}
               teaches={previewHalf(offeredSubject, offeredDetails, t.create.previewSubject, t.create.previewOffered)}
               contactMethod={contactMethod}
             />
