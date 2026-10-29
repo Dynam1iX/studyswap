@@ -22,7 +22,8 @@ Every change to the database lives in `migrations/` as a numbered SQL file, so t
 | `20261027120000_student_profile.sql` | Another student's page `/u/[id]`: `get_student_profile` (name, major, year, photo path; contact = visible Telegram handle, otherwise the university e-mail only for students with an active card, as on the cards) | Applied (SQL Editor) |
 | `20261027140000_card_preview.sql` | Card links `/c/<slug>-<code>`: `get_card_preview` — **public on purpose** (chat apps fetch link previews without signing in); returns only subjects, topics, author first name + initial, major, year of an active card | Applied (SQL Editor) |
 | `20261024010000_swap_requests.sql` | Swap requests in the app (statuses, six request functions, handles visible after an accepted swap). Applied 2026-10-24 but the file was lost; **restored from the live database for history only — do not re-run** | Applied (SQL Editor) |
-| `20261027160000_hardening.sql` | Bug review fixes: cards cannot set their own `id` / `created_at`, unique 8-character link code; drops `swap_requests` and its functions (`get_telegram_handles`, `export_my_data` updated); the AITU e-mail rule also on e-mail change | **Not applied yet** — run in the SQL Editor |
+| `20261027160000_hardening.sql` | Bug review fixes: cards cannot set their own `id` / `created_at`, unique 8-character link code; drops `swap_requests` and its functions (`get_telegram_handles`, `export_my_data` updated); the AITU e-mail rule also on e-mail change | Applied (SQL Editor) |
+| `20261029120000_polish.sql` | Small review fixes: `update_my_card` fails for a card that no longer exists; topic texts at most 150 characters as stored; `complete_my_profile` requires a year; photos readable only while they are someone's current photo (`avatars_read_current`) | **Not applied yet** — run in the SQL Editor |
 | `20261022200000_sign_in.sql` | Only `6 digits@astanait.edu.kz` can sign up (trigger on `auth.users`); `complete_my_profile`; signed-in students never fall back to the demo account | Applied (SQL Editor) |
 | `20261022180000_avatars.sql` | Storage bucket `avatars` (own-folder policies), `users.avatar_path`, `set_my_avatar`, `remove_my_avatar` | Applied (SQL Editor) |
 | `20261022160000_profile_settings.sql` | `users.telegram_visibility`; `get_my_cards`, `update_my_card`, `set_my_card_status`, `delete_my_card`, `set_telegram_visibility`, `export_my_data` | Applied (SQL Editor) |
@@ -61,7 +62,7 @@ Supabase asks for confirmation before destructive statements (`DROP`, `DELETE`).
 - The profile row is read-only; it changes only through functions (avatar, Telegram)
 - Other students' rows: only id, name, major, year and photo path; e-mail and Telegram only through `get_post_contacts`, `get_student_profile`, `get_telegram_handles` (every linked handle is visible to signed-in students)
 - `search_history`, `favorites` and every `*_my_*` function act only on the signed-in student
-- Profile photos: anyone signed in can view them; a student can change files only in `avatars/<own id>/`
+- Profile photos: anyone signed in can view a photo that is someone's current one; a student sees and changes every file only in `avatars/<own id>/`
 
 ## Roadmap
 

@@ -61,7 +61,7 @@ export async function signInWithMicrosoft(): Promise<void> {
  * Error sent back by Microsoft or Supabase after a failed redirect sign-in (in the query
  * string or the #fragment). Removes it from the address bar so a reload does not show it again.
  */
-export function takeRedirectError(): string | null {
+function readRedirectError(): string | null {
   const params = new URLSearchParams(window.location.search);
   const hash = new URLSearchParams(window.location.hash.replace(/^#/, ''));
   const code = params.get('error') ?? hash.get('error');
@@ -74,6 +74,24 @@ export function takeRedirectError(): string | null {
     return messages().authErrors.studentAccountsOnly;
   }
   return friendly({ message: description }).message;
+}
+
+let redirectError: string | null | undefined;
+
+/**
+ * Reads a failed Microsoft sign-in from the address once, as the app starts on any page
+ * (Supabase may send the error to the site root, which then redirects to /login).
+ */
+export function captureRedirectError(): void {
+  if (redirectError === undefined && typeof window !== 'undefined') redirectError = readRedirectError();
+}
+
+/** The captured sign-in error, once (the Login page shows it). */
+export function takeRedirectError(): string | null {
+  captureRedirectError();
+  const error = redirectError ?? null;
+  redirectError = null;
+  return error;
 }
 
 /** First and last name from the Microsoft account, to fill in "Complete your profile". */

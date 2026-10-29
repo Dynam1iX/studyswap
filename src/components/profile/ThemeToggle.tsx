@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, type MouseEvent } from 'react';
+import { useState, type MouseEvent } from 'react';
 import { applyTheme, currentTheme, type ThemeChoice } from '@/lib/theme';
 import { useT } from '@/i18n';
 
@@ -19,13 +19,11 @@ const STARS = [
  */
 export function ThemeToggle() {
   const t = useT();
-  const [theme, setTheme] = useState<ThemeChoice>('light');
+  // Pages render only in the browser (behind the AuthGate splash): read the theme at once,
+  // so a dark-theme student does not see the switch animate from day to night on every visit.
+  const [theme, setTheme] = useState<ThemeChoice>(() => (typeof document === 'undefined' ? 'light' : currentTheme()));
   const night = theme === 'dark';
 
-  useEffect(() => {
-    const frame = requestAnimationFrame(() => setTheme(currentTheme()));
-    return () => cancelAnimationFrame(frame);
-  }, []);
 
   const toggle = (event: MouseEvent<HTMLButtonElement>) => {
     const next: ThemeChoice = night ? 'light' : 'dark';

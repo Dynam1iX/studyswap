@@ -280,7 +280,9 @@ function SwapDetailActions({ post, onClose }: { post: FeedPost; onClose: () => v
           href={getContactHref(post)}
           target={isTelegram ? '_blank' : undefined}
           rel="noreferrer"
-          className="col-span-3 flex h-14 items-center justify-center gap-2.5 rounded-2xl bg-linear-to-r from-brand-fill-from to-brand-fill-to text-base font-bold text-white no-underline shadow-[0_8px_20px_rgba(200,40,140,0.28)] transition hover:opacity-95 active:scale-[0.99]"
+          // No contact known yet: shown, but not a link.
+          aria-disabled={post.contact ? undefined : true}
+          className="col-span-3 flex h-14 aria-disabled:pointer-events-none aria-disabled:opacity-60 items-center justify-center gap-2.5 rounded-2xl bg-linear-to-r from-brand-fill-from to-brand-fill-to text-base font-bold text-white no-underline shadow-[0_8px_20px_rgba(200,40,140,0.28)] transition hover:opacity-95 active:scale-[0.99]"
         >
           <img
             src={isTelegram ? '/telegram.svg' : '/email.svg'}

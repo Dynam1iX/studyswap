@@ -117,16 +117,34 @@ function SearchView() {
     scrollAppToTop();
   }, []);
 
+  /** Queries removed (×) while their save was still running: removed again once it lands. */
+  const dropped = useRef(new Set<string>());
+  /** Bumped by "Clear all", so a save that was running cannot bring the list back. */
+  const clears = useRef(0);
+
   const submitSearch = (query: string) => {
     applyFilters({ ...filters, query: query || null });
     if (!query) return;
+    const key = query.toLowerCase();
+    dropped.current.delete(key);
+    const clearsAtStart = clears.current;
     // Show it at the top right away, then sync with the database.
     setRecent((prev) => [
       { id: `pending-${query}`, query },
-      ...(prev ?? []).filter((item) => item.query.toLowerCase() !== query.toLowerCase()),
+      ...(prev ?? []).filter((item) => item.query.toLowerCase() !== key),
     ].slice(0, 10));
     addRecentSearch(query)
-      .then(fetchRecentSearches)
+      .then(async () => {
+        if (clears.current !== clearsAtStart) {
+          await clearRecentSearches();
+          return [];
+        }
+        const items = await fetchRecentSearches();
+        const gone = items.filter((item) => dropped.current.has(item.query.toLowerCase()));
+        await Promise.all(gone.map((item) => deleteRecentSearch(item.id)));
+        gone.forEach((item) => dropped.current.delete(item.query.toLowerCase()));
+        return items.filter((item) => !gone.includes(item));
+      })
       .then(setRecent)
       .catch(logError('saving the search'));
   };
@@ -137,11 +155,17 @@ function SearchView() {
   };
 
   const removeRecent = (id: string) => {
-    setRecent((prev) => prev?.filter((item) => item.id !== id) ?? prev);
-    if (!id.startsWith('pending-')) deleteRecentSearch(id).catch(logError('removing a recent search'));
+    const item = recent?.find((r) => r.id === id);
+    setRecent((prev) => prev?.filter((r) => r.id !== id) ?? prev);
+    if (id.startsWith('pending-')) {
+      if (item) dropped.current.add(item.query.toLowerCase());
+    } else {
+      deleteRecentSearch(id).catch(logError('removing a recent search'));
+    }
   };
 
   const clearRecent = () => {
+    clears.current += 1;
     setRecent([]);
     clearRecentSearches().catch(logError('clearing recent searches'));
   };

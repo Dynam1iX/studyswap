@@ -20,7 +20,7 @@ import {
 import { useReplay } from '@/lib/useReplay';
 import { useT } from '@/i18n';
 
-/** Error from a failed Microsoft sign-in, read from the address once per page load. */
+/** Error from a failed Microsoft sign-in (captured by the AuthGate before any redirect). */
 let redirectError: string | null | undefined;
 function initialRedirectError(): string | null {
   // The page renders only in the browser (behind the AuthGate splash).
