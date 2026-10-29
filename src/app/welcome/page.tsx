@@ -12,7 +12,7 @@ import type { StudyYear } from '@/types/database';
 import { useT } from '@/i18n';
 
 
-const DEGREES: NewProfile['degree'][] = ['Undergraduate', "Master's Degree"];
+const DEGREES: NewProfile['degree'][] = ['Undergraduate', "Master's Degree", 'Teacher'];
 
 const FIELD =
   'h-12 w-full rounded-xl border border-field bg-surface px-4 text-[16px] font-semibold text-ink outline-none transition-[border-color,box-shadow] placeholder:text-placeholder focus:border-brand-from focus:shadow-[0_0_0_3px_rgba(173,70,255,0.15)] sm:text-[15px]';
@@ -49,7 +49,7 @@ function Segmented<T extends string | number>({
             role="radio"
             aria-checked={selected}
             onClick={() => onChange(option.value)}
-            className={`relative h-11 flex-1 cursor-pointer overflow-hidden rounded-xl text-sm font-bold transition-[color,transform] duration-300 active:scale-95 ${
+            className={`relative h-11 flex-auto basis-auto cursor-pointer overflow-hidden rounded-xl px-2 text-[13px] font-bold whitespace-nowrap min-[400px]:text-sm transition-[color,transform] duration-300 active:scale-95 ${
               selected ? 'text-white' : 'text-ink hover:bg-line/60'
             }`}
           >
@@ -93,6 +93,9 @@ export default function WelcomePage() {
     });
   }, []);
 
+  // A teacher has no year of study: the field folds away.
+  const isTeacher = degree === 'Teacher';
+
   const missing =
     firstName.trim().length < 1
       ? t.welcome.missingFirst
@@ -100,15 +103,15 @@ export default function WelcomePage() {
         ? t.welcome.missingLast
         : !major
           ? t.welcome.missingMajor
-          : !studyYear
-            ? t.welcome.missingYear
-            : !degree
-              ? t.welcome.missingDegree
+          : !degree
+            ? t.welcome.missingDegree
+            : !isTeacher && !studyYear
+              ? t.welcome.missingYear
               : null;
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
-    if (missing || !studyYear || !degree) {
+    if (missing || !degree) {
       setError(missing);
       setShake((n) => n + 1);
       playSound('error');
@@ -181,14 +184,35 @@ export default function WelcomePage() {
           </span>
         </Field>
 
-        <Field label={t.edit.yearOfStudy} delay={180}>
-          <Segmented
-            label={t.edit.yearOfStudy}
-            options={STUDY_YEARS.map((year) => ({ value: year, label: t.common.year(year) }))}
-            value={studyYear}
-            onChange={setStudyYear}
-          />
-        </Field>
+        {/*
+          Teacher: the year folds up and away (slides up, fades, blurs, the space closes);
+          back to Bachelor's / Master's: it drops in from the top again.
+          -mb-4 takes back the form's gap so nothing is left behind.
+        */}
+        <div
+          inert={isTeacher}
+          aria-hidden={isTeacher}
+          className={`grid transition-[grid-template-rows,margin] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
+            isTeacher ? '-mb-4 grid-rows-[0fr]' : 'grid-rows-[1fr]'
+          }`}
+        >
+          <div className="min-h-0 overflow-hidden">
+            <div
+              className={`origin-top transition-[opacity,translate,scale,filter] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
+                isTeacher ? '-translate-y-8 scale-y-90 opacity-0 blur-sm' : 'translate-y-0 scale-100 opacity-100 blur-none'
+              }`}
+            >
+              <Field label={t.edit.yearOfStudy} delay={180}>
+                <Segmented
+                  label={t.edit.yearOfStudy}
+                  options={STUDY_YEARS.map((year) => ({ value: year, label: t.common.year(year) }))}
+                  value={studyYear}
+                  onChange={setStudyYear}
+                />
+              </Field>
+            </div>
+          </div>
+        </div>
 
         <Field label={t.edit.degree} delay={220}>
           <Segmented label={t.edit.degree} options={DEGREES.map((value) => ({ value, label: t.degree[value] }))} value={degree} onChange={setDegree} />

@@ -9,6 +9,7 @@ export const en = {
     tryAgain: 'Try again',
     somethingWrong: 'Something went wrong',
     year: (year: number) => `Year ${year}`,
+    teacher: 'Teacher',
     cards: (count: number) => `${count} ${count === 1 ? 'card' : 'cards'}`,
   },
 
@@ -23,6 +24,7 @@ export const en = {
     Undergraduate: "Bachelor's",
     "Master's Degree": "Master's",
     PhD: 'PhD',
+    Teacher: 'Teacher',
   } satisfies Record<DegreeLevel, string> as Record<DegreeLevel, string>,
 
   nav: {
@@ -350,7 +352,7 @@ export const en = {
     subtitle: 'Find study partners on your campus. No money, just a fair swap.',
     emailLabel: 'University email',
     emailHint: 'Only university emails are accepted. This keeps StudySwap student-only.',
-    emailInvalid: 'Enter your student e-mail: 6 digits @astanait.edu.kz',
+    emailInvalid: "Enter your AITU e-mail: …@astanait.edu.kz",
     continue: 'Continue',
     microsoft: 'Login with Microsoft',
     openingMicrosoft: 'Opening Microsoft…',
@@ -371,11 +373,11 @@ export const en = {
   authErrors: {
     tooMany: 'Too many attempts. Wait a minute and try again.',
     badCode: 'This code is wrong or has expired. Check it or ask for a new one.',
-    studentOnly: 'Only AITU student e-mails (6 digits @astanait.edu.kz) can sign up.',
+    studentOnly: "Only AITU e-mails (@astanait.edu.kz) can sign up.",
     offline: 'No connection. Check the internet and try again.',
     generic: 'Something went wrong. Try again.',
     microsoftCancelled: 'Microsoft sign-in was cancelled.',
-    studentAccountsOnly: 'Only student accounts can sign in: 6 digits @astanait.edu.kz.',
+    studentAccountsOnly: "Only AITU accounts can sign in (@astanait.edu.kz).",
   },
 
   authGate: {
@@ -393,7 +395,7 @@ export const en = {
     missingLast: 'Enter your last name',
     missingMajor: 'Choose your major',
     missingYear: 'Choose your year of study',
-    missingDegree: "Choose Bachelor's or Master's",
+    missingDegree: "Choose Bachelor's, Master's or Teacher",
     checkCarefully: 'Check them carefully: you cannot change these details later.',
     start: 'Start swapping',
     otherEmail: 'Use another e-mail',

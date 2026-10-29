@@ -28,7 +28,8 @@ export interface ProfileUser {
   displayName: string;
   initials: string;
   major: string;
-  studyYear: StudyYear;
+  /** null for a teacher. */
+  studyYear: StudyYear | null;
   /** Without the leading "@"; null when the student has not linked Telegram. */
   telegramHandle: string | null;
   /** Storage path of the photo, or null. */
@@ -75,7 +76,8 @@ function splitName(fullName: string): [string, string] {
   return space === -1 ? [trimmed, ''] : [trimmed.slice(0, space), trimmed.slice(space + 1).trim()];
 }
 
-function toStudyYear(value: number | null | undefined): StudyYear {
+function toStudyYear(value: number | null | undefined): StudyYear | null {
+  if (value == null) return null; // teacher
   return value === 2 || value === 3 ? value : 1;
 }
 

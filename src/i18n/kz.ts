@@ -9,6 +9,7 @@ export const kz: Messages = {
     tryAgain: 'Қайталап көру',
     somethingWrong: 'Бірдеңе дұрыс болмады',
     year: (year) => `${year}-курс`,
+    teacher: 'Оқытушы',
     cards: (count) => `${count} карточка`,
   },
 
@@ -23,6 +24,7 @@ export const kz: Messages = {
     Undergraduate: 'Бакалавриат',
     "Master's Degree": 'Магистратура',
     PhD: 'PhD',
+    Teacher: 'Оқытушы',
   },
 
   nav: {
@@ -341,7 +343,7 @@ export const kz: Messages = {
     subtitle: 'Кампусыңыздан оқу серіктесін табыңыз. Ақшасыз, тек әділ алмасу.',
     emailLabel: 'Университет поштасы',
     emailHint: 'Тек университет поштасы қабылданады, сонда StudySwap тек студенттерге арналған болады.',
-    emailInvalid: 'Студенттік поштаңызды енгізіңіз: 6 сан @astanait.edu.kz',
+    emailInvalid: "AITU поштаңызды енгізіңіз: …@astanait.edu.kz",
     continue: 'Жалғастыру',
     microsoft: 'Microsoft арқылы кіру',
     openingMicrosoft: 'Microsoft ашылуда…',
@@ -362,11 +364,11 @@ export const kz: Messages = {
   authErrors: {
     tooMany: 'Тым көп әрекет. Бір минут күтіп, қайталап көріңіз.',
     badCode: 'Код қате немесе мерзімі өткен. Тексеріңіз немесе жаңасын сұраңыз.',
-    studentOnly: 'Тек AITU студенттік поштасымен тіркелуге болады (6 сан @astanait.edu.kz).',
+    studentOnly: "Тек AITU поштасымен тіркелуге болады (@astanait.edu.kz).",
     offline: 'Байланыс жоқ. Интернетті тексеріп, қайталап көріңіз.',
     generic: 'Бірдеңе дұрыс болмады. Қайталап көріңіз.',
     microsoftCancelled: 'Microsoft арқылы кіру тоқтатылды.',
-    studentAccountsOnly: 'Тек студенттік аккаунтпен кіруге болады: 6 сан @astanait.edu.kz.',
+    studentAccountsOnly: "Тек AITU аккаунтымен кіруге болады (@astanait.edu.kz).",
   },
 
   authGate: {
@@ -384,7 +386,7 @@ export const kz: Messages = {
     missingLast: 'Тегіңізді енгізіңіз',
     missingMajor: 'Мамандығыңызды таңдаңыз',
     missingYear: 'Курсыңызды таңдаңыз',
-    missingDegree: 'Бакалавриат немесе магистратураны таңдаңыз',
+    missingDegree: "Бакалавриат, магистратура немесе «Оқытушы» таңдаңыз",
     checkCarefully: 'Мұқият тексеріңіз: бұл деректерді кейін өзгертуге болмайды.',
     start: 'Алмасуды бастау',
     otherEmail: 'Басқа поштамен кіру',

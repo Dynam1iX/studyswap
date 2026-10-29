@@ -17,6 +17,7 @@ export const ru: Messages = {
     tryAgain: 'Попробовать снова',
     somethingWrong: 'Что-то пошло не так',
     year: (year) => `${year} курс`,
+    teacher: 'Преподаватель',
     cards: (count) => `${count} ${plural(count, 'карточка', 'карточки', 'карточек')}`,
   },
 
@@ -31,6 +32,7 @@ export const ru: Messages = {
     Undergraduate: 'Бакалавриат',
     "Master's Degree": 'Магистратура',
     PhD: 'PhD',
+    Teacher: 'Преподаватель',
   },
 
   nav: {
@@ -349,7 +351,7 @@ export const ru: Messages = {
     subtitle: 'Находите партнёров по учёбе в своём кампусе. Без денег, просто честный обмен.',
     emailLabel: 'Университетская почта',
     emailHint: 'Принимаем только университетскую почту, чтобы StudySwap был только для студентов.',
-    emailInvalid: 'Введите студенческую почту: 6 цифр @astanait.edu.kz',
+    emailInvalid: "Введите почту AITU: …@astanait.edu.kz",
     continue: 'Продолжить',
     microsoft: 'Войти через Microsoft',
     openingMicrosoft: 'Открываем Microsoft…',
@@ -370,11 +372,11 @@ export const ru: Messages = {
   authErrors: {
     tooMany: 'Слишком много попыток. Подождите минуту и попробуйте снова.',
     badCode: 'Код неверный или устарел. Проверьте его или запросите новый.',
-    studentOnly: 'Зарегистрироваться можно только со студенческой почтой AITU (6 цифр @astanait.edu.kz).',
+    studentOnly: "Зарегистрироваться можно только с почтой AITU (@astanait.edu.kz).",
     offline: 'Нет соединения. Проверьте интернет и попробуйте снова.',
     generic: 'Что-то пошло не так. Попробуйте снова.',
     microsoftCancelled: 'Вход через Microsoft отменён.',
-    studentAccountsOnly: 'Войти можно только со студенческим аккаунтом: 6 цифр @astanait.edu.kz.',
+    studentAccountsOnly: "Войти можно только с аккаунтом AITU (@astanait.edu.kz).",
   },
 
   authGate: {
@@ -392,7 +394,7 @@ export const ru: Messages = {
     missingLast: 'Введите фамилию',
     missingMajor: 'Выберите специальность',
     missingYear: 'Выберите курс',
-    missingDegree: 'Выберите бакалавриат или магистратуру',
+    missingDegree: "Выберите бакалавриат, магистратуру или «Преподаватель»",
     checkCarefully: 'Проверьте внимательно: эти данные потом изменить нельзя.',
     start: 'Начать обмен',
     otherEmail: 'Войти с другой почтой',

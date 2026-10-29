@@ -3,8 +3,8 @@ import { supabase } from '@/lib/supabase';
 import type { DegreeLevel, StudyYear } from '@/types/database';
 import { messages } from '@/i18n';
 
-/** AITU student e-mail: the six-digit student id @astanait.edu.kz. */
-export const STUDENT_EMAIL_RE = /^\d{6}@astanait\.edu\.kz$/i;
+/** Any AITU e-mail: students (6-digit id) and teachers (name) @astanait.edu.kz. */
+export const STUDENT_EMAIL_RE = /^[a-z0-9._%+-]+@astanait\.edu\.kz$/i;
 
 /** Length of the one-time code sent by e-mail (Supabase Auth → Email OTP Length). */
 export const CODE_LENGTH = 6;
@@ -20,7 +20,7 @@ function friendly(error: { message?: string; status?: number } | null): Error {
     return new Error(t.tooMany);
   }
   if (/expired|invalid/i.test(message)) return new Error(t.badCode);
-  if (/student e-mails|Database error saving new user/i.test(message)) {
+  if (/AITU e-mails|student e-mails|Database error saving new user/i.test(message)) {
     return new Error(t.studentOnly);
   }
   if (/fetch|network/i.test(message)) return new Error(t.offline);
@@ -70,7 +70,7 @@ function readRedirectError(): string | null {
   window.history.replaceState(null, '', window.location.pathname);
 
   if (code === 'access_denied') return messages().authErrors.microsoftCancelled;
-  if (/student e-mails|Database error saving new user|email/i.test(description)) {
+  if (/AITU e-mails|student e-mails|Database error saving new user|email/i.test(description)) {
     return messages().authErrors.studentAccountsOnly;
   }
   return friendly({ message: description }).message;
@@ -131,8 +131,9 @@ export interface NewProfile {
   firstName: string;
   lastName: string;
   major: string;
-  studyYear: StudyYear;
-  degree: Extract<DegreeLevel, 'Undergraduate' | "Master's Degree">;
+  /** null for a teacher. */
+  studyYear: StudyYear | null;
+  degree: Extract<DegreeLevel, 'Undergraduate' | "Master's Degree" | 'Teacher'>;
 }
 
 /** Creates the profile once; afterwards these details are read-only. */
@@ -140,7 +141,7 @@ export async function completeProfile(profile: NewProfile): Promise<void> {
   const { error } = await supabase.rpc('complete_my_profile', {
     p_full_name: `${profile.firstName.trim()} ${profile.lastName.trim()}`,
     p_major: profile.major,
-    p_study_year: profile.studyYear,
+    p_study_year: profile.degree === 'Teacher' ? null : profile.studyYear,
     p_degree: profile.degree,
   });
   if (error) throw new Error(error.message);

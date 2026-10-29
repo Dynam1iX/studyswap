@@ -101,7 +101,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
     );
   }
 
-  const subtitle = `${card.major || 'Software Engineering'}, Year ${card.study_year || 1}`;
+  const subtitle = `${card.major || 'Software Engineering'}, ${card.study_year ? `Year ${card.study_year}` : 'Teacher'}`;
   return new ImageResponse(
     page(
       <div
