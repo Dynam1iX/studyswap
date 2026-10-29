@@ -95,7 +95,7 @@ export function StudentDetails({ user }: { user: ProfileUser }) {
         <ReadOnlyField label={t.edit.firstName} value={user.firstName} />
         <ReadOnlyField label={t.edit.lastName} value={user.lastName} />
         <ReadOnlyField label={t.edit.major} value={user.major} />
-        <ReadOnlyField label={t.edit.yearOfStudy} value={t.common.year(user.studyYear)} />
+        {user.studyYear !== null && <ReadOnlyField label={t.edit.yearOfStudy} value={t.common.year(user.studyYear)} />}
         <ReadOnlyField label={t.edit.degree} value={degreeLabel(t, user.degree)} />
         <ReadOnlyField label={t.edit.email} value={user.email} />
       </div>

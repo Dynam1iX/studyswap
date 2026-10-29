@@ -5,13 +5,14 @@ import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
 import { ChevronDown, Loader2, Lock } from 'lucide-react';
 import { AppHeader } from '@/components/layout/AppHeader';
 import { MobileShell } from '@/components/layout/MobileShell';
-import { completeProfile, currentEmail, nameFromAccount, signOut, type NewProfile } from '@/lib/auth';
+import { completeProfile, currentEmail, isTeacherEmail, nameFromAccount, signOut, type NewProfile } from '@/lib/auth';
 import { PROGRAM_GROUPS, STUDY_YEARS } from '@/lib/search';
 import { playSound } from '@/lib/sound';
 import type { StudyYear } from '@/types/database';
 import { useT } from '@/i18n';
 
 
+/** Students choose; a teacher (name e-mail) is fixed. */
 const DEGREES: NewProfile['degree'][] = ['Undergraduate', "Master's Degree"];
 
 const FIELD =
@@ -93,6 +94,9 @@ export default function WelcomePage() {
     });
   }, []);
 
+  // Decided by the e-mail: 6 digits = student, a name = teacher (no year, no choice).
+  const role = email === null ? null : isTeacherEmail(email) ? 'teacher' : 'student';
+
   const missing =
     firstName.trim().length < 1
       ? t.welcome.missingFirst
@@ -100,15 +104,17 @@ export default function WelcomePage() {
         ? t.welcome.missingLast
         : !major
           ? t.welcome.missingMajor
-          : !studyYear
-            ? t.welcome.missingYear
-            : !degree
-              ? t.welcome.missingDegree
-              : null;
+          : role !== 'student'
+            ? null
+            : !studyYear
+              ? t.welcome.missingYear
+              : !degree
+                ? t.welcome.missingDegree
+                : null;
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
-    if (missing || !studyYear || !degree) {
+    if (missing || !role) {
       setError(missing);
       setShake((n) => n + 1);
       playSound('error');
@@ -117,7 +123,11 @@ export default function WelcomePage() {
     setBusy(true);
     setError(null);
     try {
-      await completeProfile({ firstName, lastName, major, studyYear, degree });
+      await completeProfile(
+        role === 'teacher'
+          ? { firstName, lastName, major, studyYear: null, degree: 'Teacher' }
+          : { firstName, lastName, major, studyYear, degree: degree ?? 'Undergraduate' },
+      );
       // A full load so every page starts with the new profile.
       window.location.assign(takeReturnPath());
     } catch (err: unknown) {
@@ -181,18 +191,36 @@ export default function WelcomePage() {
           </span>
         </Field>
 
-        <Field label={t.edit.yearOfStudy} delay={180}>
-          <Segmented
-            label={t.edit.yearOfStudy}
-            options={STUDY_YEARS.map((year) => ({ value: year, label: t.common.year(year) }))}
-            value={studyYear}
-            onChange={setStudyYear}
-          />
-        </Field>
+        {role === 'student' && (
+          <Field label={t.edit.yearOfStudy} delay={180}>
+            <Segmented
+              label={t.edit.yearOfStudy}
+              options={STUDY_YEARS.map((year) => ({ value: year, label: t.common.year(year) }))}
+              value={studyYear}
+              onChange={setStudyYear}
+            />
+          </Field>
+        )}
 
-        <Field label={t.edit.degree} delay={220}>
-          <Segmented label={t.edit.degree} options={DEGREES.map((value) => ({ value, label: t.degree[value] }))} value={degree} onChange={setDegree} />
-        </Field>
+        {role === 'student' && (
+          <Field label={t.edit.degree} delay={220}>
+            <Segmented label={t.edit.degree} options={DEGREES.map((value) => ({ value, label: t.degree[value] }))} value={degree} onChange={setDegree} />
+          </Field>
+        )}
+
+        {/* A name e-mail is a teacher: fixed, nothing to choose. */}
+        {role === 'teacher' && (
+          <div style={{ animationDelay: '180ms' }} className="flex animate-rise flex-col gap-2 motion-reduce:animate-none">
+            <span className="text-sm font-semibold text-ink">{t.edit.degree}</span>
+            <div className="flex h-12 items-center justify-between gap-3 rounded-2xl bg-soft pr-4 pl-1">
+              <span className="flex h-10 items-center rounded-xl bg-linear-to-r from-brand-fill-from to-brand-fill-to px-4 text-sm font-bold text-white">
+                {t.degree.Teacher}
+              </span>
+              <Lock aria-hidden className="size-4 shrink-0 text-placeholder" />
+            </div>
+            <span className="text-xs font-medium text-muted">{t.welcome.teacherByEmail}</span>
+          </div>
+        )}
 
         <div
           style={{ animationDelay: '260ms' }}

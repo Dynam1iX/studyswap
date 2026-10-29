@@ -14,9 +14,12 @@ export function getShortName(name: string): string {
   return first && second ? `${first} ${second[0]}.` : name;
 }
 
-/** "Software Engineering, Year 1" (the year in the interface language). */
+/**
+ * "Software Engineering, Year 1" (the year in the interface language).
+ * No year means a teacher: "Software Engineering, Teacher".
+ */
 export function formatStudyInfo(t: Messages, major?: string | null, year?: number | null): string {
-  return `${major || 'Software Engineering'}, ${t.common.year(year || 1)}`;
+  return `${major || 'Software Engineering'}, ${year ? t.common.year(year) : t.common.teacher}`;
 }
 
 /** "2026-10-14T01:45:37Z" -> "14 Oct 2026, 06:45" in the viewer's time zone and language. */
