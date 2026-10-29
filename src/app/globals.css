@@ -640,27 +640,27 @@ html.dark {
   --cat-empty-dot: #6f6888;
 }
 
-/* Subject colours, light theme (see lib/categoryPalette.ts). */
+/* Subject colours, light theme (see lib/categoryPalette.ts). Topic text is at least 4.5:1 on its background (WCAG AA). */
 :root {
   --cat-cs-bg: #d9e1f1;
   --cat-cs-label: #274cb1;
   --cat-cs-title: #1e3a8a;
-  --cat-cs-topic: #4065bb;
+  --cat-cs-topic: #3c5fb1;
   --cat-cs-dot: #4065bb;
   --cat-lang-bg: #fdd5da;
   --cat-lang-label: #9e1842;
   --cat-lang-title: #881337;
-  --cat-lang-topic: #be1f52;
+  --cat-lang-topic: #ba1e50;
   --cat-lang-dot: #9e1842;
   --cat-hum-bg: #fdeae2;
   --cat-hum-label: #994716;
   --cat-hum-title: #78350f;
-  --cat-hum-topic: #c35f20;
+  --cat-hum-topic: #a9521b;
   --cat-hum-dot: #994716;
   --cat-math-bg: #cbc2f7;
   --cat-math-label: #5b24b1;
   --cat-math-title: #4c1d95;
-  --cat-math-topic: #6d2ed6;
+  --cat-math-topic: #652ac7;
   --cat-math-dot: #6d2ed6;
   --cat-empty-bg: #f3effc;
   --cat-empty-label: #736a8e;

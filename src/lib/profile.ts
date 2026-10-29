@@ -188,17 +188,17 @@ export async function downloadMyData(): Promise<void> {
 
 /**
  * Deletes the signed-in student for good. Every file in the student's photo folder is
- * removed, not only the current photo (an interrupted upload can leave another one).
- * The folder is listed first, the account is deleted next (if that fails nothing is
- * lost), then the files go: SQL cannot remove Storage files.
+ * removed first, not only the current photo (an interrupted upload can leave another
+ * one): the photo rules need the profile row, so after the account is gone the files
+ * could no longer be removed. Then everything in the database and the sign-in account.
  */
 export async function deleteMyAccount(userId: string): Promise<void> {
   const { data: files } = await supabase.storage.from('avatars').list(userId, { limit: 100 });
-  const { error } = await supabase.rpc('delete_my_account');
-  if (error) throw error;
   const paths = (files ?? []).map((file) => `${userId}/${file.name}`);
   if (paths.length > 0) {
     const { error: removeError } = await supabase.storage.from('avatars').remove(paths);
     if (removeError) console.error('Could not remove the photo files:', removeError);
   }
+  const { error } = await supabase.rpc('delete_my_account');
+  if (error) throw error;
 }

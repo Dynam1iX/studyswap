@@ -12,10 +12,10 @@ export const contentType = 'image/png';
 
 /** Light-theme subject colours (same values as globals.css). */
 const PALETTE: Record<Category, { bg: string; label: string; title: string; topic: string }> = {
-  'CS & Dev': { bg: '#d9e1f1', label: '#274cb1', title: '#1e3a8a', topic: '#4065bb' },
-  Languages: { bg: '#fdd5da', label: '#9e1842', title: '#881337', topic: '#be1f52' },
-  Humanities: { bg: '#fdeae2', label: '#994716', title: '#78350f', topic: '#c35f20' },
-  Mathematics: { bg: '#cbc2f7', label: '#5b24b1', title: '#4c1d95', topic: '#6d2ed6' },
+  'CS & Dev': { bg: '#d9e1f1', label: '#274cb1', title: '#1e3a8a', topic: '#3c5fb1' },
+  Languages: { bg: '#fdd5da', label: '#9e1842', title: '#881337', topic: '#ba1e50' },
+  Humanities: { bg: '#fdeae2', label: '#994716', title: '#78350f', topic: '#a9521b' },
+  Mathematics: { bg: '#cbc2f7', label: '#5b24b1', title: '#4c1d95', topic: '#652ac7' },
 };
 const EMPTY = { bg: '#f3effc', label: '#736a8e', title: '#2f274b', topic: '#5a5472' };
 

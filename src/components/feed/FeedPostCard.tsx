@@ -1,7 +1,7 @@
 'use client';
 
 import { BarterCard } from '@/components/barter/BarterCard';
-import { CATEGORY_PALETTE } from '@/lib/categoryPalette';
+import { paletteFor } from '@/lib/categoryPalette';
 import { useMyId } from '@/lib/auth';
 import { getAuthorName, getContactHref, getContactMethod, type FeedPost } from '@/lib/feed';
 import { formatStudyInfo, getInitials } from '@/lib/format';
@@ -32,14 +32,15 @@ export function FeedPostCard({ post, liked, onToggleLike, onOpen, linkAuthor = t
         subtitle: formatStudyInfo(t, post.author?.major, post.author?.study_year),
       }}
       needs={{
-        palette: post.needed ? CATEGORY_PALETTE[post.needed.category] : CATEGORY_PALETTE.Mathematics,
-        title: post.needed?.name || 'Calculus I',
-        topic: post.description || post.needed?.code || 'Details & topics',
+        // A subject the database did not return: say so instead of showing a made-up one.
+        palette: paletteFor(post.needed?.category),
+        title: post.needed?.name || t.details.notSpecified,
+        topic: post.description || post.needed?.code || '',
       }}
       teaches={{
-        palette: post.offered ? CATEGORY_PALETTE[post.offered.category] : CATEGORY_PALETTE['CS & Dev'],
-        title: post.offered?.name || 'Introduction to Programming 1',
-        topic: post.offered_description || post.offered?.department || post.offered?.code || 'Topics & skills',
+        palette: paletteFor(post.offered?.category),
+        title: post.offered?.name || t.details.notSpecified,
+        topic: post.offered_description || post.offered?.department || post.offered?.code || '',
       }}
       contactMethod={getContactMethod(post)}
       contactHref={getContactHref(post)}

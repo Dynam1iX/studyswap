@@ -20,6 +20,8 @@ export default function FeedPage() {
   const [posts, setPosts] = useState<FeedPost[]>([]);
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [loading, setLoading] = useState(true);
+  /** The Feed could not be loaded (shown instead of "no cards"). */
+  const [loadFailed, setLoadFailed] = useState(false);
   const [selectedSubject, setSelectedSubject] = useState<SubjectFilterValue>('All');
   const { liked: likedPosts, toggle: toggleLike } = useFavoriteIds();
   /** The card whose details modal is open, or null. */
@@ -36,8 +38,12 @@ export default function FeedPage() {
         if (cancelled) return;
         setPosts(data.posts);
         setSubjects(data.subjects);
+        setLoadFailed(false);
       })
-      .catch((err: unknown) => console.error('Error fetching data from Supabase:', err))
+      .catch((err: unknown) => {
+        console.error('Error fetching data from Supabase:', err);
+        if (!cancelled) setLoadFailed(true);
+      })
       .finally(() => {
         if (!cancelled) setLoading(false);
       });
@@ -114,6 +120,17 @@ export default function FeedPage() {
       >
         {loading ? (
           <FeedSkeleton />
+        ) : loadFailed && posts.length === 0 ? (
+          <div className="flex animate-pop flex-col items-center gap-3 rounded-2xl border border-danger-line bg-surface p-6 py-12 text-center motion-reduce:animate-none lg:col-span-full">
+            <p className="text-sm font-semibold text-danger-ink">{t.feed.loadError}</p>
+            <button
+              type="button"
+              onClick={() => window.location.reload()}
+              className="h-11 cursor-pointer rounded-xl bg-linear-to-r from-brand-fill-from to-brand-fill-to px-5 text-sm font-bold text-white active:scale-95"
+            >
+              {t.common.tryAgain}
+            </button>
+          </div>
         ) : visiblePosts.length === 0 ? (
           <div className="animate-pop rounded-2xl border border-line bg-surface p-6 py-16 text-center text-xs font-medium text-muted motion-reduce:animate-none lg:col-span-full">
             {t.feed.empty}

@@ -121,7 +121,7 @@ export function AvatarSheet({ open, onClose, initials, currentUrl, onSave, onRem
           )}
         </div>
         <p className="text-center text-xs font-medium text-muted">
-          The photo is cropped to a square from the centre and saved small (256×256).
+          {t.avatar.cropHint}
         </p>
 
         <input ref={inputRef} type="file" accept="image/*" onChange={onFile} className="hidden" />

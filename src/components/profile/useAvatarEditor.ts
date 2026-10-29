@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { removeAvatar, useAvatarUrl, uploadAvatar, type PreparedAvatar } from '@/lib/avatar';
+import { preloadAvatar, removeAvatar, useAvatarUrl, uploadAvatar, type PreparedAvatar } from '@/lib/avatar';
 import { messages } from '@/i18n';
 
 /** Fired on window when a photo is saved or removed, so Profile and Edit profile agree. */
@@ -75,6 +75,8 @@ export function useAvatarEditor(user: AvatarOwner | null, { onChange, notify }: 
     setPendingUrl(URL.createObjectURL(avatar.blob));
     try {
       const path = await uploadAvatar(user.id, avatar, pathRef.current);
+      // Keep the local preview until the stored photo is ready to show.
+      await preloadAvatar(path);
       changed(path);
       notify(messages().avatar.updated);
     } catch (err: unknown) {

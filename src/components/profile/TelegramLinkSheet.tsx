@@ -100,6 +100,13 @@ function LinkFlow({
   const [state, setState] = useState<FlowState>({ step: 'creating' });
   const [launching, launch] = useReplay(900);
   const finished = useRef(false);
+  /** A check is running: the next one waits (no double "linked" handling). */
+  const checking = useRef(false);
+  /** Callbacks from the parent, kept out of the effect's dependencies (they change on every render). */
+  const callbacks = useRef({ onLinked, onClose });
+  useEffect(() => {
+    callbacks.current = { onLinked, onClose };
+  });
 
   const start = useCallback(async () => {
     setState({ step: 'creating' });
@@ -125,25 +132,35 @@ function LinkFlow({
     if (!active || !token || !waiting) return;
     let cancelled = false;
 
+    let failures = 0;
     const check = async () => {
+      if (finished.current || checking.current) return;
+      checking.current = true;
       try {
         const status = await fetchTelegramLinkStatus(token);
-        if (cancelled || finished.current) return;
+        failures = 0;
+        if (finished.current) return;
         if (status === 'linked') {
-          finished.current = true;
+          // Finish even if the effect re-ran meanwhile: the link is made either way.
           const handle = (await fetchMyTelegramHandle()) ?? '';
-          if (cancelled) return;
+          if (finished.current) return;
+          finished.current = true;
           setState({ step: 'linked', handle });
           playSound('linked');
           window.setTimeout(() => {
-            onLinked(handle);
-            onClose();
+            callbacks.current.onLinked(handle);
+            callbacks.current.onClose();
           }, SUCCESS_MS);
-        } else {
+        } else if (!cancelled) {
           setState((prev) => (prev.step === 'open' && prev.status !== status ? { ...prev, status } : prev));
         }
       } catch (err: unknown) {
         console.error('Could not check the Telegram link:', err);
+        // Offline or signed out: say so after ~10 s instead of waiting forever.
+        failures += 1;
+        if (failures >= 5 && !cancelled) setState({ step: 'error', message: messages().telegram.checkError });
+      } finally {
+        checking.current = false;
       }
     };
 
@@ -157,7 +174,7 @@ function LinkFlow({
       window.clearInterval(timer);
       document.removeEventListener('visibilitychange', onVisible);
     };
-  }, [active, token, waiting, onClose, onLinked]);
+  }, [active, token, waiting]);
 
   const linked = state.step === 'linked';
   const problem =

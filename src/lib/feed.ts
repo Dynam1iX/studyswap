@@ -98,15 +98,19 @@ export function getContactMethod(post: FeedPost): ContactMethod {
   return post.contact?.method ?? 'email';
 }
 
-/** Telegram link or a prefilled mailto: link for the post's contact method. */
-export function getContactHref(post: FeedPost): string {
+/**
+ * Telegram link or a prefilled mailto: link for the post's contact method; undefined
+ * while the contact is unknown (no e-mail address to write to yet).
+ */
+export function getContactHref(post: FeedPost): string | undefined {
+  if (!post.contact) return undefined;
   if (post.contact?.method === 'telegram') {
     // The message carries the card's link: Telegram shows the card as a picture under it,
     // so the author knows which swap the message is about.
     const text = encodeURIComponent(messages().card.telegramMessage(cardUrl(post)));
     return `https://t.me/${post.contact.value}?text=${text}`;
   }
-  const email = post.contact?.value ?? '';
+  const email = post.contact.value;
   const subjectName = post.needed?.name;
   const subject = encodeURIComponent(`StudySwap: ${subjectName || 'Academic Exchange'}`);
   const body = encodeURIComponent(

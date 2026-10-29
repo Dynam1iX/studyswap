@@ -34,6 +34,7 @@ export const en = {
   },
 
   feed: {
+    loadError: 'Could not load the cards. Check your connection and try again.',
     title: 'Matches for you',
     all: 'All',
     empty: 'No barter offers found for this subject',
@@ -244,6 +245,7 @@ export const en = {
   },
 
   avatar: {
+    cropHint: 'The photo is cropped to a square from the centre and saved small (256×256).',
     /** Opening a photo in the viewer. */
     view: (name: string) => `Open ${name}'s photo`,
     viewer: (name: string) => `${name}'s photo`,
@@ -264,6 +266,7 @@ export const en = {
   },
 
   telegram: {
+    checkError: 'Could not check the link. Check your connection and try again.',
     link: 'Link Telegram',
     linked: 'Linked',
     linkHint: 'Link Telegram so other students can message you there. Until then they contact you by university e-mail.',

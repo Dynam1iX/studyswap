@@ -65,6 +65,17 @@ function signedUrl(path: string): Promise<string | null> {
   return promise;
 }
 
+/** Signs the photo's link ahead of time, so it shows without a flash of initials. */
+export async function preloadAvatar(path: string): Promise<void> {
+  const url = await signedUrl(path);
+  if (!url) return;
+  await new Promise<void>((resolve) => {
+    const img = new Image();
+    img.onload = img.onerror = () => resolve();
+    img.src = url;
+  });
+}
+
 /** A temporary link to the photo at `path`, or null (no photo yet, or initials). */
 export function useAvatarUrl(path: string | null | undefined): string | null {
   const [loaded, setLoaded] = useState<{ path: string; url: string | null } | null>(null);

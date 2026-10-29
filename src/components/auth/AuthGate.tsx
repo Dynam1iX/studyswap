@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { hasProfile } from '@/lib/auth';
+import { captureRedirectError, hasProfile } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
 import { useT } from '@/i18n';
 
@@ -90,6 +90,8 @@ export function AuthGate({ children }: { children: ReactNode }) {
   const checkedId = useRef<string | null>(null);
 
   useEffect(() => {
+    // Before any redirect drops the address's ?error= / #error=.
+    captureRedirectError();
     let cancelled = false;
     const set = (next: Status) => {
       if (cancelled) return;

@@ -18,13 +18,11 @@ const SPRING = 'ease-[cubic-bezier(0.34,1.56,0.64,1)]';
 /** Sun / moon button: the icons roll past each other and the new theme spreads in a circle from it. */
 function ThemeButton() {
   const { t } = useI18n();
-  const [theme, setTheme] = useState<ThemeChoice>('light');
+  // Pages render only in the browser (behind the AuthGate splash): read the theme at once,
+  // so a dark-theme student does not see the switch animate from day to night on every visit.
+  const [theme, setTheme] = useState<ThemeChoice>(() => (typeof document === 'undefined' ? 'light' : currentTheme()));
   const night = theme === 'dark';
 
-  useEffect(() => {
-    const frame = requestAnimationFrame(() => setTheme(currentTheme()));
-    return () => cancelAnimationFrame(frame);
-  }, []);
 
   const toggle = (event: MouseEvent<HTMLButtonElement>) => {
     const next: ThemeChoice = night ? 'light' : 'dark';
