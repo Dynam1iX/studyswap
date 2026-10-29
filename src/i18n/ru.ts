@@ -234,6 +234,28 @@ export const ru: Messages = {
     deleteCard: 'Удалить карточку',
   },
 
+  files: {
+    title: 'Примеры задач',
+    hint: 'Фото или PDF с задачами, которые не получаются, чтобы помощник сразу видел, что именно нужно. До 3 файлов, до 10 МБ каждый.',
+    optional: 'необязательно',
+    add: 'Добавить фото или PDF',
+    preparing: 'Подготовка…',
+    remove: (name) => `Убрать ${name}`,
+    attached: (count) => `${count} ${plural(count, 'файл', 'файла', 'файлов')} прикреплено`,
+    tooMany: 'К карточке можно прикрепить не больше 3 файлов',
+    tooBig: (name) => `${name} больше 10 МБ`,
+    wrongType: (name) => `${name}: можно прикреплять только фото и PDF`,
+    unreadable: (name) => `Не удалось открыть ${name}. Попробуйте JPG, PNG или PDF.`,
+    uploadError: 'Не удалось загрузить файлы. Проверьте интернет и попробуйте ещё раз.',
+    openPdf: (name) => `Открыть ${name}`,
+    openPhoto: (name) => `Посмотреть ${name}`,
+    of: (index, count) => `${index} из ${count}`,
+    previous: 'Назад',
+    next: 'Дальше',
+    zoomIn: 'Увеличить',
+    zoomOut: 'Уменьшить',
+  },
+
   privacy: {
     yourData: 'Ваши данные',
     yourDataHint: 'Скачайте всё, что StudySwap хранит о вас: профиль, карточки, лайки и недавние запросы.',

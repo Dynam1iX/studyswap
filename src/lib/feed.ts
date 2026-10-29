@@ -1,3 +1,4 @@
+import { sortFiles, type CardFile } from '@/lib/cardFiles';
 import { supabase } from '@/lib/supabase';
 import { cardUrl } from '@/lib/cardLink';
 import { messages } from '@/i18n';
@@ -21,6 +22,8 @@ export interface FeedPost
   author: FeedAuthor | null;
   /** null until get_post_contacts has answered (or for cards the database no longer shows). */
   contact: PostContact | null;
+  /** Photos / PDFs with the tasks ("Needs help" side), oldest first. */
+  files: CardFile[];
 }
 
 export interface FeedData {
@@ -44,7 +47,7 @@ export async function attachContacts(posts: Omit<FeedPost, 'contact'>[]): Promis
       { method: row.method, value: row.contact.replace(/^@/, '') },
     ]),
   );
-  return posts.map((post) => ({ ...post, contact: contacts.get(post.id) ?? null }));
+  return posts.map((post) => ({ ...post, files: sortFiles(post.files), contact: contacts.get(post.id) ?? null }));
 }
 
 /** id → handle (without "@") for the students whose Telegram the caller may see. */
@@ -65,7 +68,8 @@ export const FEED_POST_SELECT = `
         created_at,
         needed:subjects!barter_posts_needed_subject_id_fkey(id, code, name, category, department),
         offered:subjects!barter_posts_offered_subject_id_fkey(id, code, name, category, department),
-        author:users!barter_posts_author_id_fkey(id, full_name, major, study_year, avatar_path)
+        author:users!barter_posts_author_id_fkey(id, full_name, major, study_year, avatar_path),
+        files:card_files(id, path, name, kind, created_at)
       `;
 
 /** Active posts (newest first) and the subject catalogue for the filter chips. */

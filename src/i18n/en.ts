@@ -233,6 +233,28 @@ export const en = {
     deleteCard: 'Delete card',
   },
 
+  files: {
+    title: 'Examples of tasks',
+    hint: 'Photos or PDFs of the tasks you are stuck on, so a helper sees exactly what you need. Up to 3 files, 10 MB each.',
+    optional: 'optional',
+    add: 'Add photo or PDF',
+    preparing: 'Preparing…',
+    remove: (name: string) => `Remove ${name}`,
+    attached: (count: number) => (count === 1 ? '1 file attached' : `${count} files attached`),
+    tooMany: 'At most 3 files per card',
+    tooBig: (name: string) => `${name} is larger than 10 MB`,
+    wrongType: (name: string) => `${name}: only photos and PDFs can be attached`,
+    unreadable: (name: string) => `Could not read ${name}. Try a JPG, PNG or PDF.`,
+    uploadError: 'Could not upload the files. Check the connection and try again.',
+    openPdf: (name: string) => `Open ${name}`,
+    openPhoto: (name: string) => `View ${name}`,
+    of: (index: number, count: number) => `${index} of ${count}`,
+    previous: 'Previous',
+    next: 'Next',
+    zoomIn: 'Zoom in',
+    zoomOut: 'Zoom out',
+  },
+
   privacy: {
     yourData: 'Your data',
     yourDataHint: 'Download everything StudySwap stores about you: profile, cards, likes and recent searches.',

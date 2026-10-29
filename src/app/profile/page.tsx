@@ -1,5 +1,6 @@
 'use client';
 
+import { attachFiles, detachFiles } from '@/lib/cardFiles';
 import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import Link from 'next/link';
 import { Loader2, LogOut, Pencil, Plus } from 'lucide-react';
@@ -117,6 +118,20 @@ export default function ProfilePage() {
     if (changes.neededTopic !== card.neededTopic || changes.offeredTopic !== card.offeredTopic) {
       await updateMyCard(card.id, changes.neededTopic, changes.offeredTopic);
     }
+    // Files: removed ones first (frees places), then the new ones.
+    const kept = new Set(changes.files.flatMap((item) => (item.existing ? [item.existing.id] : [])));
+    const removed = card.files.filter((file) => !kept.has(file.id));
+    const added = changes.files.flatMap((item) => (item.prepared ? [item.prepared] : []));
+    if (removed.length > 0) await detachFiles(removed);
+    if (added.length > 0 && state.status === 'ready') {
+      try {
+        await attachFiles(state.data.user.id, card.id, added);
+      } catch (err: unknown) {
+        console.error('Could not upload card files:', err);
+        await load();
+        throw new Error(t.files.uploadError);
+      }
+    }
     if (changes.active !== (card.status === 'active')) {
       await setMyCardStatus(card.id, changes.active ? 'active' : 'archived');
     }
@@ -126,7 +141,7 @@ export default function ProfilePage() {
   };
 
   const removeCard = async (card: ProfileCard) => {
-    await deleteMyCard(card.id);
+    await deleteMyCard(card.id, card.files);
     await load();
     setManaging(null);
     showToast(t.profile.cardDeleted);

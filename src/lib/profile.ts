@@ -1,4 +1,5 @@
 import { getInitials, getShortName } from '@/lib/format';
+import { fetchMyCardFiles, listMyStoredFiles, removeStoredFiles, type CardFile } from '@/lib/cardFiles';
 import { supabase } from '@/lib/supabase';
 import type { DegreeLevel, PostStatus, StudyYear, Subject, User } from '@/types/database';
 import type { Messages } from '@/i18n';
@@ -14,6 +15,8 @@ export interface ProfileCard {
   neededTopic: string;
   /** What the student can teach (barter_posts.offered_description). */
   offeredTopic: string;
+  /** Photos / PDFs with the tasks ("Needs help" side), oldest first. */
+  files: CardFile[];
 }
 
 export interface ProfileUser {
@@ -99,7 +102,10 @@ export async function fetchProfile(): Promise<ProfileData | null> {
   const userRow = await fetchMyProfileRow();
   if (!userRow) return null;
 
-  const { data: postData, error: postsError } = await supabase.rpc('get_my_cards');
+  const [{ data: postData, error: postsError }, files] = await Promise.all([
+    supabase.rpc('get_my_cards'),
+    fetchMyCardFiles(),
+  ]);
 
   if (postsError) throw postsError;
 
@@ -113,6 +119,7 @@ export async function fetchProfile(): Promise<ProfileData | null> {
             offered: row.offered,
             neededTopic: row.description?.trim() ?? '',
             offeredTopic: row.offered_description?.trim() ?? '',
+            files: files.get(row.id) ?? [],
           },
         ]
       : [],
@@ -167,9 +174,11 @@ export async function setMyCardStatus(id: string, status: 'active' | 'archived')
   if (error) throw error;
 }
 
-export async function deleteMyCard(id: string): Promise<void> {
+/** Deletes the card (its file rows go with it), then its files in Storage. */
+export async function deleteMyCard(id: string, files: CardFile[] = []): Promise<void> {
   const { error } = await supabase.rpc('delete_my_card', { p_id: id });
   if (error) throw error;
+  await removeStoredFiles(files.map((file) => file.path));
 }
 
 /** Everything stored about the student, saved as studyswap-my-data.json. */
@@ -201,6 +210,8 @@ export async function deleteMyAccount(userId: string): Promise<void> {
     const { error: removeError } = await supabase.storage.from('avatars').remove(paths);
     if (removeError) console.error('Could not remove the photo files:', removeError);
   }
+  // Files on the cards (photos / PDFs of tasks): same reason, before the profile goes.
+  await removeStoredFiles(await listMyStoredFiles(userId));
   const { error } = await supabase.rpc('delete_my_account');
   if (error) throw error;
 }

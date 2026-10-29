@@ -41,6 +41,7 @@ src/
     barter/               BarterCard: the "Needs help / Can teach" card
     ui/                   Generic UI: BottomSheet (accessible modal: bottom sheet on phones, centred modal or menu on desktop), AvatarViewer (tap a photo: small window, grows out of the avatar)
     feed/ create/ profile/ search/ favorites/  Components used by one page only
+    files/                AttachmentsField (pick up to 3 photos / PDFs of tasks), TaskFiles (thumbnails in the swap window, full-screen photo viewer)
     student/              StudentLink (avatar + name → /u/<id>, avatar flies into the header), another student's page parts
   lib/
     supabase.ts           Supabase client
@@ -50,6 +51,7 @@ src/
     student.ts            Another student's page: get_student_profile, their cards, matching subjects, avatar view transition
     favorites.ts          Likes: Supabase functions + useFavoriteIds (shared by Feed and Search)
     avatar.ts             Profile photos: crop to 256×256 WebP/JPEG, upload, public URL
+    cardFiles.ts          Files on a card: compress photos (≤2000 px WebP/JPEG), upload, attach / detach, signed links
     format.ts             Small text helpers (initials, short names)
     auth.ts               Sign-in: e-mail codes, Microsoft, current student, complete profile
     telegram.ts           Telegram linking through the bot: link token, status, unlink

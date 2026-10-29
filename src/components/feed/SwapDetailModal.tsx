@@ -1,5 +1,6 @@
 'use client';
 
+import { TaskFiles } from '@/components/files/TaskFiles';
 import { useId, useState, type CSSProperties, type ReactNode } from 'react';
 import Link from 'next/link';
 import { useMyId } from '@/lib/auth';
@@ -136,6 +137,7 @@ function SwapDetailBody({ post, onClose, linkAuthor }: { post: FeedPost; onClose
 
       <TextBlock title={t.details.whatTheyTeach} text={post.offered_description} />
       <TextBlock title={t.details.whatTheyNeed} text={post.description} />
+      <TaskFiles files={post.files} />
 
       {/* Subjects */}
       <section className="flex flex-col gap-2">
