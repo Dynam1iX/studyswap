@@ -24,7 +24,8 @@ Every change to the database lives in `migrations/` as a numbered SQL file, so t
 | `20261024010000_swap_requests.sql` | Swap requests in the app (statuses, six request functions, handles visible after an accepted swap). Applied 2026-10-24 but the file was lost; **restored from the live database for history only — do not re-run** | Applied (SQL Editor) |
 | `20261027160000_hardening.sql` | Bug review fixes: cards cannot set their own `id` / `created_at`, unique 8-character link code; drops `swap_requests` and its functions (`get_telegram_handles`, `export_my_data` updated); the AITU e-mail rule also on e-mail change | Applied (SQL Editor) |
 | `20261029120000_polish.sql` | Small review fixes: `update_my_card` fails for a card that no longer exists; topic texts at most 150 characters as stored; `complete_my_profile` requires a year; photos readable only while they are someone's current photo (`avatars_read_current`) | **Not applied yet** — run in the SQL Editor |
-| `20261029180000_teachers.sql` | Any `@astanait.edu.kz` e-mail can sign up (codes, Microsoft, e-mail change); **Teacher** next to Bachelor's / Master's: `degree_level = 'Teacher'`, `study_year` null (shown as "Teacher" instead of the year); `complete_my_profile` accepts a teacher without a year | **Not applied yet** — run in the SQL Editor |
+| `20261029180000_teachers.sql` | Any `@astanait.edu.kz` e-mail can sign up (codes, Microsoft, e-mail change); **Teacher** next to Bachelor's / Master's: `degree_level = 'Teacher'`, `study_year` null (shown as "Teacher" instead of the year); `complete_my_profile` accepts a teacher without a year | Applied (SQL Editor) |
+| `20261029190000_teacher_by_email.sql` | Teacher is decided by the e-mail: exactly 6 digits = student, anything else = teacher (`check_teacher_email` on `users`; `complete_my_profile` sets Teacher for a name e-mail and refuses it for a student e-mail) | **Not applied yet** — run in the SQL Editor |
 | `20261022200000_sign_in.sql` | Only `6 digits@astanait.edu.kz` can sign up (trigger on `auth.users`); `complete_my_profile`; signed-in students never fall back to the demo account | Applied (SQL Editor) |
 | `20261022180000_avatars.sql` | Storage bucket `avatars` (own-folder policies), `users.avatar_path`, `set_my_avatar`, `remove_my_avatar` | Applied (SQL Editor) |
 | `20261022160000_profile_settings.sql` | `users.telegram_visibility`; `get_my_cards`, `update_my_card`, `set_my_card_status`, `delete_my_card`, `set_telegram_visibility`, `export_my_data` | Applied (SQL Editor) |
@@ -50,7 +51,7 @@ Supabase asks for confirmation before destructive statements (`DROP`, `DELETE`).
 ## Rules enforced by the database
 
 **Data**
-- Accounts: any `…@astanait.edu.kz` can sign up or switch to it (before `20261029180000_teachers.sql`: only 6 digits) (triggers on `auth.users`, insert and e-mail change)
+- Accounts: any `…@astanait.edu.kz` can sign up or switch to it (before `20261029180000_teachers.sql`: only 6 digits). 6 digits = student, a name e-mail = teacher (triggers on `auth.users`, insert and e-mail change)
 - Telegram is optional; when set: 5–32 letters, digits or `_`, without `@`
 - Topic texts are required, at most 150 characters (same as the Create form)
 - The two subjects of a card must differ

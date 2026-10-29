@@ -26,7 +26,7 @@ src/
   app/                    Pages (one folder per route)
     page.tsx              /         Feed
     login/                /login    Sign in: code to any @astanait.edu.kz e-mail, or Microsoft (AITU accounts)
-    welcome/              /welcome  Complete your profile (first sign-in; Microsoft fills in the name; Teacher hides the year)
+    welcome/              /welcome  Complete your profile (first sign-in; Microsoft fills in the name; name e-mail = Teacher, no year)
     create/               /create   Create a barter offer
     profile/              /profile  Student profile; profile/edit: Telegram + student details
     u/[id]/               /u/<id>   Another student's profile: contact, matching subjects, active cards, share link

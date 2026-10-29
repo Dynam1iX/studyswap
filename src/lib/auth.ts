@@ -6,6 +6,14 @@ import { messages } from '@/i18n';
 /** Any AITU e-mail: students (6-digit id) and teachers (name) @astanait.edu.kz. */
 export const STUDENT_EMAIL_RE = /^[a-z0-9._%+-]+@astanait\.edu\.kz$/i;
 
+/**
+ * Students have a 6-digit id e-mail, teachers a name e-mail. Exactly 6 digits = student,
+ * anything else = teacher (the database checks the same rule).
+ */
+export function isTeacherEmail(email: string): boolean {
+  return !/^\d{6}@astanait\.edu\.kz$/i.test(email.trim());
+}
+
 /** Length of the one-time code sent by e-mail (Supabase Auth → Email OTP Length). */
 export const CODE_LENGTH = 6;
 
